@@ -2,9 +2,9 @@
 
 <script lang="ts">
 	import YearSelect from "./yearSelect.svelte";
-	import AudioPlayer from "./audioPlayer.svelte";
 	import Header from "./header.svelte";
 	import "$lib/css/fonts.css";
+	import { currentTrack } from "$lib/playerStore";
 
 	let { data } = $props();
 	const { audioFiles } = data;
@@ -28,6 +28,10 @@
 	function selectYear(year: number) {
 		selectedYear = year;
 	}
+
+	function selectTrack(track) {
+		currentTrack.set(track);
+	}
 </script>
 
 <Header></Header>
@@ -35,21 +39,26 @@
 <YearSelect {years} year={selectedYear} {selectYear} />
 
 <!-- display files -->
-<div class="mx-7 mb-10 flex flex-col max-md:mx-4">
-	{#each audioFiles as file, index}
+<div class="flex flex-col">
+	{#each audioFiles as file}
 		{#if file.year == selectedYear}
 			<!-- file row -->
-			<div class="flex flex-wrap md:flex-nowrap">
-				<!-- date -->
-				<div class="flex items-center justify-center p-4 whitespace-nowrap md:w-30 md:min-w-30">
-					{file.displayDate}
-				</div>
-				<!-- title -->
-				<div class="flex w-full items-center p-4 md:w-auto md:min-w-min">
-					{file.title}
-				</div>
-				<!-- player -->
-				<AudioPlayer src={file.filePath} />
+			<div class="flex pt-3 text-left">
+				<button
+					type="button"
+					class="ml-18 flex cursor-pointer border-b-2 px-1 hover:border-black"
+					class:border-black={file.filePath === $currentTrack?.filePath}
+					class:border-transparent={file.filePath !== $currentTrack?.filePath}
+					onclick={() => selectTrack(file)}>
+					<!-- date -->
+					<div class="flex items-center justify-center pr-4 whitespace-nowrap">
+						{file.displayDate}
+					</div>
+					<!-- title -->
+					<div class="my-1 flex items-center">
+						{file.title}
+					</div>
+				</button>
 			</div>
 		{/if}
 	{/each}
