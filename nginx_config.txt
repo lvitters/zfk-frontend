@@ -1,6 +1,6 @@
 server {
     listen 443 ssl;
-    server_name archive.radioangrezi.de archiv.radioangrezi.de;
+    server_name archiv.zfk-bh.de;
 
     client_max_body_size 2G;
 
@@ -17,8 +17,8 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme; # VERY IMPORTANT
     }
 
-    ssl_certificate /etc/letsencrypt/live/archive.radioangrezi.de/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/archive.radioangrezi.de/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/archiv.zfk-bh.de/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/archiv.zfk-bh.de/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 }
@@ -26,7 +26,7 @@ server {
 server {
     listen 80;
     listen [::]:80;
-    server_name archive.radioangrezi.de archiv.radioangrezi.de;
+    server_name archiv.zfk-bh.de;
 
     return 301 https://$host$request_uri;
 }

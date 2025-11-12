@@ -1,6 +1,6 @@
 # SvelteKit
 
-The Radio Angrezi Archive is developed with [SvelteKit](https://svelte.dev/docs/kit/introduction).
+The ZfK Archive is developed with [SvelteKit](https://svelte.dev/docs/kit/introduction).
 
 ## Developing
 
@@ -25,7 +25,7 @@ You can preview the production build with `npm run preview`.
 
 ## Deployment
 
-The Radio Angrezi Archive can be deployed to a server running Node.js via SvelteKit's [node adapter](https://svelte.dev/docs/kit/adapter-node).
+The ZfK Archive can be deployed to a server running Node.js via SvelteKit's [node adapter](https://svelte.dev/docs/kit/adapter-node).
 
 It is managed with [PM2](https://codepilotsf.medium.com/running-node-apps-in-production-with-pm2-simplified-c2c19c42ae45)
 and deployed via a [reverse proxy](https://ryanschiang.com/how-to-deploy-sveltekit-app-to-nginx-reverse-proxy).
@@ -54,7 +54,7 @@ Database migration can be done via `npm run generate-migrations:db` and `npm run
 
 ## Adding, editing and deleting files from the database through the admin interface (after building and deploying)
 
-The admin interface can be reached by `https://archive.radioangrezi.de/admin`.
+The admin interface can be reached by `https://archiv.zfk-hb.de/admin`.
 
 With the correct password, the login should be valid for an hour.
 
