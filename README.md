@@ -1,6 +1,6 @@
 # SvelteKit
 
-The ZfK Archive is developed with [SvelteKit](https://svelte.dev/docs/kit/introduction).
+The ZfK website is developed with [SvelteKit](https://svelte.dev/docs/kit/introduction).
 
 ## Developing
 
@@ -25,14 +25,16 @@ You can preview the production build with `npm run preview`.
 
 ## Deployment
 
-The ZfK Archive can be deployed to a server running Node.js via SvelteKit's [node adapter](https://svelte.dev/docs/kit/adapter-node).
+The ZfK recording archive can be deployed to a server running Node.js via SvelteKit's [node adapter](https://svelte.dev/docs/kit/adapter-node).
 
 It is managed with [PM2](https://codepilotsf.medium.com/running-node-apps-in-production-with-pm2-simplified-c2c19c42ae45)
 and deployed via a [reverse proxy](https://ryanschiang.com/how-to-deploy-sveltekit-app-to-nginx-reverse-proxy).
 
+Note: A local only .env with some secret variables must be present for the project to run, which naturally can not present in the repository, please contact the author for it.
+
 ## Filling the database before the build step
 
-The archive serves files from a folder 'db/audio'. If new files are added before the build step, they can be added to the database via "npm populate-database".
+The archive serves audio files from a folder 'db/audio'. If new files are added before the build step, they can be added to the database via "npm populate-database".
 
 If there is no database for whatever reason, it can be created via
 

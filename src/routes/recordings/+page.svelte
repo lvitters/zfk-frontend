@@ -1,8 +1,7 @@
 <!-- Copyright © 2025 Lucca Vitters. All rights reserved -->
 
 <script lang="ts">
-	import YearSelect from "./yearSelect.svelte";
-	import Header from "./header.svelte";
+	import YearSelect from "../yearSelect.svelte";
 	import "$lib/css/fonts.css";
 	import { currentTrack } from "$lib/playerStore";
 
@@ -33,8 +32,6 @@
 		currentTrack.set(track);
 	}
 </script>
-
-<Header></Header>
 
 <YearSelect {years} year={selectedYear} {selectYear} />
 

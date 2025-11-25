@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { currentTrack } from "$lib/playerStore";
 
-	let audio: HTMLAudioElement;
+	let audio: HTMLAudioElement = $state();
 	let paused = $state(true);
 	let currentTime = $state(0);
 	let duration = $state(0);
@@ -46,18 +46,21 @@
 	function showHoverIndicator(event) {
 		const progressBar = event.currentTarget;
 		const rect = progressBar.getBoundingClientRect();
-
 		const mouseX = event.clientX - rect.left;
-		const progress = (currentTime / duration) * rect.width;
-		const isLeft = mouseX < progress;
+		const width = rect.width;
+		const indicatorWidth = 6;
 
-		hoverIndicator.style.backgroundColor = isLeft ? "black" : "red";
-		hoverIndicator.classList.add("md:block");
-		hoverIndicator.style.left = `${mouseX}px`;
+		// calculate clip-path inset values
+		const right = width - mouseX - indicatorWidth;
+		const left = mouseX;
+
+		// apply clip-path to show only a slice of the full-width rainbow indicator
+		hoverIndicator.style.clipPath = `inset(0px ${right}px 0px ${left}px)`;
+		hoverIndicator.classList.remove("opacity-0");
 	}
 
 	function hideHoverIndicator() {
-		hoverIndicator.classList.remove("md:block");
+		hoverIndicator.classList.add("opacity-0");
 	}
 
 	const formatTime = (time) => {
@@ -70,6 +73,14 @@
 		}
 		return `${minutes}:${String(seconds).padStart(2, "0")}`;
 	};
+
+	function closePlayer() {
+		currentTrack.set(null); // clear the current track to hide the player
+		if (audio) {
+			audio.pause(); // also stop playback
+			audio.currentTime = 0; // reset time
+		}
+	}
 </script>
 
 {#if $currentTrack}
@@ -94,7 +105,7 @@
 		</div>
 
 		<div
-			class="relative flex h-2 grow cursor-pointer items-center bg-gray-300"
+			class="animate-rainbow relative flex h-2 grow cursor-pointer items-center bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] ease-linear"
 			role="button"
 			tabindex="0"
 			aria-label="Seek in audio"
@@ -106,16 +117,24 @@
 					seek(e);
 				}
 			}}>
-			<div class="pointer-events-none absolute hidden h-full w-[1.5px] bg-red-500" bind:this={hoverIndicator}>
-			</div>
+			<!-- gray overlay for remaining time -->
 			<div
-				class="h-full w-0 bg-red-500 ease-linear"
-				style="width: {duration ? (currentTime / duration) * 100 : 0}%">
+				class="pointer-events-none absolute top-0 right-0 bottom-0 bg-gray-300"
+				style="width: {100 - (duration ? (currentTime / duration) * 100 : 0)}%">
+			</div>
+
+			<!-- hover indicator (Full width, masked via clip-path) -->
+			<!-- changed 'hidden' to 'opacity-0' to ensure animation remains synced with the progress bar -->
+			<div
+				class="animate-rainbow pointer-events-none absolute top-1/2 left-0 z-10 h-16 w-full -translate-y-1/2 bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] opacity-0 ease-linear"
+				bind:this={hoverIndicator}>
 			</div>
 		</div>
 
 		<div class="flex w-32 items-center justify-center">
 			<span>{formatTime(currentTime)} / {formatTime(duration)}</span>
 		</div>
+
+		<button class="ml-auto flex-shrink-0 cursor-pointer text-lg hover:text-red-500" onclick={closePlayer}>X</button>
 	</div>
 {/if}
