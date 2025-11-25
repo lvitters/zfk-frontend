@@ -1,5 +1,3 @@
-<!-- Copyright © 2025 Lucca Vitters. All rights reserved -->
-
 <script lang="ts">
 	import YearSelect from "../yearSelect.svelte";
 	import "$lib/css/fonts.css";
@@ -43,7 +41,7 @@
 			<div class="flex pt-3 text-left">
 				<button
 					type="button"
-					class="ml-18 flex cursor-pointer border-b-2 px-1 hover:border-black"
+					class="ml-7 flex cursor-pointer border-b-2 px-1 hover:border-black"
 					class:border-black={file.filePath === $currentTrack?.filePath}
 					class:border-transparent={file.filePath !== $currentTrack?.filePath}
 					onclick={() => selectTrack(file)}>

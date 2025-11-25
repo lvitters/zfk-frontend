@@ -1,5 +1,3 @@
-// Copyright © 2025 Lucca Vitters. All rights reserved
-
 import fs from "fs";
 import path from "path";
 

@@ -1,13 +1,14 @@
 <!-- tailwindcss -->
 <script>
+	import { page } from "$app/stores"; // Import page store
 	let { children } = $props();
 	import "../app.css";
-	import AudioPlayer from "./audioPlayer.svelte";
-	import Header from "./header.svelte";
+	import Nav from "./nav.svelte";
 </script>
 
-<Header />
+{#if !$page.url.pathname.startsWith('/admin')}
+	<Nav />
+{/if}
 
 {@render children()}
 
-<AudioPlayer />

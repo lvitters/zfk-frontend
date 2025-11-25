@@ -1,5 +1,3 @@
-// Copyright © 2025 Lucca Vitters. All rights reserved
-
 import { getAllEntries } from "../../../db/entries.js";
 //import type { PageServerLoad } from './$types'; //why don't I need this?
 

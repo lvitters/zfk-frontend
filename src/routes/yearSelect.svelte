@@ -2,13 +2,11 @@
 	let { years, year: selectedYear, selectYear } = $props();
 </script>
 
-<div class="mb-10 ml-12 flex flex-wrap p-4 max-md:mx-4">
+<div class="mb-8 ml-7 mt-4 flex flex-wrap gap-6 text-xl">
 	{#each years as year}
 		<button
-			class="m-1 cursor-pointer border-b-2 px-2 py-1"
-			class:border-black={year === selectedYear}
-			class:border-transparent={year !== selectedYear}
-			class:hover:border-black={true}
+			class="cursor-pointer hover:underline"
+			class:underline={year === selectedYear}
 			onclick={() => selectYear(year)}>
 			{year}
 		</button>

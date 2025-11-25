@@ -1,7 +1,3 @@
-<script>
-	import Page from "../club/+page.svelte";
-</script>
-
 <div class="mt-4 ml-7 text-xl">
 	<h1 class="mt-10 mb-4 text-2xl font-bold">Präambel</h1>
 	<p>
