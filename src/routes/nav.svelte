@@ -29,8 +29,8 @@
 			event.preventDefault();
 			isPlaying.update((p) => !p);
 		} else {
-			// No track selected, play a random one
-			event.preventDefault(); // Prevent navigating away
+			// no track selected, play a random one
+			event.preventDefault(); // prevent navigating away
 			randomizeAndPlay();
 		}
 	}
