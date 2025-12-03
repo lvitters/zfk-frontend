@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 body {
-	font-family: 'Roboto', sans-serif;
+	font-family: "Roboto", sans-serif;
 }
 
 @theme {
@@ -36,5 +36,19 @@ body {
 		to {
 			transform: rotate(360deg);
 		}
+	}
+}
+
+@layer components {
+	.kirby-content h1 {
+		@apply mt-16 mb-4 text-2xl;
+	}
+
+	.kirby-content h2 {
+		@apply mt-4 mb-4 text-xl;
+	}
+
+	.kirby-content p {
+		@apply min-h-[1em];
 	}
 }

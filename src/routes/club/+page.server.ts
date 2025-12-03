@@ -1,15 +1,16 @@
 import { kql } from "$lib/server/kirby";
 import type { PageServerLoad } from "./$types";
+import { error } from "@sveltejs/kit";
 
-interface Impressum {
+interface ClubPage {
 	title: string;
 	text: string;
 }
 
 export const load: PageServerLoad = async ({ fetch }) => {
-	const impressum = await kql<Impressum>(
+	const data = await kql<ClubPage>(
 		{
-			query: "page('impressum')",
+			query: "page('club')",
 			select: {
 				title: true,
 				text: "page.text.kirbytext",
@@ -18,7 +19,11 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		fetch,
 	);
 
+    if (!data) {
+        error(404, 'Club page not found');
+    }
+
 	return {
-		impressum,
+		page: data,
 	};
 };
