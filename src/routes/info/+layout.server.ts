@@ -8,7 +8,7 @@ export const load: LayoutServerLoad = async ({ fetch }) => {
 			select: {
 				id: true,
 				title: true,
-				slug: true
+				slug: true,
 			},
 		},
 		fetch,

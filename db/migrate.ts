@@ -8,5 +8,5 @@ import config from "./drizzle.config";
 dotenv.config();
 
 migrate(db, {
-  migrationsFolder: config.out,
+	migrationsFolder: config.out,
 });

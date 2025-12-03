@@ -1,6 +1,6 @@
 import { kql } from "$lib/server/kirby";
-import type { PageServerLoad } from "./$types";
 import { error } from "@sveltejs/kit";
+import type { PageServerLoad } from "./$types";
 
 interface ClubPage {
 	title: string;
@@ -19,9 +19,9 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		fetch,
 	);
 
-    if (!data) {
-        error(404, 'Club page not found');
-    }
+	if (!data) {
+		error(404, "Club page not found");
+	}
 
 	return {
 		page: data,

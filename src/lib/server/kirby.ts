@@ -1,4 +1,4 @@
-import { KIRBY_API_PASSWORD, KIRBY_API_USER, KIRBY_API_URL } from "$env/static/private";
+import { KIRBY_API_PASSWORD, KIRBY_API_URL, KIRBY_API_USER } from "$env/static/private";
 
 interface KqlResponse<T> {
 	code: number;

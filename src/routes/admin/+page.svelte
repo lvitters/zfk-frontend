@@ -2,7 +2,7 @@
 	import type { Track } from "$lib/types";
 
 	// apparently this will automatically fetch all the data via the load function in +page.server.ts? this is why SSR is good (I hope it works)
-	let { data }: { data: { audioFiles: Track[], isAdmin: boolean } } = $props();
+	let { data }: { data: { audioFiles: Track[]; isAdmin: boolean } } = $props();
 	let { audioFiles } = $state(data);
 	let isAdmin = $state(data.isAdmin);
 
@@ -23,7 +23,7 @@
 
 	// change placeholder after input change
 	function changeFilePlaceholder(event: Event & { currentTarget: HTMLInputElement }) {
-        const target = event.currentTarget;
+		const target = event.currentTarget;
 		const file = target.files?.[0];
 		if (file) {
 			fileName = file.name; // update label text with selected file name

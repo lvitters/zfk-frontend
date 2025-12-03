@@ -14,18 +14,21 @@ interface Event {
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	// We pass <Event[]> to the kql function to say "We expect an array of Events"
-	const events = await kql<Event[]>({
-		query: "page('veranstaltungen').children.listed.sortBy('date', 'desc')",
-		select: {
-			title: true,
-			date: true,
-			time: true,
-			description: true,
-			formattedDate: "page.date.toDate('d.m.Y')",
-			url: true,
-			id: "page.id"
+	const events = await kql<Event[]>(
+		{
+			query: "page('veranstaltungen').children.listed.sortBy('date', 'desc')",
+			select: {
+				title: true,
+				date: true,
+				time: true,
+				description: true,
+				formattedDate: "page.date.toDate('d.m.Y')",
+				url: true,
+				id: "page.id",
+			},
 		},
-	}, fetch);
+		fetch,
+	);
 
 	return {
 		// If kql fails (returns null), fallback to an empty array

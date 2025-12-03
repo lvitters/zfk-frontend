@@ -11,17 +11,12 @@
 			year: new Date(e.date).getFullYear(),
 			displayDate: e.formattedDate,
 			fullText: e.description,
-			previewText:
-				e.description.length > 300 ? e.description.slice(0, 300) + "..." : e.description,
-		}))
+			previewText: e.description.length > 300 ? e.description.slice(0, 300) + "..." : e.description,
+		})),
 	);
 
 	// extract unique years and sort them in ascending order
-	let years = $derived(
-		Array.from(new Set(events.map((event) => event.year))).sort(
-			(a, b) => Number(a) - Number(b)
-		)
-	);
+	let years = $derived(Array.from(new Set(events.map((event) => event.year))).sort((a, b) => Number(a) - Number(b)));
 
 	// get the current year
 	const currentYear = new Date().getFullYear();
@@ -31,9 +26,7 @@
 
 	$effect(() => {
 		if (!initialized && years.length > 0) {
-			selectedYear = years.includes(currentYear)
-				? currentYear
-				: (years[years.length - 1] as number);
+			selectedYear = years.includes(currentYear) ? currentYear : (years[years.length - 1] as number);
 			initialized = true;
 		}
 	});
@@ -86,8 +79,7 @@
 			<!-- continue button -->
 			<button
 				class="mt-2 w-fit cursor-pointer border-b border-transparent text-base font-bold hover:border-black"
-				onclick={() => toggleEvent(event.id)}
-			>
+				onclick={() => toggleEvent(event.id)}>
 				{expandedEventIds.has(event.id) ? "close" : "continue"}
 			</button>
 		</div>

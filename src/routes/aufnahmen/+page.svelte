@@ -2,7 +2,7 @@
 	import YearSelect from "../yearSelect.svelte";
 	import "$lib/css/fonts.css";
 	import { currentTrack } from "$lib/playerStore";
-    import type { Track } from "$lib/types";
+	import type { Track } from "$lib/types";
 
 	let { data }: { data: { audioFiles: Track[] } } = $props();
 	const { audioFiles } = data;

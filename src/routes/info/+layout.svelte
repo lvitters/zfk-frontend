@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-    import type { Snippet } from "svelte";
+	import type { Snippet } from "svelte";
 
-    interface InfoPageItem {
-        id: string;
-        title: string;
-        slug: string;
-    }
+	interface InfoPageItem {
+		id: string;
+		title: string;
+		slug: string;
+	}
 
-	let { children, data }: { children: Snippet, data: { infoPages: InfoPageItem[] } } = $props();
+	let { children, data }: { children: Snippet; data: { infoPages: InfoPageItem[] } } = $props();
 </script>
 
 <div class="mt-4 mb-8 ml-7 flex gap-6 text-xl">

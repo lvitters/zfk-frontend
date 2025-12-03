@@ -1,5 +1,5 @@
 import { kql } from "$lib/server/kirby";
-import { error } from '@sveltejs/kit';
+import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 interface InfoPage {
@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ fetch, params }) => {
 	);
 
 	if (!data) {
-		error(404, 'Page not found');
+		error(404, "Page not found");
 	}
 
 	return {
