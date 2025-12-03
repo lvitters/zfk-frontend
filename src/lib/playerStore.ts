@@ -1,4 +1,5 @@
-import { writable } from "svelte/store";
+import { writable, type Writable } from "svelte/store";
+import type { Track } from "./types";
 
-export const currentTrack = writable(null);
+export const currentTrack: Writable<Track | null> = writable(null);
 export const isPlaying = writable(false);

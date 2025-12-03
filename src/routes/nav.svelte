@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { page } from "$app/stores";
 	import { isPlaying, currentTrack } from "$lib/playerStore";
 	import AudioPlayer from "./audioPlayer.svelte";
@@ -24,7 +24,7 @@
 		}
 	}
 
-	function togglePlayback(event) {
+	function togglePlayback(event: MouseEvent) {
 		if ($currentTrack) {
 			event.preventDefault();
 			isPlaying.update((p) => !p);

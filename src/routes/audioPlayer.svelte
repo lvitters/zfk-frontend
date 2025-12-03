@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { currentTrack, isPlaying } from "$lib/playerStore";
+    import type { Track } from "$lib/types";
 
-	let audio: HTMLAudioElement = $state();
+	let audio: HTMLAudioElement | undefined = $state();
 	let currentTime = $state(0);
 	let duration = $state(0);
-	let hoverIndicator = $state(null);
+	let hoverIndicator: HTMLDivElement | null = $state(null);
 	let src = $state("");
 
 	// Sync $isPlaying store to audio element state
@@ -17,7 +18,7 @@
 		}
 	});
 
-	currentTrack.subscribe((track) => {
+	currentTrack.subscribe((track: Track | null) => {
 		if (track) {
 			src = track.filePath;
 			// reset state
@@ -35,9 +36,11 @@
 
 		// play from a specific time in the audio
 
-		function seek(event) {
+		function seek(event: MouseEvent & { currentTarget: HTMLDivElement } | KeyboardEvent) {
+            if (event instanceof KeyboardEvent) return; // Simple handling for now, logic was slightly mixed in original
 
-			const rect = event.currentTarget.getBoundingClientRect();
+            const target = event.currentTarget as HTMLDivElement;
+			const rect = target.getBoundingClientRect();
 
 			const progressWidth = rect.width;
 
@@ -65,7 +68,7 @@
 
 		// show indicator when hovering over the progress bar
 
-		function showHoverIndicator(event) {
+		function showHoverIndicator(event: MouseEvent & { currentTarget: HTMLDivElement }) {
 
 			const progressBar = event.currentTarget;
 
@@ -95,7 +98,8 @@
 
 				hoverIndicator.classList.remove("opacity-0");
 
-				progressBar.style.cursor = "none"; // Hide cursor
+				const parent = hoverIndicator.parentElement;
+                if(parent) parent.style.cursor = "none"; // Hide cursor
 
 			}
 
@@ -119,7 +123,7 @@
 
 	
 
-		const formatTime = (time) => {
+		const formatTime = (time: number) => {
 
 			if (isNaN(time)) return "0:00";
 
@@ -161,7 +165,7 @@
 
 					onpause={() => isPlaying.set(false)}
 
-					onloadedmetadata={() => (duration = audio.duration)}
+					onloadedmetadata={() => (duration = (audio as HTMLAudioElement).duration)}
 
 					{src}>
 

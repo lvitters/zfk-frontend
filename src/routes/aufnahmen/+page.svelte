@@ -2,31 +2,32 @@
 	import YearSelect from "../yearSelect.svelte";
 	import "$lib/css/fonts.css";
 	import { currentTrack } from "$lib/playerStore";
+    import type { Track } from "$lib/types";
 
-	let { data } = $props();
+	let { data }: { data: { audioFiles: Track[] } } = $props();
 	const { audioFiles } = data;
 
 	// extract unique years and sort them in descending order
 	const years = Array.from(new Set(audioFiles.map((file) => file.year))).sort((a, b) => Number(a) - Number(b));
 
 	// get the current year
-	const currentYear = new Date().getFullYear();
-	const defaultYear = years.includes(currentYear) ? currentYear : (years[years.length - 1] as number);
+	const currentYear = new Date().getFullYear().toString();
+	const defaultYear = years.includes(currentYear) ? currentYear : (years[years.length - 1] as string);
 
 	// apply to selectedYear
-	let selectedYear = $state<number>(defaultYear);
+	let selectedYear = $state<string>(defaultYear);
 
-	let filteredAudioFiles = $state([]);
+	let filteredAudioFiles: Track[] = $state([]);
 
 	$effect(() => {
 		filteredAudioFiles = audioFiles.filter((file) => file.year === selectedYear);
 	});
 
-	function selectYear(year: number) {
+	function selectYear(year: string) {
 		selectedYear = year;
 	}
 
-	function selectTrack(track) {
+	function selectTrack(track: Track) {
 		currentTrack.set(track);
 	}
 </script>

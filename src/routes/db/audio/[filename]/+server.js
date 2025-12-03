@@ -20,6 +20,7 @@ export async function GET({ params, request }) {
 		const fileStream = fs.createReadStream(fullFilePath, { start: startByte, end: endByte });
 
 		// ensure the response has the right status code and headers for partial content
+		// @ts-expect-error Node ReadStream is compatible at runtime with SvelteKit's node adapter
 		return new Response(fileStream, {
 			status: 206, // Partial Content
 			headers: {

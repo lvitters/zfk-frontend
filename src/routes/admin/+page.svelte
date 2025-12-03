@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
+	import type { Track } from "$lib/types";
+
 	// apparently this will automatically fetch all the data via the load function in +page.server.ts? this is why SSR is good (I hope it works)
-	let { data } = $props();
+	let { data }: { data: { audioFiles: Track[], isAdmin: boolean } } = $props();
 	let { audioFiles } = $state(data);
 	let isAdmin = $state(data.isAdmin);
 
@@ -20,8 +22,9 @@
 	}
 
 	// change placeholder after input change
-	function changeFilePlaceholder(event) {
-		const file = event.target.files[0];
+	function changeFilePlaceholder(event: Event & { currentTarget: HTMLInputElement }) {
+        const target = event.currentTarget;
+		const file = target.files?.[0];
 		if (file) {
 			fileName = file.name; // update label text with selected file name
 		} else {
@@ -30,7 +33,7 @@
 	}
 
 	// ask to confirm before deletion
-	function confirmDelete(event) {
+	function confirmDelete(event: MouseEvent) {
 		if (!confirm("Are you sure you want to delete this entry?")) {
 			event.preventDefault(); // Stop form submission
 		}
