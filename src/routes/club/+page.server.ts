@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			query: "page('club')",
 			select: {
 				title: true,
-				text: "page.text.kirbytext",
+				text: "page.text.toBlocks.toHtml",
 			},
 		},
 		fetch,

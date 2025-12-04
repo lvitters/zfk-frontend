@@ -1,7 +1,27 @@
 @import "tailwindcss";
 
+@font-face {
+	font-family: "ClashGroteskRegular";
+	src: url("/fonts/ClashGrotesk-Regular.woff2") format("woff2");
+	font-weight: normal;
+	font-style: normal;
+}
+
+:root {
+	--bg-color: #ffffff;
+	--text-color: #000000;
+}
+
+:root.dark {
+	--bg-color: #000000;
+	--text-color: #ffffff;
+}
+
 body {
-	font-family: "Roboto", sans-serif;
+	font-family: "ClashGroteskRegular", sans-serif;
+	color: var(--text-color);
+	background-color: var(--bg-color);
+	transition: background-color 0.3s, color 0.3s;
 }
 
 @theme {
@@ -41,14 +61,39 @@ body {
 
 @layer components {
 	.kirby-content h1 {
-		@apply mt-16 mb-4 text-2xl;
+		@apply mt-16 mb-4 text-2xl font-bold;
 	}
 
 	.kirby-content h2 {
-		@apply mt-4 mb-4 text-xl;
+		@apply mt-4 mb-4 text-xl font-bold;
 	}
 
 	.kirby-content p {
 		@apply min-h-[1em];
+	}
+
+	.kirby-content figure ul {
+		@apply grid grid-cols-2 gap-4 md:grid-cols-3;
+	}
+
+	.kirby-content figure ul li {
+		@apply list-none;
+	}
+
+	.kirby-content figure ul li img {
+		@apply mt-4 mb-4 h-full w-auto object-cover;
+	}
+
+	/* gallery block specific styling */
+	.kirby-content figure ul li figure {
+		@apply flex flex-col; /* Stack image and caption vertically */
+	}
+
+	.kirby-content figure ul li figure img {
+		@apply mb-2; /* Add space below image */
+	}
+
+	.kirby-content figure ul li figure figcaption {
+		@apply text-sm text-gray-600; /* Basic caption style */
 	}
 }

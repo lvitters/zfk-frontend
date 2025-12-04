@@ -35,7 +35,6 @@
 	});
 
 	// play from a specific time in the audio
-
 	function seek(event: (MouseEvent & { currentTarget: HTMLDivElement }) | KeyboardEvent) {
 		if (event instanceof KeyboardEvent) return; // simple handling for now, logic was slightly mixed in original
 
@@ -114,23 +113,24 @@
 			</audio>
 
 			<!-- progress Bar Wrapper -->
-			<div class="relative h-2 grow">
-				<!-- visual Progress Bar -->
-
+			<div class="relative h-2 grow bg-gray-300">
+				<!-- glow Layer -->
 				<div
-					class="animate-rainbow absolute inset-0 h-full w-full bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] ease-linear">
-					<!-- gray overlay for remaining time -->
+					class="animate-rainbow absolute inset-0 h-full w-full bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] opacity-100 blur-lg ease-linear"
+					style="clip-path: inset(-2rem {100 -
+						(duration ? (currentTime / duration) * 100 : 0)}% -2rem -2rem);">
+				</div>
 
-					<div
-						class="pointer-events-none absolute top-0 right-0 bottom-0 bg-gray-300"
-						style="width: {100 - (duration ? (currentTime / duration) * 100 : 0)}%">
-					</div>
+				<!-- main Layer -->
+				<div
+					class="animate-rainbow absolute inset-0 h-full w-full bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] ease-linear"
+					style="clip-path: inset(0 {100 - (duration ? (currentTime / duration) * 100 : 0)}% 0 0);">
 				</div>
 
 				<!-- interaction area (Hit Box) -->
 
 				<div
-					class="absolute top-1/2 left-0 z-10 h-16 w-full -translate-y-1/2 cursor-pointer"
+					class="absolute left-0 top-1/2 z-10 h-16 w-full -translate-y-1/2 cursor-pointer"
 					role="button"
 					tabindex="0"
 					aria-label="Seek in audio"
@@ -145,7 +145,7 @@
 					<!-- hover indicator (full width, masked via clip-path) -->
 
 					<div
-						class="animate-rainbow pointer-events-none absolute top-0 left-0 h-full w-full bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] opacity-0 ease-linear"
+						class="animate-rainbow pointer-events-none absolute left-0 top-0 h-full w-full bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] opacity-0 ease-linear"
 						bind:this={hoverIndicator}>
 					</div>
 				</div>

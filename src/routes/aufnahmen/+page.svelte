@@ -41,7 +41,7 @@
 					class:border-transparent={file.filePath !== $currentTrack?.filePath}
 					onclick={() => selectTrack(file)}>
 					<!-- date -->
-					<div class="flex items-center justify-center pr-4 whitespace-nowrap">
+					<div class="flex items-center justify-center whitespace-nowrap pr-4">
 						{file.displayDate}
 					</div>
 					<!-- title -->

@@ -2,6 +2,31 @@
 	import { page } from "$app/stores";
 	import { isPlaying, currentTrack } from "$lib/playerStore";
 	import AudioPlayer from "./audioPlayer.svelte";
+	import { onMount } from "svelte";
+
+	let isDark = $state(false);
+
+	onMount(() => {
+		const stored = localStorage.getItem("theme");
+		if (stored === "dark" || (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+			isDark = true;
+			document.documentElement.classList.add("dark");
+		} else {
+			isDark = false;
+			document.documentElement.classList.remove("dark");
+		}
+	});
+
+	function toggleTheme() {
+		isDark = !isDark;
+		if (isDark) {
+			document.documentElement.classList.add("dark");
+			localStorage.setItem("theme", "dark");
+		} else {
+			document.documentElement.classList.remove("dark");
+			localStorage.setItem("theme", "light");
+		}
+	}
 
 	async function randomizeAndPlay() {
 		try {
@@ -56,7 +81,7 @@
 			<div class="ml-6 flex grow items-center text-lg text-gray-500">Zentrum für Kollektivkultur e.V.</div>
 		{/if}
 	</div>
-	<nav class="mt-4 flex gap-6 text-2xl">
+	<nav class="mt-4 flex items-center gap-6 text-2xl">
 		<a
 			href="/veranstaltungen"
 			class="cursor-pointer hover:underline"
@@ -75,5 +100,10 @@
 		<a href="/info" class="cursor-pointer hover:underline" class:underline={$page.url.pathname.startsWith("/info")}>
 			Info
 		</a>
+		
+		<!-- Theme Toggle -->
+		<button onclick={toggleTheme} class="cursor-pointer text-2xl hover:scale-110 transition-transform" aria-label="Toggle Dark Mode">
+			{#if isDark}☀︎{:else}☾{/if}
+		</button>
 	</nav>
 </div>

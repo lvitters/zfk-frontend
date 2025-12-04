@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ fetch, params }) => {
 			query: `page('info/${params.slug}')`,
 			select: {
 				title: true,
-				text: "page.text.kirbytext",
+				text: "page.text.toBlocks.toHtml",
 			},
 		},
 		fetch,
