@@ -5,8 +5,10 @@
 	let audio: HTMLAudioElement | undefined = $state();
 	let currentTime = $state(0);
 	let duration = $state(0);
-	let hoverIndicator: HTMLDivElement | null = $state(null);
 	let src = $state("");
+
+	let isDragging = $state(false);
+	let progressBar: HTMLDivElement | undefined = $state();
 
 	// Sync $isPlaying store to audio element state
 	$effect(() => {
@@ -24,7 +26,6 @@
 			// reset state
 			currentTime = 0;
 			duration = 0;
-			// paused = true; // Removed local paused state
 			// autoplay
 			setTimeout(() => {
 				if (audio) {
@@ -34,53 +35,51 @@
 		}
 	});
 
-	// play from a specific time in the audio
-	function seek(event: (MouseEvent & { currentTarget: HTMLDivElement }) | KeyboardEvent) {
-		if (event instanceof KeyboardEvent) return; // simple handling for now, logic was slightly mixed in original
+	function updateTime(clientX: number) {
+		if (!progressBar || !audio || !duration) return;
 
-		const target = event.currentTarget as HTMLDivElement;
-		const rect = target.getBoundingClientRect();
-		const progressWidth = rect.width;
-		const mouseX = event.clientX - rect.left;
-		const newTime = (mouseX / progressWidth) * duration;
-
-		if (audio) {
-			audio.currentTime = newTime;
-
-			// if audio was paused, resume playback
-			if (audio.paused) {
-				isPlaying.set(true);
-			}
-		}
-	}
-
-	// show indicator when hovering over the progress bar
-	function showHoverIndicator(event: MouseEvent & { currentTarget: HTMLDivElement }) {
-		const progressBar = event.currentTarget;
 		const rect = progressBar.getBoundingClientRect();
-		const mouseX = event.clientX - rect.left;
+		const x = clientX - rect.left;
 		const width = rect.width;
-		const indicatorWidth = 6;
+		const ratio = Math.max(0, Math.min(1, x / width));
+		const newTime = ratio * duration;
 
-		// calculate clip-path inset values
-		const right = width - mouseX - indicatorWidth;
-		const left = mouseX;
-
-		// apply clip-path to show only a slice of the full-width rainbow indicator
-		if (hoverIndicator) {
-			hoverIndicator.style.clipPath = `inset(0px ${right}px 0px ${left}px)`;
-			hoverIndicator.classList.remove("opacity-0");
-			const parent = hoverIndicator.parentElement;
-			if (parent) parent.style.cursor = "none"; // hide cursor
-		}
+		audio.currentTime = newTime;
+		currentTime = newTime;
 	}
 
-	function hideHoverIndicator() {
-		if (hoverIndicator) {
-			hoverIndicator.classList.add("opacity-0");
-			const progressBar = hoverIndicator.parentElement; // get the parent element (progress bar wrapper)
-			if (progressBar) progressBar.style.cursor = "pointer"; // restore cursor
+	function onDragStart(event: MouseEvent | TouchEvent) {
+		if (audio && audio.paused) {
+			isPlaying.set(true);
 		}
+
+		isDragging = true;
+
+		const clientX = "touches" in event ? event.touches[0].clientX : event.clientX;
+		updateTime(clientX);
+
+		window.addEventListener("mousemove", onDragMove);
+		window.addEventListener("touchmove", onDragMove, { passive: false });
+		window.addEventListener("mouseup", onDragEnd);
+		window.addEventListener("touchend", onDragEnd);
+	}
+
+	function onDragMove(event: MouseEvent | TouchEvent) {
+		if (!isDragging) return;
+		if (event.cancelable) {
+			event.preventDefault();
+		}
+
+		const clientX = "touches" in event ? event.touches[0].clientX : event.clientX;
+		updateTime(clientX);
+	}
+
+	function onDragEnd() {
+		isDragging = false;
+		window.removeEventListener("mousemove", onDragMove);
+		window.removeEventListener("touchmove", onDragMove);
+		window.removeEventListener("mouseup", onDragEnd);
+		window.removeEventListener("touchend", onDragEnd);
 	}
 
 	const formatTime = (time: number) => {
@@ -98,7 +97,7 @@
 </script>
 
 {#if $currentTrack}
-	<div class="ml-6 flex grow flex-col gap-1 pr-4">
+	<div class="flex grow flex-col gap-1 pr-4">
 		<div class="flex items-center gap-4">
 			<audio
 				bind:this={audio}
@@ -108,12 +107,11 @@
 				onpause={() => isPlaying.set(false)}
 				onloadedmetadata={() => (duration = (audio as HTMLAudioElement).duration)}
 				{src}>
-				<source {src} type="audio/mp3" />
 				Your browser does not support the audio element.
 			</audio>
 
-			<!-- progress Bar Wrapper -->
-			<div class="relative h-2 grow bg-gray-300">
+			<!-- progress bar wrapper -->
+			<div class="relative h-2 grow bg-gray-300" bind:this={progressBar}>
 				<!-- glow Layer -->
 				<div
 					class="animate-rainbow absolute inset-0 h-full w-full bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] opacity-100 blur-lg ease-linear"
@@ -130,23 +128,17 @@
 				<!-- interaction area (Hit Box) -->
 
 				<div
-					class="absolute left-0 top-1/2 z-10 h-16 w-full -translate-y-1/2 cursor-pointer"
+					class="absolute left-0 top-1/2 z-50 h-16 w-full -translate-y-1/2 cursor-pointer"
+					style="touch-action: none;"
 					role="button"
 					tabindex="0"
 					aria-label="Seek in audio"
-					onclick={seek}
-					onmousemove={showHoverIndicator}
-					onmouseleave={hideHoverIndicator}
-					onkeydown={(e) => {
-						if (e.key === "Enter" || e.key === " ") {
-							seek(e);
-						}
-					}}>
-					<!-- hover indicator (full width, masked via clip-path) -->
-
+					onmousedown={onDragStart}
+					ontouchstart={onDragStart}>
+					<!-- current progress indicator -->
 					<div
-						class="animate-rainbow pointer-events-none absolute left-0 top-0 h-full w-full bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] opacity-0 ease-linear"
-						bind:this={hoverIndicator}>
+						class="animate-rainbow pointer-events-none absolute top-0 h-full w-[6px] bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] ease-linear"
+						style="left: {duration ? (currentTime / duration) * 100 : 0}%; transform: translateX(-50%); box-shadow: var(--box-glow);">
 					</div>
 				</div>
 			</div>

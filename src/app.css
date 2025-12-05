@@ -7,21 +7,36 @@
 	font-style: normal;
 }
 
+html {
+	scrollbar-gutter: stable;
+}
+
 :root {
-	--bg-color: #ffffff;
-	--text-color: #000000;
+	--bg-color: #e0e0e0;
+	--text-color: #2a2a2a;
+	--text-glow: 0 0 5px rgba(0, 0, 0, 0.3);
+	--box-glow: 0 0 5px rgba(0, 0, 0, 0.3);
+	--item-bg-color: var(--text-color);
+	--item-text-color: var(--bg-color);
 }
 
 :root.dark {
-	--bg-color: #000000;
-	--text-color: #ffffff;
+	--bg-color: #2a2a2a;
+	--text-color: #e0e0e0;
+	--text-glow: 0 0 5px rgba(255, 255, 255, 0.5);
+	--box-glow: 0 0 5px rgba(255, 255, 255, 0.5);
+	--item-bg-color: var(--text-color);
+	--item-text-color: var(--bg-color);
 }
 
 body {
 	font-family: "ClashGroteskRegular", sans-serif;
 	color: var(--text-color);
 	background-color: var(--bg-color);
-	transition: background-color 0.3s, color 0.3s;
+	text-shadow: var(--text-glow);
+	transition:
+		background-color 0.3s,
+		color 0.3s;
 }
 
 @theme {
@@ -86,14 +101,14 @@ body {
 
 	/* gallery block specific styling */
 	.kirby-content figure ul li figure {
-		@apply flex flex-col; /* Stack image and caption vertically */
+		@apply flex flex-col; /* stack image and caption vertically */
 	}
 
 	.kirby-content figure ul li figure img {
-		@apply mb-2; /* Add space below image */
+		@apply mb-2; /* add space below image */
 	}
 
 	.kirby-content figure ul li figure figcaption {
-		@apply text-sm text-gray-600; /* Basic caption style */
+		@apply text-sm text-gray-600; /* basic caption style */
 	}
 }

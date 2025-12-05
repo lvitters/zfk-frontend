@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 				date: true,
 				time: true,
 				description: true,
-				formattedDate: "page.date.toDate('d.m.Y')",
+				formattedDate: "page.date.toDate('d.m.')",
 				url: true,
 				id: "page.id",
 			},

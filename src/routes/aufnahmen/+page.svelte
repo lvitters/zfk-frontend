@@ -26,30 +26,28 @@
 	}
 </script>
 
-<YearSelect {years} year={selectedYear} {selectYear} />
+<div class="flex w-full justify-start">
+	<YearSelect {years} year={selectedYear} {selectYear} />
+</div>
 
 <!-- display files -->
-<div class="flex flex-col">
+<div class="mt-4 flex w-full flex-col gap-2 pb-24">
 	{#each audioFiles as file}
 		{#if file.year == selectedYear}
 			<!-- file row -->
-			<div class="flex pt-3 text-left">
-				<button
-					type="button"
-					class="ml-7 flex cursor-pointer border-b-2 px-1 hover:border-black"
-					class:border-black={file.filePath === $currentTrack?.filePath}
-					class:border-transparent={file.filePath !== $currentTrack?.filePath}
-					onclick={() => selectTrack(file)}>
-					<!-- date -->
-					<div class="flex items-center justify-center whitespace-nowrap pr-4">
-						{file.displayDate}
-					</div>
-					<!-- title -->
-					<div class="my-1 flex items-center">
-						{file.title}
-					</div>
-				</button>
-			</div>
+			<button
+				class="my-2 flex cursor-pointer flex-col rounded-lg bg-[var(--item-bg-color)] p-4 text-left text-[var(--item-text-color)] transition-colors duration-300 hover:bg-[var(--bg-color)] hover:text-[var(--text-color)]"
+				onclick={() => selectTrack(file)}
+				style="box-shadow: var(--box-glow);">
+				<!-- date -->
+				<div class="flex items-center pr-4 text-sm">
+					{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.
+				</div>
+				<!-- title -->
+				<div class="my-1 flex items-center text-2xl font-medium">
+					{file.title}
+				</div>
+			</button>
 		{/if}
 	{/each}
 </div>

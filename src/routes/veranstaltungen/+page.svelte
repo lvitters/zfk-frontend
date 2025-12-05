@@ -11,7 +11,6 @@
 			year: new Date(e.date).getFullYear(),
 			displayDate: e.formattedDate,
 			fullText: e.description,
-			previewText: e.description.length > 300 ? e.description.slice(0, 300) + "..." : e.description,
 		})),
 	);
 
@@ -36,54 +35,28 @@
 	function selectYear(year: number) {
 		selectedYear = year;
 	}
-
-	// track expanded states using a set
-	let expandedEventIds = $state(new Set());
-
-	function toggleEvent(id: string) {
-		// create a new set to trigger reactivity
-		const newSet = new Set(expandedEventIds);
-		if (newSet.has(id)) {
-			newSet.delete(id);
-		} else {
-			newSet.add(id);
-		}
-		expandedEventIds = newSet;
-	}
 </script>
 
-<YearSelect {years} year={selectedYear} {selectYear} />
+<div class="flex justify-start w-full">
+    <YearSelect {years} year={selectedYear} {selectYear} />
+</div>
 
-<div class="mx-7 mt-4 flex max-w-2xl flex-col gap-10 pb-24">
+<div class="mt-4 flex w-full flex-col gap-2 pb-24">
 	{#each filteredEvents as event}
-		<div class="flex flex-col gap-2 border-b border-black pt-3 pb-6">
+		<div class="flex flex-col gap-2 border-b border-[var(--item-text-color)] bg-[var(--item-bg-color)] text-[var(--item-text-color)] p-4 my-2 rounded-lg" style="box-shadow: var(--box-glow);">
 			<!-- date -->
-			<div class="text-sm text-gray-500">{event.displayDate}</div>
+			<div class="text-sm">{event.displayDate}</div>
 
 			<!-- title -->
 			<h2 class="text-2xl font-medium">{event.title}</h2>
 
 			<!-- content -->
 			<div class="text-lg leading-relaxed">
-				{#if expandedEventIds.has(event.id)}
-					<div in:fade={{ duration: 200 }}>
-						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-						{@html event.fullText}
-					</div>
-				{:else}
-					<div in:fade={{ duration: 200 }}>
-						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-						{@html event.previewText}
-					</div>
-				{/if}
+				<div in:fade={{ duration: 200 }}>
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+					{@html event.fullText}
+				</div>
 			</div>
-
-			<!-- continue button -->
-			<button
-				class="mt-2 w-fit cursor-pointer border-b border-transparent text-base font-bold hover:border-black"
-				onclick={() => toggleEvent(event.id)}>
-				{expandedEventIds.has(event.id) ? "close" : "continue"}
-			</button>
 		</div>
 	{/each}
 </div>

@@ -61,49 +61,71 @@
 	}
 </script>
 
-<div class="my-7 ml-7 flex flex-col max-md:mx-4 max-md:mt-7 max-md:py-0">
-	<div class="flex w-full items-center">
+<div class="my-7 flex flex-col max-md:mt-7 max-md:py-0">
+	{#if $currentTrack}
+		<div class="mb-7 mt-4 w-full">
+			<AudioPlayer />
+		</div>
+	{:else}
+		<div class="mb-7 mt-4 flex grow items-center justify-center text-lg text-gray-500">
+			Zentrum für Kollektivkultur e.V.
+		</div>
+	{/if}
+
+	<div class="flex w-full items-center justify-between">
+		<!-- page select -->
+		<nav class="flex items-center gap-6 text-2xl">
+			<a
+				href="/veranstaltungen"
+				class="cursor-pointer hover:underline"
+				class:underline={$page.url.pathname.startsWith("/veranstaltungen")}>
+				Veranstaltungen
+			</a>
+			<a
+				href="/aufnahmen"
+				class="cursor-pointer hover:underline"
+				class:underline={$page.url.pathname.startsWith("/aufnahmen")}>
+				Aufnahmen
+			</a>
+			<a
+				href="/club"
+				class="cursor-pointer hover:underline"
+				class:underline={$page.url.pathname.startsWith("/club")}>
+				Club
+			</a>
+			<a
+				href="/info"
+				class="cursor-pointer hover:underline"
+				class:underline={$page.url.pathname.startsWith("/info")}>
+				Info
+			</a>
+
+			<!-- theme toggle -->
+			<button
+				onclick={toggleTheme}
+				class="cursor-pointer text-2xl transition-transform hover:scale-110"
+				aria-label="Toggle Dark Mode">
+				{#if isDark}☀︎{:else}☾{/if}
+			</button>
+		</nav>
+
+		<!-- spinning logo -->
 		<button class="relative flex cursor-pointer items-center" onclick={togglePlayback}>
 			<img
 				src="/logo_zfk_transparent.png"
 				alt="ZfK Logo"
 				class="animate-spin-vinyl h-[100px] w-auto cursor-pointer"
-				style="animation-play-state: {$isPlaying ? 'running' : 'paused'};" />
+				style="animation-play-state: {$isPlaying ? 'running' : 'paused'}; filter: {isDark
+					? 'invert(1)'
+					: 'none'};" />
 			<div
 				class="absolute -bottom-1 -left-6 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full">
-				<img src="/playpause.png" alt="Play/Pause" class="h-full w-full object-contain" />
+				<img
+					src="/playpause.png"
+					alt="Play/Pause"
+					class="h-full w-full object-contain"
+					style="filter: {isDark ? 'invert(1)' : 'none'};" />
 			</div>
 		</button>
-
-		{#if $currentTrack}
-			<AudioPlayer />
-		{:else}
-			<div class="ml-6 flex grow items-center text-lg text-gray-500">Zentrum für Kollektivkultur e.V.</div>
-		{/if}
 	</div>
-	<nav class="mt-4 flex items-center gap-6 text-2xl">
-		<a
-			href="/veranstaltungen"
-			class="cursor-pointer hover:underline"
-			class:underline={$page.url.pathname.startsWith("/veranstaltungen")}>
-			Veranstaltungen
-		</a>
-		<a
-			href="/aufnahmen"
-			class="cursor-pointer hover:underline"
-			class:underline={$page.url.pathname.startsWith("/aufnahmen")}>
-			Aufnahmen
-		</a>
-		<a href="/club" class="cursor-pointer hover:underline" class:underline={$page.url.pathname.startsWith("/club")}>
-			Club
-		</a>
-		<a href="/info" class="cursor-pointer hover:underline" class:underline={$page.url.pathname.startsWith("/info")}>
-			Info
-		</a>
-		
-		<!-- Theme Toggle -->
-		<button onclick={toggleTheme} class="cursor-pointer text-2xl hover:scale-110 transition-transform" aria-label="Toggle Dark Mode">
-			{#if isDark}☀︎{:else}☾{/if}
-		</button>
-	</nav>
 </div>

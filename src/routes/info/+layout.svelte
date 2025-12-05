@@ -11,7 +11,7 @@
 	let { children, data }: { children: Snippet; data: { infoPages: InfoPageItem[] } } = $props();
 </script>
 
-<div class="mt-4 mb-8 ml-7 flex gap-6 text-xl">
+<div class="mt-4 mb-4 flex gap-6 text-xl justify-start w-full">
 	{#each data.infoPages as infoPage}
 		<a
 			href="/info/{infoPage.slug}"
