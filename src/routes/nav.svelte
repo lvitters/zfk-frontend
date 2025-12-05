@@ -61,20 +61,41 @@
 	}
 </script>
 
-<div class="my-7 flex flex-col max-md:mt-7 max-md:py-0">
-	{#if $currentTrack}
-		<div class="mb-7 mt-4 w-full">
-			<AudioPlayer />
-		</div>
-	{:else}
-		<div class="mb-7 mt-4 flex grow items-center justify-center text-lg text-gray-500">
-			Zentrum für Kollektivkultur e.V.
-		</div>
-	{/if}
+<div class="mt-7 mb-4 flex flex-col md:mt-7 md:mb-8">
+	<div class="mt-4 flex w-full items-center justify-between mb-3 md:mb-7">
+		{#if $currentTrack}
+			<div class="grow">
+				<AudioPlayer />
+			</div>
+		{:else}
+			<div class="flex grow items-center justify-center text-lg text-gray-500">
+				Zentrum für Kollektivkultur e.V.
+			</div>
+		{/if}
+
+		<!-- spinning logo -->
+		<button class="relative ml-4 flex shrink-0 cursor-pointer items-center" onclick={togglePlayback}>
+			<img
+				src="/logo_zfk_transparent.png"
+				alt="ZfK Logo"
+				class="animate-spin-vinyl h-[50px] w-auto cursor-pointer md:h-[75px]"
+				style="animation-play-state: {$isPlaying ? 'running' : 'paused'}; filter: {isDark
+					? 'invert(1)'
+					: 'none'};" />
+			<div
+				class="absolute -bottom-1 -left-5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-transform hover:scale-110 active:scale-95 md:-bottom-1 md:-left-6 md:h-8 md:w-8">
+				<img
+					src="/playpause.png"
+					alt="Play/Pause"
+					class="h-full w-full object-contain"
+					style="filter: {isDark ? 'invert(1)' : 'none'};" />
+			</div>
+		</button>
+	</div>
 
 	<div class="flex w-full items-center justify-between">
 		<!-- page select -->
-		<nav class="flex items-center gap-6 text-2xl">
+		<nav class="flex items-center gap-3 text-sm md:gap-6 md:text-2xl">
 			<a
 				href="/veranstaltungen"
 				class="cursor-pointer hover:underline"
@@ -103,29 +124,10 @@
 			<!-- theme toggle -->
 			<button
 				onclick={toggleTheme}
-				class="cursor-pointer text-2xl transition-transform hover:scale-110"
+				class="cursor-pointer text-sm transition-transform hover:scale-110 md:text-2xl"
 				aria-label="Toggle Dark Mode">
 				{#if isDark}☀︎{:else}☾{/if}
 			</button>
 		</nav>
-
-		<!-- spinning logo -->
-		<button class="relative flex cursor-pointer items-center" onclick={togglePlayback}>
-			<img
-				src="/logo_zfk_transparent.png"
-				alt="ZfK Logo"
-				class="animate-spin-vinyl h-[100px] w-auto cursor-pointer"
-				style="animation-play-state: {$isPlaying ? 'running' : 'paused'}; filter: {isDark
-					? 'invert(1)'
-					: 'none'};" />
-			<div
-				class="absolute -bottom-1 -left-6 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full">
-				<img
-					src="/playpause.png"
-					alt="Play/Pause"
-					class="h-full w-full object-contain"
-					style="filter: {isDark ? 'invert(1)' : 'none'};" />
-			</div>
-		</button>
 	</div>
 </div>

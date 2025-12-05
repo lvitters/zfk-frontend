@@ -43,10 +43,10 @@ body {
 	--animate-scroll-left: scroll-left 20s linear infinite;
 	@keyframes scroll-left {
 		0% {
-			transform: translateX(100%);
+			transform: translateX(0);
 		}
 		100% {
-			transform: translateX(-100%);
+			transform: translateX(-50%);
 		}
 	}
 
@@ -76,15 +76,19 @@ body {
 
 @layer components {
 	.kirby-content h1 {
-		@apply mt-16 mb-4 text-2xl font-bold;
+		@apply mt-0 mb-4 text-lg font-bold md:mt-0 md:text-2xl;
 	}
 
 	.kirby-content h2 {
-		@apply mt-4 mb-4 text-xl font-bold;
+		@apply mt-4 mb-4 text-base font-bold md:text-xl;
 	}
 
 	.kirby-content p {
 		@apply min-h-[1em];
+	}
+
+	.kirby-content figure {
+		@apply my-5;
 	}
 
 	.kirby-content figure ul {
@@ -95,8 +99,12 @@ body {
 		@apply list-none;
 	}
 
+	.kirby-content img {
+		@apply w-full;
+	}
+
 	.kirby-content figure ul li img {
-		@apply mt-4 mb-4 h-full w-auto object-cover;
+		@apply mt-4 mb-4 h-full w-full object-cover;
 	}
 
 	/* gallery block specific styling */

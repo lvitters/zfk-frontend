@@ -6,7 +6,7 @@
 	import Nav from "./nav.svelte";
 </script>
 
-<div class="mx-auto w-2/3 min-w-[500px] max-w-[1000px]">
+<div class="mx-auto w-full max-w-[1000px] px-5 text-sm md:w-3/4 md:px-0 md:text-base lg:w-2/3">
 	{#if !$page.url.pathname.startsWith("/admin")}
 		<Nav />
 	{/if}

@@ -40,11 +40,11 @@
 				onclick={() => selectTrack(file)}
 				style="box-shadow: var(--box-glow);">
 				<!-- date -->
-				<div class="flex items-center pr-4 text-sm">
-					{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.
+				<div class="flex items-center pr-4 text-xs md:text-sm">
+					{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}
 				</div>
 				<!-- title -->
-				<div class="my-1 flex items-center text-2xl font-medium">
+				<div class="my-1 flex items-center text-lg font-medium md:text-2xl">
 					{file.title}
 				</div>
 			</button>

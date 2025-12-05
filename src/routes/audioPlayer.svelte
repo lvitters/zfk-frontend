@@ -137,8 +137,8 @@
 					ontouchstart={onDragStart}>
 					<!-- current progress indicator -->
 					<div
-						class="animate-rainbow pointer-events-none absolute top-0 h-full w-[6px] bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] ease-linear"
-						style="left: {duration ? (currentTime / duration) * 100 : 0}%; transform: translateX(-50%); box-shadow: var(--box-glow);">
+						class="animate-rainbow pointer-events-none absolute bottom-0 top-0 m-auto h-6 w-[2px] -translate-x-1/2 bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] ease-linear md:h-full md:w-[4px]"
+						style="left: {duration ? (currentTime / duration) * 100 : 0}%; box-shadow: var(--box-glow);">
 					</div>
 				</div>
 			</div>

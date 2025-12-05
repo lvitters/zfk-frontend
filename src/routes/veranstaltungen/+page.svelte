@@ -45,13 +45,13 @@
 	{#each filteredEvents as event}
 		<div class="flex flex-col gap-2 border-b border-[var(--item-text-color)] bg-[var(--item-bg-color)] text-[var(--item-text-color)] p-4 my-2 rounded-lg" style="box-shadow: var(--box-glow);">
 			<!-- date -->
-			<div class="text-sm">{event.displayDate}</div>
+			<div class="text-xs md:text-sm">{event.displayDate}</div>
 
 			<!-- title -->
-			<h2 class="text-2xl font-medium">{event.title}</h2>
+			<h2 class="text-lg font-medium md:text-2xl">{event.title}</h2>
 
 			<!-- content -->
-			<div class="text-lg leading-relaxed">
+			<div class="text-sm leading-relaxed md:text-lg">
 				<div in:fade={{ duration: 200 }}>
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 					{@html event.fullText}
