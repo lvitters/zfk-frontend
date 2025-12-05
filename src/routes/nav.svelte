@@ -64,7 +64,7 @@
 <div class="mt-7 mb-4 flex flex-col md:mt-7 md:mb-8">
 	<div class="mt-4 flex w-full items-center justify-between mb-3 md:mb-7">
 		{#if $currentTrack}
-			<div class="grow">
+			<div class="min-w-0 grow">
 				<AudioPlayer />
 			</div>
 		{:else}

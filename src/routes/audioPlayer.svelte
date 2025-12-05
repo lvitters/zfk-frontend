@@ -10,6 +10,41 @@
 	let isDragging = $state(false);
 	let progressBar: HTMLDivElement | undefined = $state();
 
+	let titleElement: HTMLDivElement | undefined = $state();
+	let isOverflowing = $state(false);
+
+	function checkOverflow() {
+		if (!titleElement) return;
+		const parent = titleElement.parentElement;
+		if (!parent) return;
+
+		const scrollWidth = titleElement.scrollWidth;
+		const clientWidth = parent.getBoundingClientRect().width;
+
+		if (scrollWidth > clientWidth) {
+			isOverflowing = true;
+			const offset = clientWidth - scrollWidth;
+			titleElement.style.setProperty("--scroll-offset", `${offset}px`);
+		} else {
+			isOverflowing = false;
+			titleElement.style.removeProperty("--scroll-offset");
+		}
+	}
+
+	$effect(() => {
+		if (!titleElement) return;
+		const parent = titleElement.parentElement;
+
+		const ro = new ResizeObserver(() => {
+			checkOverflow();
+		});
+
+		ro.observe(titleElement);
+		if (parent) ro.observe(parent);
+
+		return () => ro.disconnect();
+	});
+
 	// Sync $isPlaying store to audio element state
 	$effect(() => {
 		if (!audio) return;
@@ -145,9 +180,19 @@
 		</div>
 
 		<div class="flex items-center justify-between text-left text-xs text-gray-500">
-			<div>{$currentTrack.title}</div>
+			<div class="min-w-0 flex-1 overflow-hidden">
+				<div
+					bind:this={titleElement}
+					class="w-max whitespace-nowrap will-change-transform {isOverflowing
+						? 'animate-scroll-back-forth'
+						: ''}">
+					{$currentTrack.title}
+				</div>
+			</div>
 
-			<div class="flex-shrink-0"><span>{formatTime(currentTime)} / {formatTime(duration)}</span></div>
+			<div class="flex w-12 shrink-0 justify-end pl-2 md:w-auto">
+				<span class="tabular-nums">{formatTime(currentTime)} <span class="hidden md:inline-block">/ {formatTime(duration)}</span></span>
+			</div>
 		</div>
 	</div>
 {/if}
