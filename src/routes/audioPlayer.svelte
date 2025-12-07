@@ -9,6 +9,7 @@
 
 	let isDragging = $state(false);
 	let progressBar: HTMLDivElement | undefined = $state();
+	let barWidth = $state(0);
 
 	let titleElement: HTMLDivElement | undefined = $state();
 	let isOverflowing = $state(false);
@@ -32,15 +33,14 @@
 	}
 
 	$effect(() => {
-		if (!titleElement) return;
-		const parent = titleElement.parentElement;
-
 		const ro = new ResizeObserver(() => {
-			checkOverflow();
+			if (titleElement) checkOverflow();
+			if (progressBar) barWidth = progressBar.getBoundingClientRect().width;
 		});
 
-		ro.observe(titleElement);
-		if (parent) ro.observe(parent);
+		if (titleElement) ro.observe(titleElement);
+		if (titleElement?.parentElement) ro.observe(titleElement.parentElement);
+		if (progressBar) ro.observe(progressBar);
 
 		return () => ro.disconnect();
 	});
@@ -146,22 +146,22 @@
 			</audio>
 
 			<!-- progress bar wrapper -->
-			<div class="relative h-2 grow bg-gray-300" bind:this={progressBar}>
-				<!-- glow Layer -->
+			<div class="relative h-2 grow rounded-full bg-gray-300" bind:this={progressBar}>
+				<!-- 1. Glow Layer (Revealed Window) -->
 				<div
-					class="animate-rainbow absolute inset-0 h-full w-full bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] opacity-100 blur-lg ease-linear"
-					style="clip-path: inset(-2rem {100 -
-						(duration ? (currentTime / duration) * 100 : 0)}% -2rem -2rem);">
+					class="absolute left-0 top-0 h-full overflow-hidden rounded-full opacity-100 blur-lg"
+					style="width: {duration ? (currentTime / duration) * 100 : 0}%;">
+					<div class="bg-neon-rainbow absolute left-0 top-0 h-full" style="width: {barWidth}px;"></div>
 				</div>
 
-				<!-- main Layer -->
+				<!-- 2. Main Fill Layer (Revealed Window) -->
 				<div
-					class="animate-rainbow absolute inset-0 h-full w-full bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] ease-linear"
-					style="clip-path: inset(0 {100 - (duration ? (currentTime / duration) * 100 : 0)}% 0 0);">
+					class="absolute left-0 top-0 h-full overflow-hidden rounded-full"
+					style="width: {duration ? (currentTime / duration) * 100 : 0}%;">
+					<div class="bg-neon-rainbow absolute left-0 top-0 h-full" style="width: {barWidth}px;"></div>
 				</div>
 
-				<!-- interaction area (Hit Box) -->
-
+				<!-- 3. Interaction Area (Hit Box) -->
 				<div
 					class="absolute left-0 top-1/2 z-50 h-16 w-full -translate-y-1/2 cursor-pointer"
 					style="touch-action: none;"
@@ -170,11 +170,42 @@
 					aria-label="Seek in audio"
 					onmousedown={onDragStart}
 					ontouchstart={onDragStart}>
-					<!-- current progress indicator -->
-					<div
-						class="animate-rainbow pointer-events-none absolute bottom-0 top-0 m-auto h-6 w-[2px] -translate-x-1/2 bg-[linear-gradient(270deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000)] bg-[length:400%_400%] ease-linear md:h-full md:w-[4px]"
-						style="left: {duration ? (currentTime / duration) * 100 : 0}%; box-shadow: var(--box-glow);">
+				</div>
+
+				<!-- 4. Playhead (Visual) -->
+				<div
+					class="pointer-events-none absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2"
+					style="left: {duration ? (currentTime / duration) * 100 : 0}%;">
+					<!-- 4a. Playhead Background Window (Masked Gradient) -->
+					<div class="absolute inset-0 overflow-hidden rounded-full">
+						<!-- Center (Current Cycle) -->
+						<div
+							class="bg-neon-rainbow absolute top-0 h-full"
+							style="
+								width: {barWidth}px; 
+								left: calc(-1 * {duration ? currentTime / duration : 0} * {barWidth}px + 10px);
+							">
+						</div>
+						<!-- Left Neighbor (Previous Cycle / End of Gradient) -->
+						<div
+							class="bg-neon-rainbow-inverse absolute top-0 h-full"
+							style="
+								width: {barWidth}px; 
+								left: calc(-1 * {duration ? currentTime / duration : 0} * {barWidth}px + 10px - {barWidth}px);
+							">
+						</div>
+						<!-- Right Neighbor (Next Cycle / Start of Gradient - modeled as Inverse shifted) -->
+						<div
+							class="bg-neon-rainbow-inverse absolute top-0 h-full"
+							style="
+								width: {barWidth}px; 
+								left: calc(-1 * {duration ? currentTime / duration : 0} * {barWidth}px + 10px + {barWidth}px);
+							">
+						</div>
 					</div>
+
+					<!-- 4b. Glass/Glow Overlay -->
+					<div class="glow-box absolute inset-0 rounded-full border border-white/50"></div>
 				</div>
 			</div>
 		</div>

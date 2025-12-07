@@ -81,14 +81,14 @@
 				class="animate-spin-vinyl h-[50px] w-auto cursor-pointer md:h-[75px]"
 				style="animation-play-state: {$isPlaying ? 'running' : 'paused'}; filter: {isDark
 					? 'invert(1)'
-					: 'none'};" />
+					: ''} var(--image-glow-filter);" />
 			<div
 				class="absolute -bottom-1 -left-5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-transform hover:scale-110 active:scale-95 md:-bottom-1 md:-left-6 md:h-8 md:w-8">
 				<img
 					src="/playpause.png"
 					alt="Play/Pause"
 					class="h-full w-full object-contain"
-					style="filter: {isDark ? 'invert(1)' : 'none'};" />
+					style="filter: {isDark ? 'invert(1)' : ''} var(--image-glow-filter);" />
 			</div>
 		</button>
 	</div>
