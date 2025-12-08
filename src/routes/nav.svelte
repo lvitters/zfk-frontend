@@ -40,7 +40,6 @@
 				const randomIndex = Math.floor(Math.random() * audioFiles.length);
 				const randomTrack = audioFiles[randomIndex];
 				currentTrack.set(randomTrack);
-				isPlaying.set(true); // ensure playback starts
 			} else {
 				console.warn("No audio files found to play.");
 			}

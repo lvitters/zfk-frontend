@@ -61,12 +61,15 @@
 			// reset state
 			currentTime = 0;
 			duration = 0;
-			// autoplay
-			setTimeout(() => {
-				if (audio) {
-					audio.play();
-				}
-			}, 100);
+		}
+	});
+
+	// Autoplay when src changes or audio element becomes available
+	$effect(() => {
+		if (audio && src) {
+			audio.load();
+			audio.play().catch((e) => console.error("Autoplay failed:", e));
+			isPlaying.set(true);
 		}
 	});
 
