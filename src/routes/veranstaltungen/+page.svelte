@@ -1,33 +1,33 @@
 <script lang="ts">
 	import YearSelect from "../yearSelect.svelte";
 	import "$lib/css/fonts.css";
+	import NavBottomPortal from '$lib/NavBottomPortal.svelte';
+	import { getNavHeight } from "$lib/layoutState.svelte";
 
 	let { data } = $props();
 
-	let events = $derived(
-		data.events.map((e) => {
-			let displayDate = e.formattedDate;
-			let displayTime = '';
-			if (e.formattedEndDate && e.formattedEndDate !== e.formattedDate) {
-				displayDate += ` - ${e.formattedEndDate}`;
-			}
-			if (e.time) {
-				// Format time to ensure HH:MM (strip seconds if present)
-				const timeParts = e.time.split(":");
-				displayTime = timeParts.length >= 2 ? `${timeParts[0]}:${timeParts[1]}` : e.time;
-			}
-			return {
-				...e,
-				year: new Date(e.date).getFullYear(),
-				displayDate,
-				displayTime,
-				fullText: e.text,
-			};
-		}),
-	);
+	// Calculate events once from data.events, handling potential undefined data.events
+	const events = (data.events || []).map((e) => {
+		let displayDate = e.formattedDate;
+		let displayTime = '';
+		if (e.formattedEndDate && e.formattedEndDate !== e.formattedDate) {
+			displayDate += ` - ${e.formattedEndDate}`;
+		}
+		if (e.time) {
+			const timeParts = e.time.split(":");
+			displayTime = timeParts.length >= 2 ? `${timeParts[0]}:${timeParts[1]}` : e.time;
+		}
+		return {
+			...e,
+			year: new Date(e.date).getFullYear(),
+			displayDate,
+			displayTime,
+			fullText: e.text,
+		};
+	});
 
 	// extract unique years and sort them in ascending order
-	let years = $derived(Array.from(new Set(events.map((event) => event.year))).sort((a, b) => Number(a) - Number(b)));
+	const years = Array.from(new Set(events.map((event) => event.year))).sort((a, b) => Number(a) - Number(b));
 
 	// get the current year
 	const currentYear = new Date().getFullYear();
@@ -45,12 +45,18 @@
 		}
 	}
 
+	const scrollOffset = 20; // Define a small gap in pixels
+
 	function selectYear(year: number) {
 		selectedYear = year;
 		const firstEventOfYear = events.find((e) => e.year === year);
 		if (firstEventOfYear) {
 			const el = eventRefs.get(firstEventOfYear.id);
-			el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			if (el) {
+                const navHeight = getNavHeight();
+                const y = el.getBoundingClientRect().top + window.scrollY - navHeight - scrollOffset; // Adjusted calculation
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
 		}
 	}
 
@@ -64,7 +70,12 @@
 			// Wait for the closing animation to finish (approx 200ms) plus a small buffer
 			setTimeout(() => {
 				if (expandedEventId && eventRefs.has(expandedEventId)) {
-					eventRefs.get(expandedEventId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+					const el = eventRefs.get(expandedEventId);
+                    if (el) {
+                        const navHeight = getNavHeight();
+                        const y = el.getBoundingClientRect().top + window.scrollY - navHeight - scrollOffset; // Adjusted calculation
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                    }
 				}
 			}, 250);
 		}
@@ -74,15 +85,13 @@
 		e.stopPropagation();
 		expandedEventId = null;
 	}
-
-	import NavBottomPortal from '$lib/NavBottomPortal.svelte';
 </script>
 
 <NavBottomPortal>
 	<YearSelect {years} year={selectedYear} {selectYear} />
 </NavBottomPortal>
 
-<div class="flex w-full flex-col gap-6 pb-24">
+<div class="flex w-full flex-col gap-6">
 	{#each events as event, index}
 		<div class="w-full" use:addRef={event.id}>
 			{#if expandedEventId === event.id}

@@ -4,7 +4,7 @@
 	let { children } = $props();
 	import "../app.css";
 	import Nav from "./nav.svelte";
-	import { setNavBottom } from "$lib/layoutState.svelte";
+	import { setNavBottom, setNavHeight } from "$lib/layoutState.svelte"; // Updated import
 
 	let isNavOpen = $state(true);
 	let topSectionHeight = $state(0);
@@ -12,6 +12,13 @@
 
 	let fullNavHeight = $derived(topSectionHeight + bottomSectionHeight);
 	const navClosedPaddingTop = 20; // Additional space above page select when nav is closed
+
+	let currentVisibleNavHeight = $state(0);
+
+	$effect(() => {
+		currentVisibleNavHeight = isNavOpen ? fullNavHeight : bottomSectionHeight + navClosedPaddingTop;
+		setNavHeight(currentVisibleNavHeight);
+	});
 </script>
 
 <div 
@@ -29,8 +36,16 @@
 	</div>
 </div>
 
-<div 
-	class="mx-auto w-full max-w-[1000px] overflow-hidden px-5 text-sm md:w-3/4 md:px-0 md:text-base lg:w-2/3"
-	style="padding-top: {isNavOpen ? fullNavHeight + 40 : bottomSectionHeight + navClosedPaddingTop + 40}px">
-	{@render children()}
-</div>
+	<div 
+		class="mx-auto w-full max-w-[1000px] px-5 text-sm md:w-3/4 md:px-0 md:text-base lg:w-2/3"
+		style="padding-top: {isNavOpen ? fullNavHeight + 40 : bottomSectionHeight + navClosedPaddingTop + 40}px;
+           padding-bottom: max(0px, calc(100vh - {currentVisibleNavHeight}px - 40px));"> <!-- Dynamic padding-bottom -->
+		{@render children()}
+	</div>
+<svelte:head>
+	<style>
+		:root {
+			--nav-height: {$fullNavHeight}px;
+		}
+	</style>
+</svelte:head>

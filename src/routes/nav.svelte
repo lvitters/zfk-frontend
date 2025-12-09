@@ -159,7 +159,7 @@
 			</div>
 		</div>
 
-		{#if navBottom}
+		{#if navBottom && typeof navBottom === 'function'}
 			<div class="mt-4 pb-4 pr-0 pt-0">
 				{@render navBottom()}
 			</div>
