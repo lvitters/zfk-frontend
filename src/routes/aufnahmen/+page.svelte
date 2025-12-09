@@ -24,14 +24,16 @@
 	function selectTrack(track: Track) {
 		currentTrack.set(track);
 	}
+
+	import NavBottomPortal from '$lib/NavBottomPortal.svelte';
 </script>
 
-<div class="flex w-full justify-start">
+<NavBottomPortal>
 	<YearSelect {years} year={selectedYear} {selectYear} />
-</div>
+</NavBottomPortal>
 
 <!-- display files -->
-<div class="mt-4 flex w-full flex-col gap-2 pb-24">
+<div class="flex w-full flex-col gap-2 pb-24">
 	{#each audioFiles as file}
 		{#if file.year == selectedYear}
 			<!-- file row -->
