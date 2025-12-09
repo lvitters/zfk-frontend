@@ -2,31 +2,6 @@
 	import { page } from "$app/stores";
 	import { isPlaying, currentTrack } from "$lib/playerStore";
 	import AudioPlayer from "./audioPlayer.svelte";
-	import { onMount } from "svelte";
-
-	let isDark = $state(false);
-
-	onMount(() => {
-		const stored = localStorage.getItem("theme");
-		if (stored === "dark" || (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-			isDark = true;
-			document.documentElement.classList.add("dark");
-		} else {
-			isDark = false;
-			document.documentElement.classList.remove("dark");
-		}
-	});
-
-	function toggleTheme() {
-		isDark = !isDark;
-		if (isDark) {
-			document.documentElement.classList.add("dark");
-			localStorage.setItem("theme", "dark");
-		} else {
-			document.documentElement.classList.remove("dark");
-			localStorage.setItem("theme", "light");
-		}
-	}
 
 	async function randomizeAndPlay() {
 		try {
@@ -66,7 +41,7 @@
 </script>
 
 <div class="relative flex flex-col">
-	<!-- Top Section: AudioPlayer / Logo - part to be hidden -->
+	<!-- top section: AudioPlayer / Logo - part to be hidden -->
 	<div bind:clientHeight={topSectionHeight}>
 		<div class="mb-2 mt-7 flex w-full items-start justify-between md:mt-4">
 			{#if $currentTrack}
@@ -75,7 +50,7 @@
 				</div>
 			{:else}
 				<div class="mt-2 flex grow items-center justify-center text-lg text-gray-500">
-					Zentrum für Kollektivkultur e.V.
+					Zentrum für Kollektivkultur e.e.
 				</div>
 			{/if}
 
@@ -85,16 +60,10 @@
 					src="/logo_zfk_transparent.png"
 					alt="ZfK Logo"
 					class="animate-spin-vinyl h-[50px] w-auto cursor-pointer md:h-[75px]"
-					style="animation-play-state: {$isPlaying ? 'running' : 'paused'}; filter: {isDark
-						? 'invert(1)'
-						: ''} var(--image-glow-filter);" />
+					style="animation-play-state: {$isPlaying ? 'running' : 'paused'};" />
 				<div
 					class="absolute -bottom-1 -left-5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full md:-bottom-1 md:-left-6 md:h-8 md:w-8">
-					<img
-						src="/playpause.png"
-						alt="Play/Pause"
-						class="h-full w-full object-contain"
-						style="filter: {isDark ? 'invert(1)' : ''} var(--image-glow-filter);" />
+					<img src="/playpause.png" alt="Play/Pause" class="h-full w-full object-contain" />
 				</div>
 			</button>
 		</div>
@@ -131,20 +100,12 @@
 				</a>
 			</nav>
 
-			<!-- Controls: Theme Toggle & Nav Arrow -->
+			<!-- controls: nav arrow -->
 			<div class="flex items-center gap-3">
-				<!-- theme toggle -->
-				<button
-					onclick={toggleTheme}
-					class="cursor-pointer text-sm md:text-2xl"
-					aria-label="Toggle Dark Mode">
-					{#if isDark}☀︎{:else}☾{/if}
-				</button>
-
 				<!-- toggle arrow -->
 				<button
 					onclick={() => (isOpen = !isOpen)}
-					class="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10"
+					class="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full hover:bg-black/5"
 					aria-label={isOpen ? "Close navigation" : "Open navigation"}>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -159,7 +120,7 @@
 			</div>
 		</div>
 
-		{#if navBottom && typeof navBottom === 'function'}
+		{#if navBottom && typeof navBottom === "function"}
 			<div class="mt-4 pb-4 pr-0 pt-0">
 				{@render navBottom()}
 			</div>

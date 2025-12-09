@@ -26,22 +26,22 @@
 		return {
 			destroy() {
 				eventRefs.delete(id);
-			}
-		}
+			},
+		};
 	}
-	
-	const scrollOffset = 20; // Define a small gap in pixels
+
+	const scrollOffset = 20; // define a small gap in pixels
 
 	function selectYear(year: string) {
-		selectedYear = year; // Keep selectedYear updated for styling in YearSelect
-		// Find the first audio file for the selected year
-		const firstFileOfYear = audioFiles.find(file => file.year === year);
+		selectedYear = year; // keep selectedYear updated for styling in YearSelect
+		// find the first audio file for the selected year
+		const firstFileOfYear = audioFiles.find((file) => file.year === year);
 		if (firstFileOfYear) {
 			const el = eventRefs.get(firstFileOfYear.id);
 			if (el) {
-				const navHeight = getNavHeight(); // Get the current nav height
-				const y = el.getBoundingClientRect().top + window.scrollY - navHeight - scrollOffset; // Adjusted calculation
-				window.scrollTo({ top: y, behavior: 'smooth' });
+				const navHeight = getNavHeight(); // get the current nav height
+				const y = el.getBoundingClientRect().top + window.scrollY - navHeight - scrollOffset; // adjusted calculation
+				window.scrollTo({ top: y, behavior: "smooth" });
 			}
 		}
 	}
@@ -50,7 +50,7 @@
 		currentTrack.set(track);
 	}
 
-	import NavBottomPortal from '$lib/NavBottomPortal.svelte';
+	import NavBottomPortal from "$lib/NavBottomPortal.svelte";
 </script>
 
 <NavBottomPortal>
@@ -64,8 +64,7 @@
 		<button
 			class="glow-box my-2 flex cursor-pointer flex-col rounded-3xl p-4 text-left"
 			onclick={() => selectTrack(file)}
-			use:addRef={file.id}
-		>
+			use:addRef={file.id}>
 			<!-- date -->
 			<div class="flex items-center pr-4 text-xs md:text-sm">
 				{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.{file.year}

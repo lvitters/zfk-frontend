@@ -22,17 +22,6 @@ html {
 	--item-text-color: var(--bg-color);
 }
 
-:root.dark {
-	--bg-color: #2a2a2a;
-	--text-color: #e0e0e0;
-	--text-glow: 0 0 5px rgba(255, 255, 255, 0.5);
-	--image-glow-filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
-	--box-glow: 0 0 15px rgba(255, 255, 255, 0.5);
-	--box-glow-hover: 0 0 20px rgba(255, 255, 255, 0.7);
-	--item-bg-color: var(--text-color);
-	--item-text-color: var(--bg-color);
-}
-
 body {
 	font-family: "ClashGroteskRegular", sans-serif;
 	color: var(--text-color);
