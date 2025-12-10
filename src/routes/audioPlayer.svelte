@@ -135,7 +135,7 @@
 </script>
 
 {#if $currentTrack}
-	<div class="flex grow flex-col gap-1 pr-4">
+	<div class="flex grow flex-col gap-1">
 		<div class="flex items-center gap-4">
 			<audio
 				bind:this={audio}

@@ -40,7 +40,7 @@
 	let { isOpen = $bindable(true), topSectionHeight = $bindable(), bottomSectionHeight = $bindable() } = $props();
 </script>
 
-<div class="relative flex flex-col lg:h-full text-glow-white">
+<div class="relative flex flex-col lg:h-full">
 	<!-- top section: AudioPlayer / Logo - part to be hidden -->
 	<div bind:clientHeight={topSectionHeight}>
 		<div class="mb-2 mt-7 flex w-full flex-col items-center gap-4 md:mt-4 lg:mb-0 lg:mt-8 lg:gap-6">
@@ -49,11 +49,11 @@
 				<img
 					src="/logo_zfk_transparent.png"
 					alt="ZfK Logo"
-					class="animate-spin-vinyl h-[150px] w-auto cursor-pointer image-glow-white"
+					class="animate-spin-vinyl image-glow-white h-[150px] w-auto cursor-pointer"
 					style="animation-play-state: {$isPlaying ? 'running' : 'paused'};" />
 				<div
 					class="absolute -bottom-2 -left-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full">
-					<img src="/playpause.png" alt="Play/Pause" class="h-full w-full object-contain image-glow-white" />
+					<img src="/playpause.png" alt="Play/Pause" class="image-glow-white h-full w-full object-contain" />
 				</div>
 			</button>
 
@@ -112,19 +112,12 @@
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
 						viewBox="0 0 24 24"
-						class="h-6 w-6 {isOpen ? 'rotate-180' : 'rotate-0'} overflow-visible">
-						<defs>
-							<mask id="arrowMask">
-								<rect width="100%" height="100%" fill="white" />
-								<path
-									stroke="black"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-							</mask>
-						</defs>
-						<circle cx="12" cy="12" r="12" fill="#333" mask="url(#arrowMask)" />
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="h-6 w-6 {isOpen ? 'rotate-180' : 'rotate-0'} overflow-visible transition-transform duration-100">
+						<path d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
 					</svg>
 				</button>
 			</div>

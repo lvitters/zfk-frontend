@@ -68,6 +68,21 @@
 
 	let bottomPadding = $state(128);
 
+	let trackClasses = $derived((file) => {
+		let baseClasses = "flex cursor-pointer flex-col p-4 text-left mb-4 relative duration-100";
+		let borderStyle = "border-2 border-black"; // Common border properties
+
+		const isSelected = file.id === $currentTrack?.id;
+
+		if (isSelected) {
+			borderStyle += " border-dotted"; // Selected is always dotted
+		} else {
+			borderStyle += " border-solid hover:border-dotted"; // Not selected, default solid, dotted on hover
+		}
+
+		return `${baseClasses} ${borderStyle}`;
+	});
+
 	onMount(() => {
 		const updatePadding = () => {
 			if (window.innerWidth >= 1024) {
@@ -91,13 +106,10 @@
 </NavBottomPortal>
 
 <!-- display files -->
-<div class="flex w-full flex-col gap-2" style="padding-bottom: {bottomPadding}px;">
-	{#each audioFiles as file}
+<div class="flex w-full flex-col" style="padding-bottom: {bottomPadding}px;">
+	{#each audioFiles as file, index}
 		<!-- file row -->
-		<button
-			class="glow-box my-2 flex cursor-pointer flex-col rounded-3xl p-4 text-left"
-			onclick={() => selectTrack(file)}
-			use:addRef={file.id}>
+		<button class={trackClasses(file)} onclick={() => selectTrack(file)} use:addRef={file.id}>
 			<!-- date -->
 			<div class="flex items-center pr-4 text-xs md:text-sm">
 				{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.{file.year}

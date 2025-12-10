@@ -19,11 +19,11 @@
 
 <div class="lg:flex lg:h-screen lg:flex-row lg:overflow-hidden">
 	<div
-		class="fixed left-0 top-0 z-50 w-full overflow-hidden lg:!static lg:!h-full lg:!w-1/4 lg:!overflow-visible lg:backdrop-blur-md"
+		class="fixed left-0 top-0 z-50 w-full overflow-hidden border-b-2 border-black lg:!static lg:!h-full lg:!w-1/4 lg:!overflow-visible bg-[var(--bg-color)] lg:border-r-2 lg:border-b-0"
 		style="height: {isNavOpen ? fullNavHeight : bottomSectionHeight}px;">
 		<!-- inner container for sliding effect -->
 		<div
-			class="w-full shadow-sm backdrop-blur-md lg:!h-full lg:!transform-none lg:overflow-y-auto lg:!bg-transparent lg:!shadow-none lg:!backdrop-blur-none"
+			class="w-full shadow-sm lg:!h-full lg:!transform-none lg:overflow-y-auto lg:!shadow-none"
 			style="transform: translateY({isNavOpen ? 0 : -topSectionHeight}px)">
 			<div
 				class="mx-auto w-full max-w-[1000px] px-5 text-base lg:!h-full lg:!w-full lg:!max-w-none lg:!px-8 lg:!py-8">
