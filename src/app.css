@@ -11,8 +11,8 @@ html {
 }
 
 :root {
-	--bg-color: #e0e0e0;
-	--text-color: #2a2a2a;
+	--bg-color: #f5f5f5;
+	--text-color: #1c1c1c;
 	--text-glow: 0 0 5px rgba(0, 0, 0, 0.3);
 	--image-glow-filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3));
 	--box-glow: 0 0 15px rgba(0, 0, 0, 0.2);
@@ -62,7 +62,7 @@ body {
 			background-position: 0% 50%;
 		}
 	}
-} /* End of @theme block */
+}
 
 @keyframes scroll-back-forth {
 	0%,
@@ -80,7 +80,6 @@ body {
 }
 
 .animate-scroll-back-forth {
-	/* Correctly placed outside @theme */
 	animation: scroll-back-forth 10s ease-in-out infinite;
 }
 
@@ -120,27 +119,36 @@ body {
 	}
 
 	.kirby-content h1 {
-		@apply mt-8 mb-6 text-lg font-bold md:mt-4 md:text-2xl;
+		@apply mt-12 mb-6 text-2xl font-bold md:mt-16 md:mb-8 md:text-4xl;
+		font-weight: 700;
 	}
 
 	.kirby-content h2 {
-		@apply mt-6 mb-4 text-base font-bold md:text-xl;
+		@apply mt-10 mb-5 text-xl font-bold md:mt-12 md:mb-6 md:text-2xl;
+		font-weight: 700;
 	}
 
 	.kirby-content h3 {
-		@apply mt-4 mb-2 text-base italic md:text-lg;
+		@apply mt-8 mb-4 text-lg font-medium md:mt-10 md:mb-4 md:text-xl;
+		font-weight: 500;
+	}
+
+	.kirby-content h4 {
+		@apply mt-6 mb-6 text-xl font-bold tracking-wide uppercase md:mt-8 md:mb-8 md:text-2xl;
+		font-weight: 700;
 	}
 
 	.kirby-content p {
-		@apply min-h-[1em];
+		@apply mt-4 mb-8 min-h-[1em];
+		white-space: pre-line;
 	}
 
 	.kirby-content figure {
-		@apply my-5;
+		@apply my-6;
 	}
 
 	.kirby-content figure ul {
-		@apply my-5 grid grid-cols-2 gap-4 md:grid-cols-3;
+		@apply my-6 grid grid-cols-2 gap-4 md:grid-cols-3;
 	}
 
 	.kirby-content figure ul li {
@@ -168,8 +176,22 @@ body {
 		@apply text-sm text-gray-600; /* basic caption style */
 	}
 
+	.desktop-expanded-content > figure:first-of-type {
+		display: none;
+	}
+
 	.kirby-content a {
-		@apply underline break-all hover:opacity-80;
+		@apply break-all underline hover:opacity-80;
+	}
+
+	.text-glow-white {
+		text-shadow:
+			0 0 10px rgba(255, 255, 255, 0.8),
+			0 0 20px rgba(255, 255, 255, 0.8);
+	}
+
+	.image-glow-white {
+		filter: drop-shadow(0 0 10px rgba(255, 255, 255, 1)) drop-shadow(0 0 20px rgba(255, 255, 255, 1));
 	}
 }
 

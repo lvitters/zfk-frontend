@@ -8,15 +8,11 @@
 	let { data }: { data: { audioFiles: Track[] } } = $props();
 	const { audioFiles } = data;
 
-	// extract unique years and sort them in ascending order
-	const years = Array.from(new Set(audioFiles.map((file) => file.year))).sort((a, b) => Number(a) - Number(b));
-
-	// get the current year
-	const currentYear = new Date().getFullYear().toString();
-	const defaultYear = years.includes(currentYear) ? currentYear : (years[years.length - 1] as string);
+	// extract unique years and sort them in descending order
+	const years = Array.from(new Set(audioFiles.map((file) => file.year))).sort((a, b) => Number(b) - Number(a));
 
 	// apply to selectedYear
-	let selectedYear = $state<string>(defaultYear);
+	let selectedYear = $state<string>(years[0]);
 
 	// eventRefs and addRef for scrolling
 	let eventRefs = new Map<string, HTMLElement>();
@@ -32,6 +28,25 @@
 
 	const scrollOffset = 20; // define a small gap in pixels
 
+	function scrollToElement(el: HTMLElement) {
+		const container = document.getElementById("main-content-scroll-container");
+
+		if (container && window.innerWidth >= 1024) {
+			// Desktop scrolling via container
+			const containerRect = container.getBoundingClientRect();
+			const elRect = el.getBoundingClientRect();
+			const relativeTop = elRect.top - containerRect.top;
+			const targetScroll = container.scrollTop + relativeTop - scrollOffset;
+
+			container.scrollTo({ top: targetScroll, behavior: "smooth" });
+		} else {
+			// Mobile scrolling via window
+			const navHeight = getNavHeight();
+			const y = el.getBoundingClientRect().top + window.scrollY - navHeight - scrollOffset;
+			window.scrollTo({ top: y, behavior: "smooth" });
+		}
+	}
+
 	function selectYear(year: string) {
 		selectedYear = year; // keep selectedYear updated for styling in YearSelect
 		// find the first audio file for the selected year
@@ -39,9 +54,7 @@
 		if (firstFileOfYear) {
 			const el = eventRefs.get(firstFileOfYear.id);
 			if (el) {
-				const navHeight = getNavHeight(); // get the current nav height
-				const y = el.getBoundingClientRect().top + window.scrollY - navHeight - scrollOffset; // adjusted calculation
-				window.scrollTo({ top: y, behavior: "smooth" });
+				scrollToElement(el);
 			}
 		}
 	}
@@ -51,6 +64,26 @@
 	}
 
 	import NavBottomPortal from "$lib/NavBottomPortal.svelte";
+	import { onMount } from "svelte";
+
+	let bottomPadding = $state(128);
+
+	onMount(() => {
+		const updatePadding = () => {
+			if (window.innerWidth >= 1024) {
+				bottomPadding = window.innerHeight;
+			} else {
+				bottomPadding = 128;
+			}
+		};
+
+		updatePadding();
+		window.addEventListener("resize", updatePadding);
+
+		return () => {
+			window.removeEventListener("resize", updatePadding);
+		};
+	});
 </script>
 
 <NavBottomPortal>
@@ -58,7 +91,7 @@
 </NavBottomPortal>
 
 <!-- display files -->
-<div class="flex w-full flex-col gap-2">
+<div class="flex w-full flex-col gap-2" style="padding-bottom: {bottomPadding}px;">
 	{#each audioFiles as file}
 		<!-- file row -->
 		<button

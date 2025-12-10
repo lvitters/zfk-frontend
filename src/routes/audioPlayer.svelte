@@ -166,7 +166,7 @@
 
 				<!-- 3. Interaction Area (Hit Box) -->
 				<div
-					class="absolute left-0 top-1/2 z-50 h-16 w-full -translate-y-1/2 cursor-pointer"
+					class="absolute left-0 top-1/2 z-50 h-6 w-full -translate-y-1/2 cursor-pointer"
 					style="touch-action: none;"
 					role="button"
 					tabindex="0"
@@ -213,7 +213,7 @@
 			</div>
 		</div>
 
-		<div class="flex items-center justify-between text-left text-xs text-gray-500">
+		<div class="flex items-center justify-between text-left text-xs">
 			<div class="min-w-0 flex-1 overflow-hidden">
 				<div
 					bind:this={titleElement}
