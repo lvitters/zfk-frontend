@@ -40,40 +40,44 @@
 	let { isOpen = $bindable(true), topSectionHeight = $bindable(), bottomSectionHeight = $bindable() } = $props();
 </script>
 
-<div class="relative flex flex-col">
+<div class="relative flex flex-col lg:h-full">
 	<!-- top section: AudioPlayer / Logo - part to be hidden -->
 	<div bind:clientHeight={topSectionHeight}>
-		<div class="mb-2 mt-7 flex w-full items-start justify-between md:mt-4">
-			{#if $currentTrack}
-				<div class="mt-5 min-w-0 grow">
-					<AudioPlayer />
-				</div>
-			{:else}
-				<div class="mt-2 flex grow items-center justify-center text-lg text-gray-500">
-					Zentrum für Kollektivkultur e.e.
-				</div>
-			{/if}
-
+		<div
+			class="mb-2 mt-7 flex w-full flex-col items-center gap-4 md:mt-4 lg:mb-0 lg:mt-8 lg:gap-6">
 			<!-- spinning logo -->
-			<button class="relative ml-4 flex shrink-0 cursor-pointer items-center" onclick={togglePlayback}>
+			<button class="relative flex shrink-0 cursor-pointer items-center" onclick={togglePlayback}>
 				<img
 					src="/logo_zfk_transparent.png"
 					alt="ZfK Logo"
-					class="animate-spin-vinyl h-[50px] w-auto cursor-pointer md:h-[75px]"
+					class="animate-spin-vinyl h-[150px] w-auto cursor-pointer"
 					style="animation-play-state: {$isPlaying ? 'running' : 'paused'};" />
 				<div
-					class="absolute -bottom-1 -left-5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full md:-bottom-1 md:-left-6 md:h-8 md:w-8">
+					class="absolute -bottom-2 -left-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full">
 					<img src="/playpause.png" alt="Play/Pause" class="h-full w-full object-contain" />
 				</div>
 			</button>
+
+			{#if $currentTrack}
+				<div class="min-w-0 w-full">
+					<AudioPlayer />
+				</div>
+			{:else}
+				<div
+					class="flex w-full items-center justify-center text-center text-sm text-gray-500 md:text-xl lg:text-2xl">
+					Zentrum für Kollektivkultur e.e.
+				</div>
+			{/if}
 		</div>
 	</div>
 
 	<!-- bottom section: page select, controls, navbottom - part to remain visible -->
-	<div bind:clientHeight={bottomSectionHeight}>
-		<div class="relative flex w-full items-center justify-between py-2">
+	<div bind:clientHeight={bottomSectionHeight} class="lg:flex lg:grow lg:flex-col lg:gap-8 lg:pt-8">
+		<div
+			class="relative flex w-full items-center justify-between py-2 lg:flex-col lg:items-start lg:justify-start lg:gap-8 lg:py-0">
 			<!-- page select -->
-			<nav class="flex items-center gap-3 text-sm md:gap-6 md:text-2xl">
+			<nav
+				class="flex items-center gap-6 text-lg md:text-2xl lg:flex-col lg:items-start lg:gap-4 lg:text-3xl">
 				<a
 					href="/veranstaltungen"
 					class="cursor-pointer hover:underline"
@@ -101,7 +105,7 @@
 			</nav>
 
 			<!-- controls: nav arrow -->
-			<div class="flex items-center gap-3">
+			<div class="flex items-center gap-3 lg:hidden">
 				<!-- toggle arrow -->
 				<button
 					onclick={() => (isOpen = !isOpen)}
@@ -121,7 +125,7 @@
 		</div>
 
 		{#if navBottom && typeof navBottom === "function"}
-			<div class="mt-4 pb-4 pr-0 pt-0">
+			<div class="mt-4 pb-4 pr-0 pt-0 lg:mt-0">
 				{@render navBottom()}
 			</div>
 		{/if}

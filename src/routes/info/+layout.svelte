@@ -14,7 +14,7 @@
 </script>
 
 <NavBottomPortal>
-	<div class="flex flex-wrap gap-3 text-sm md:gap-6 md:text-xl justify-start w-full">
+	<div class="flex flex-wrap gap-3 text-sm md:gap-6 md:text-xl justify-start w-full lg:flex-col lg:items-start lg:gap-2 lg:w-auto lg:text-2xl">
 		{#each data.infoPages as infoPage}
 			<a
 				href="/info/{infoPage.slug}"
