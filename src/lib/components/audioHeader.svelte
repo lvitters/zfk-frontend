@@ -12,9 +12,6 @@
 	let isDragging = $state(false);
 	let progressBar: HTMLDivElement | undefined = $state();
 
-	let isHoveringProgressBar = $state(false);
-	let hoverX = $state(0);
-
 	// sync $isPlaying store to audio element state
 	$effect(() => {
 		if (!audio) return;
@@ -160,13 +157,13 @@
 		{#if $currentTrack}
 			<!-- track info (time + title) to the right of the logo -->
 			<div class="pointer-events-none relative z-20 ml-4 flex flex-1 flex-col items-start gap-1 pt-2">
-				<!-- time -->
-				<div class="shrink-0 text-sm tabular-nums opacity-70 md:text-lg lg:text-xl">
+				<!-- Time -->
+				<div class="shrink-0 text-base tabular-nums opacity-70 md:text-xl">
 					{formatTime(currentTime)} / {formatTime(duration)}
 				</div>
 
-				<!-- title -->
-				<div class="truncate text-sm font-medium md:text-lg lg:text-3xl">
+				<!-- Title -->
+				<div class="text-lg font-medium md:text-2xl">
 					{$currentTrack.title}
 				</div>
 			</div>
@@ -174,20 +171,17 @@
 
 		<!-- seekable progress bar area -->
 		<div
-			class="absolute bottom-0 left-0 right-0 h-[12px] cursor-none"
+			class="absolute bottom-0 left-0 right-0 h-[12px] cursor-pointer"
 			bind:this={progressBar}
 			role="button"
 			tabindex="0"
 			aria-label="Seek"
 			onmousedown={onDragStart}
-			ontouchstart={onDragStart}
-			onmouseenter={() => (isHoveringProgressBar = true)}
-			onmouseleave={() => (isHoveringProgressBar = false)}
-			onmousemove={(e) => (hoverX = e.clientX - (e.currentTarget as HTMLElement).getBoundingClientRect().left)}>
-			<!-- vertical hover indicator line -->
+			ontouchstart={onDragStart}>
+			<!-- Playhead -->
 			<div
-				class="pointer-events-none absolute inset-y-0 w-[2px] bg-[var(--text-color)] transition-opacity duration-100"
-				style="left: {hoverX}px; opacity: {isHoveringProgressBar ? 1 : 0};">
+				class="absolute bottom-0 z-20 h-[12px] w-[12px] rounded-t-full bg-[var(--text-color)]"
+				style="left: {duration ? (currentTime / duration) * 100 : 0}%; transform: translateX(-50%); opacity: {$currentTrack ? 1 : 0};">
 			</div>
 
 			<!-- progress bar (gradient from bottom) -->

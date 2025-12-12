@@ -75,7 +75,7 @@
 			onclick={() => selectTrack(file)}
 			use:addRef={file.id}>
 			<!-- date -->
-			<div class="shrink-0 text-sm opacity-70">
+			<div class="shrink-0 text-base opacity-70 md:text-xl">
 				{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.
 			</div>
 			<!-- title -->

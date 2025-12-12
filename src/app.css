@@ -17,7 +17,7 @@
 :root {
 	--bg-color: #082e33;
 	--text-color: #ffffff;
-	--text-glow: 0 0 4px var(--text-color);
+	--text-glow: 0 0 3px var(--text-color);
 	/* green: #082e33 petrol: #374151 */
 	--item-bg-color: var(--text-color);
 	--item-text-color: var(--bg-color);
@@ -104,7 +104,7 @@ textarea {
 	}
 
 	.kirby-content figure ul {
-		@apply my-6 grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3;
+		@apply my-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3;
 	}
 
 	.kirby-content figure ul li {
@@ -112,7 +112,7 @@ textarea {
 	}
 
 	.kirby-content img {
-		@apply w-full lg:w-1/2; /* 1/3 width at 2xl breakpoint and above */
+		@apply w-full lg:w-1/2;
 	}
 
 	.kirby-content figure ul li img {

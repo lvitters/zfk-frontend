@@ -120,12 +120,12 @@
 			<!-- Content Overlay (now just regular content) -->
 			<div class="flex w-full flex-col gap-1">
 				<div class="shrink-0 opacity-70">
-					<span class="text-sm">
+					<span class="text-base md:text-xl">
 						{event.displayDate}
 					</span>
 
 					{#if event.displayTime}
-						<span class="ml-1 text-xs">
+						<span class="ml-1 text-base md:text-xl">
 							{event.displayTime}
 						</span>
 					{/if}
