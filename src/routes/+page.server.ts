@@ -1,5 +1,6 @@
 import { kql } from "$lib/server/kirby";
 import type { PageServerLoad } from "./$types";
+import type { ProgrammEvent, KirbyImage } from "$lib/types";
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	// 1. Veranstaltungen Query
@@ -73,7 +74,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	console.log("Audio Result:", audioResult);
 
 	// Process Events
-	const events = ((eventsResult as any[]) || []).map((event: any) => {
+	const events = ((eventsResult || []) as ProgrammEvent[]).map((event: ProgrammEvent) => {
 		let thumbnailUrl = event.images?.[0]?.url;
 
 		if (Array.isArray(event.imageBlocks) && event.imageBlocks.length > 0) {
@@ -86,7 +87,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			) {
 				const fileId = firstImageBlock.content.image[0];
 				const matchingImage = event.images?.find(
-					(img: any) => fileId.includes(img.uuid) || img.uuid === fileId,
+					(img: KirbyImage) => fileId.includes(img.uuid) || img.uuid === fileId,
 				);
 				if (matchingImage) {
 					thumbnailUrl = matchingImage.url;
@@ -103,9 +104,9 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	});
 
 	// Process Audio
-	const audioFiles = ((audioResult as any[]) || [])
-		.filter((file: any) => file.title && file.displayDate)
-		.map((file: any) => {
+	const audioFiles = ((audioResult === null ? [] : audioResult) as Track[])
+		.filter((file: Track) => file.title && file.displayDate)
+		.map((file: Track) => {
 			if (file.filePath && file.filePath.includes("/media/")) {
 				const relativePath = file.filePath.substring(file.filePath.indexOf("media/"));
 				file.filePath = `/api/stream?file=${relativePath}`;

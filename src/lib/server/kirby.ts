@@ -8,6 +8,7 @@ interface KqlResponse<T> {
 
 interface KqlQueryBody {
 	query: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	select?: Record<string, any> | boolean;
 }
 

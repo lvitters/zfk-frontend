@@ -1,7 +1,6 @@
-import { kql } from "$lib/server/kirby.js";
 import { json } from "@sveltejs/kit";
-
-export async function GET({ fetch }) {
+import { kql } from "$lib/server/kirby.js";
+import type { Track } from "$lib/types";export async function GET({ fetch }) {
 	try {
 		const response = await kql(
 			{
@@ -19,9 +18,9 @@ export async function GET({ fetch }) {
 			fetch,
 		);
 
-		const audioFiles = ((response === null ? [] : response) as any[])
-			.filter((file: any) => file.title && file.displayDate)
-			.map((file: any) => {
+		const audioFiles = ((response === null ? [] : response) as Track[])
+			.filter((file: Track) => file.title && file.displayDate)
+			.map((file: Track) => {
 				// Transform Kirby URL to local stream URL to support Range requests (seeking)
 				if (file.filePath && file.filePath.includes("/media/")) {
 					const relativePath = file.filePath.substring(file.filePath.indexOf("media/"));

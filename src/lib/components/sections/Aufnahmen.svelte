@@ -3,7 +3,7 @@
 	import "$lib/css/fonts.css";
 	import { currentTrack } from "$lib/playerStore";
 	import type { Track } from "$lib/types";
-	import { onMount } from "svelte";
+
 
 	let { audioFiles, selectedYear = $bindable() }: { audioFiles: Track[]; selectedYear?: string } = $props();
 
@@ -16,7 +16,7 @@
 		}
 	});
 
-	let filteredAudioFiles = $derived(audioFiles.filter((file: any) => file.year === selectedYear));
+	let filteredAudioFiles = $derived(audioFiles.filter((file) => file.year === selectedYear));
 
 	// eventRefs and addRef for scrolling
 	let eventRefs = new Map<string, HTMLElement>();

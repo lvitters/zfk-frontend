@@ -4,11 +4,13 @@
 	import { onMount } from "svelte";
 	import DiagonalStrip from "$lib/DiagonalStrip.svelte";
 	import { slide } from "svelte/transition";
+	import type { ProgrammEvent } from "$lib/types";
 
-	let { events: rawEvents, selectedYear = $bindable() } = $props();
+	let { events: rawEvents, selectedYear = $bindable() }: { events: ProgrammEvent[] | null; selectedYear?: number } =
+		$props();
 
 	// calculate events once
-	const events = (rawEvents || []).map((e: any) => {
+	const events = (rawEvents || []).map((e: ProgrammEvent) => {
 		let displayDate = e.formattedDate.split(".").slice(0, 2).join(".");
 		let displayTime = "";
 		if (e.formattedEndDate && e.formattedEndDate !== e.formattedDate) {
@@ -28,8 +30,8 @@
 	});
 
 	// extract unique years
-	const years = Array.from(new Set(events.map((event: any) => event.year))).sort(
-		(a: any, b: any) => Number(b) - Number(a),
+	const years = Array.from(new Set(events.map((event: ProgrammEvent) => event.year))).sort(
+		(a: number, b: number) => Number(b) - Number(a),
 	);
 
 	$effect(() => {
@@ -38,7 +40,7 @@
 		}
 	});
 
-	let filteredEvents = $derived(events.filter((e: any) => e.year === selectedYear));
+	let filteredEvents = $derived(events.filter((e: ProgrammEvent) => e.year === selectedYear));
 
 	let eventRefs = new Map<string, HTMLElement>();
 	function addRef(node: HTMLElement, id: string) {
@@ -77,7 +79,7 @@
 	});
 </script>
 
-{#snippet previewRow(event: any, index: number)}
+{#snippet previewRow(event: ProgrammEvent, index: number)}
 	<!-- preview row -->
 	<div class="flex w-full justify-start">
 		<button
@@ -119,8 +121,8 @@
 	</div>
 {/snippet}
 
-{#snippet expandedEventContent(event: any)}
-	{@const getFilteredFullText = (text: string) => {
+{#snippet expandedEventContent(event: ProgrammEvent)}
+	{@const getFilteredFullText = (text: string | undefined) => {
 		if (!text) return "";
 		// Basic HTML parsing in browser environment
 		if (typeof document === "undefined") return text;
@@ -144,7 +146,7 @@
 		return tempDiv.innerHTML;
 	}}
 	<div class="expanded-event-container flex w-full flex-col items-center gap-6 p-4" transition:slide>
-		<!-- Image Container (w-64 left aligned) -->
+		<!-- Image Container -->
 		<div class="w-64 self-start">
 			{#if event.thumbnailUrl}
 				<img src={event.thumbnailUrl} alt={event.title} class="h-auto w-full object-contain" />
