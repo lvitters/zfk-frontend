@@ -139,4 +139,8 @@ textarea {
 	.kirby-content a {
 		@apply break-all underline hover:opacity-80;
 	}
+
+	.kirby-content {
+		text-shadow: none;
+	}
 }

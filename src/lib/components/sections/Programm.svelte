@@ -31,11 +31,11 @@
 		(a: any, b: any) => Number(b) - Number(a),
 	);
 
-    $effect(() => {
-        if (!selectedYear && years.length > 0) {
-            selectedYear = years[0] as number;
-        }
-    });
+	$effect(() => {
+		if (!selectedYear && years.length > 0) {
+			selectedYear = years[0] as number;
+		}
+	});
 
 	let filteredEvents = $derived(events.filter((e: any) => e.year === selectedYear));
 
@@ -87,7 +87,7 @@
 			expandedEventId = null;
 		} else {
 			expandedEventId = id;
-            // Removed setTimeout and scrollToElement call
+			// Removed setTimeout and scrollToElement call
 		}
 	}
 
@@ -112,11 +112,13 @@
 	<!-- preview row -->
 	<div class="flex w-full justify-start">
 		<button
-			class="relative flex w-full flex-col overflow-hidden text-left focus:outline-none cursor-pointer duration-100 p-4 {expandedEventId === event.id ? 'bg-[var(--text-color)] text-[var(--bg-color)]' : 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
+			class="relative flex w-full cursor-pointer flex-col overflow-hidden p-4 text-left duration-100 focus:outline-none {expandedEventId ===
+			event.id
+				? 'bg-[var(--text-color)] text-[var(--bg-color)]'
+				: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
 			onclick={() => toggleEvent(event.id)}
 			onmouseenter={() => (isEntryHovered[index] = true)}
 			onmouseleave={() => (isEntryHovered[index] = false)}>
-			
 			<!-- Content Overlay (now just regular content) -->
 			<div class="flex w-full flex-col gap-1">
 				<div class="shrink-0 opacity-70">
@@ -137,9 +139,9 @@
 			</div>
 
 			<!-- Diagonal Pixel Row as Bottom Border -->
-			<div 
-                class="absolute bottom-0 left-0 right-0 h-[12px] overflow-hidden"
-                style="mask-image: linear-gradient(to top, black, transparent); -webkit-mask-image: linear-gradient(to top, black, transparent);">
+			<div
+				class="absolute bottom-0 left-0 right-0 h-[12px] overflow-hidden"
+				style="mask-image: linear-gradient(to top, black, transparent); -webkit-mask-image: linear-gradient(to top, black, transparent);">
 				{#if event.thumbnailUrl}
 					<DiagonalStrip src={event.thumbnailUrl} alt="" class="h-full w-full object-fill" />
 				{/if}
@@ -186,7 +188,7 @@
 		</div>
 
 		<!-- Event Text -->
-		<div class="kirby-content w-full border-t-2 border-solid border-[var(--text-color)] text-base leading-relaxed md:text-lg">
+		<div class="kirby-content w-full text-base leading-relaxed md:text-lg">
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html getFilteredFullText(event.fullText)}
 		</div>
@@ -200,7 +202,9 @@
 	</div>
 
 	{#each filteredEvents as event, index}
-		<div class="event-row w-full border-b-2 border-[var(--text-color)] transition-colors last:border-b-0" use:addRef={event.id}>
+		<div
+			class="event-row w-full border-b-2 border-[var(--text-color)] transition-colors last:border-b-0"
+			use:addRef={event.id}>
 			{@render previewRow(event, index, expandedEventId === event.id, isEntryHovered[index])}
 			{#if expandedEventId === event.id}
 				{@render expandedEventContent(event)}
