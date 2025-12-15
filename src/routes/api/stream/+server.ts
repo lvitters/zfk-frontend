@@ -2,6 +2,8 @@ import { error } from "@sveltejs/kit";
 import fs from "fs";
 import path from "path";
 
+export const prerender = false;
+
 export async function GET({ url, request }) {
 	const filePath = url.searchParams.get("file");
 
@@ -9,46 +11,48 @@ export async function GET({ url, request }) {
 		throw error(400, "Missing file parameter");
 	}
 
-	// Security: Prevent directory traversal and ensure we only serve from zfk-backend/media
-	// Resolve relative to zfk-frontend root (where package.json is)
-	// We assume zfk-backend is a sibling of zfk-frontend
+	console.log("[Stream API] Requesting file:", filePath);
+
+	// resolve relative to zfk-frontend root (where package.json is)
+	// we assume zfk-backend is a sibling of zfk-frontend
 	const backendMediaDir = path.resolve("..", "zfk-backend");
+	console.log("[Stream API] Backend Dir:", backendMediaDir);
 
-	const requestedPath = path.resolve(backendMediaDir, filePath);
+	// construct the full path. 'filePath' is expected to be like '/media/pages/...'
+	// we need to strip the leading slash to use path.join correctly or handle absolute paths
+	const relativeFilePath = filePath.startsWith("/") ? filePath.slice(1) : filePath;
+	const requestedPath = path.resolve(backendMediaDir, relativeFilePath);
+	console.log("[Stream API] Resolved Path:", requestedPath);
 
-	console.log("Stream Debug:");
-	console.log("CWD:", process.cwd());
-	console.log("Backend Media Dir:", backendMediaDir);
-	console.log("Requested Path:", requestedPath);
-	console.log("Exists:", fs.existsSync(requestedPath));
-
-	// Ensure the resolved path is actually inside zfk-backend
+	// security: ensure the resolved path is actually inside zfk-backend
 	if (!requestedPath.startsWith(backendMediaDir)) {
 		console.error("Path traversal attempt:", requestedPath);
 		throw error(403, "Forbidden");
 	}
 
 	if (!fs.existsSync(requestedPath)) {
+		console.log("[Stream API] File not found in media, checking content fallback...");
 		// Fallback: Check if the file exists in the content source folder
-		// The structure in media is .../HASH/filename.mp3
-		// The structure in content is .../content/2_aufnahmen/filename.mp3
+		// The structure in media is .../media/pages/recordings/HASH/filename.mp3
+		// The structure in content is .../content/2_recordings/filename.mp3
+		// or potentially different depending on the slug.
+
+		// We can try to find the file by name in the content/2_recordings folder?
+		// Or try to map the path?
+		// The original code hardcoded 'content/2_recordings'. Let's try that.
 
 		const filename = path.basename(requestedPath);
-		// We know 'zfk-backend' is the parent of 'media', so we can find 'content' relative to it
 		const contentDir = path.resolve(backendMediaDir, "content/2_recordings");
 		const fallbackPath = path.join(contentDir, filename);
 
-		console.log("Checking fallback path:", fallbackPath);
+		console.log("[Stream API] Checking fallback path:", fallbackPath);
 
 		if (fs.existsSync(fallbackPath)) {
-			console.log("Found in content fallback!");
-			// We can serve this file instead.
-			// We need to re-assign requestedPath, but it's const.
-			// Let's create a new variable 'finalPath'
+			console.log("[Stream API] Found in content fallback!");
 			return serveFile(fallbackPath, request);
 		}
 
-		console.error("File not found in media or content:", requestedPath);
+		console.error("File not found:", requestedPath);
 		throw error(404, "File not found");
 	}
 
@@ -68,7 +72,7 @@ function serveFile(filePath: string, request: Request) {
 		const endByte = end ? parseInt(end, 10) : contentLength - 1;
 
 		if (isNaN(startByte) || isNaN(endByte) || startByte >= contentLength || endByte >= contentLength) {
-			// 416 Range Not Satisfiable
+			// 416 range not satisfiable
 			return new Response(null, {
 				status: 416,
 				headers: {
@@ -79,7 +83,7 @@ function serveFile(filePath: string, request: Request) {
 
 		const fileStream = fs.createReadStream(filePath, { start: startByte, end: endByte });
 
-		// @ts-expect-error Node ReadStream is compatible
+		// @ts-expect-error node readstream is compatible
 		return new Response(fileStream, {
 			status: 206,
 			headers: {
@@ -91,9 +95,9 @@ function serveFile(filePath: string, request: Request) {
 		});
 	}
 
-	// Handle full file request (no range)
+	// handle full file request (no range)
 	const fileStream = fs.createReadStream(filePath);
-	// @ts-expect-error Node ReadStream is compatible
+	// @ts-expect-error node readstream is compatible
 	return new Response(fileStream, {
 		status: 200,
 		headers: {

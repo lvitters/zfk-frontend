@@ -1,6 +1,7 @@
-import { kql } from "$lib/server/kirby";
+import { dev } from "$app/environment";
+import { kql } from "$lib/kirby";
 import type { DynamicSection, KirbyImage, KirbyPage, ProgrammEvent, Track } from "$lib/types";
-import type { PageServerLoad } from "./$types";
+import type { PageLoad } from "./$types";
 
 // helper to replace raw URLs with their title attribute in HTML
 const replaceUrlWithTitle = (html: string | undefined): string | undefined => {
@@ -16,8 +17,26 @@ const replaceUrlWithTitle = (html: string | undefined): string | undefined => {
 	});
 };
 
-// main server load function to fetch data from kirby
-export const load: PageServerLoad = async ({ fetch }) => {
+// helper to transform kirby urls to relative production paths
+const fixKirbyUrl = (url: string | undefined) => {
+	if (url && url.includes("/media/")) {
+		const mediaPath = url.substring(url.indexOf("/media/"));
+		// assume backend is deployed to /backend subfolder
+		return `/backend${mediaPath}`;
+	}
+	return url;
+};
+
+// helper to extract relative media path for dev proxy
+const getRelativeMediaPath = (url: string | undefined) => {
+	if (url && url.includes("/media/")) {
+		return url.substring(url.indexOf("/media/"));
+	}
+	return url || "";
+};
+
+// main client-side load function to fetch data from kirby
+export const load: PageLoad = async ({ fetch }) => {
 	// 1. events query
 	const eventsQuery = {
 		query: "page('events').children.listed.sortBy('date', 'desc')",
@@ -98,7 +117,6 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		kql(eventsTitleQuery, fetch),
 		kql(recordingsTitleQuery, fetch),
 	]);
-	console.log("Audio Result:", audioResult);
 
 	// process events data
 	const events = ((eventsResult || []) as ProgrammEvent[]).map((event: ProgrammEvent) => {
@@ -126,8 +144,8 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		return {
 			...event,
 			text: replaceUrlWithTitle(event.text),
-			thumbnailUrl: thumbnailUrl ? new URL(thumbnailUrl).pathname : undefined,
-			videoUrl: event.videos?.[0]?.url ? new URL(event.videos[0].url).pathname : undefined,
+			thumbnailUrl: fixKirbyUrl(thumbnailUrl),
+			videoUrl: event.videos?.[0]?.url ? new URL(event.videos[0].url, "http://base.com").pathname : undefined,
 			videoMime: event.videos?.[0]?.mime,
 		};
 	});
@@ -136,10 +154,14 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	const audioFiles = ((audioResult === null ? [] : audioResult) as Track[])
 		.filter((file: Track) => file.title && file.displayDate)
 		.map((file: Track) => {
-			// transform kirby media url to local proxy stream url
-			if (file.filePath && file.filePath.includes("/media/")) {
-				const relativePath = file.filePath.substring(file.filePath.indexOf("media/"));
+			if (dev) {
+				// in dev mode, use the stream api to handle range requests (seeking)
+				// which the local php server might not support
+				const relativePath = getRelativeMediaPath(file.filePath);
 				file.filePath = `/api/stream?file=${relativePath}`;
+			} else {
+				// in production, use the direct backend url (served by apache/nginx with range support)
+				file.filePath = fixKirbyUrl(file.filePath) || "";
 			}
 			return file;
 		});
