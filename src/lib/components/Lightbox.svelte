@@ -28,7 +28,7 @@
 		onclick={close}
 		transition:fade={{ duration: 200 }}>
 		<button
-			class="absolute right-4 top-4 z-[100] cursor-pointer p-2 text-4xl leading-none text-white hover:text-gray-300 focus:outline-none"
+			class="absolute top-4 right-4 z-[100] cursor-pointer p-2 text-4xl leading-none text-white hover:text-gray-300 focus:outline-none"
 			aria-label="Close">
 			&times;
 		</button>

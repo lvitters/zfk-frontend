@@ -60,9 +60,7 @@
 		<YearSelect {years} year={selectedYear} {selectYear} />
 	</div>
 
-	<div
-		bind:this={listContainer}
-		class="w-full overflow-hidden transition-[height] duration-300 ease-in-out">
+	<div bind:this={listContainer} class="w-full overflow-hidden transition-[height] duration-300 ease-in-out">
 		<div bind:this={innerContainer} class="w-full">
 			{#each filteredAudioFiles as file}
 				<!-- file row -->

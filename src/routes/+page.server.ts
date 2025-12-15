@@ -4,18 +4,15 @@ import type { PageServerLoad } from "./$types";
 
 const replaceUrlWithTitle = (html: string | undefined): string | undefined => {
 	if (!html) return html;
-	return html.replace(
-		/<a\s+(?:[^>]*?\s+)?title="([^"]*)"(?:[^>]*?)>(.*?)<\/a>/gi,
-		(match, title, text) => {
-			if (title && (text.trim().startsWith("http") || text.trim().startsWith("www"))) {
-				const openTagMatch = match.match(/<a\s+[^>]*>/i);
-				if (openTagMatch) {
-					return `${openTagMatch[0]}${title}</a>`;
-				}
+	return html.replace(/<a\s+(?:[^>]*?\s+)?title="([^"]*)"(?:[^>]*?)>(.*?)<\/a>/gi, (match, title, text) => {
+		if (title && (text.trim().startsWith("http") || text.trim().startsWith("www"))) {
+			const openTagMatch = match.match(/<a\s+[^>]*>/i);
+			if (openTagMatch) {
+				return `${openTagMatch[0]}${title}</a>`;
 			}
-			return match;
-		},
-	);
+		}
+		return match;
+	});
 };
 
 export const load: PageServerLoad = async ({ fetch }) => {
@@ -147,14 +144,14 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		.filter((page: KirbyPage) => page.slug !== "events" && page.slug !== "recordings")
 		.map((page: KirbyPage) => {
 			const hasChildren = page.children && page.children.length > 0;
-			
+
 			const processedPage = {
 				...page,
 				text: replaceUrlWithTitle(page.text),
-				children: page.children?.map(child => ({
+				children: page.children?.map((child) => ({
 					...child,
-					text: replaceUrlWithTitle(child.text)
-				}))
+					text: replaceUrlWithTitle(child.text),
+				})),
 			};
 
 			return {

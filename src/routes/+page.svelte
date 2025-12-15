@@ -1,9 +1,9 @@
 <script lang="ts">
 	import AudioHeader from "$lib/components/AudioHeader.svelte";
-	import Aufnahmen from "$lib/components/sections/Aufnahmen.svelte";
-	import Programm from "$lib/components/sections/Programm.svelte";
-	import Club from "$lib/components/sections/MainSection.svelte"; // Still needed for mainSection type
-	import Info from "$lib/components/sections/HeaderSection.svelte"; // Still needed for headerSection type
+	import Aufnahmen from "$lib/components/Aufnahmen.svelte";
+	import Programm from "$lib/components/Programm.svelte";
+	import Club from "$lib/components/MainSection.svelte"; // Still needed for mainSection type
+	import Info from "$lib/components/HeaderSection.svelte"; // Still needed for headerSection type
 
 	import "$lib/css/fonts.css";
 	import { slide } from "svelte/transition";
