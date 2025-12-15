@@ -2,6 +2,22 @@ import { kql } from "$lib/server/kirby";
 import type { DynamicSection, KirbyImage, KirbyPage, ProgrammEvent, Track } from "$lib/types";
 import type { PageServerLoad } from "./$types";
 
+const replaceUrlWithTitle = (html: string | undefined): string | undefined => {
+	if (!html) return html;
+	return html.replace(
+		/<a\s+(?:[^>]*?\s+)?title="([^"]*)"(?:[^>]*?)>(.*?)<\/a>/gi,
+		(match, title, text) => {
+			if (title && (text.trim().startsWith("http") || text.trim().startsWith("www"))) {
+				const openTagMatch = match.match(/<a\s+[^>]*>/i);
+				if (openTagMatch) {
+					return `${openTagMatch[0]}${title}</a>`;
+				}
+			}
+			return match;
+		},
+	);
+};
+
 export const load: PageServerLoad = async ({ fetch }) => {
 	// 1. Veranstaltungen Query
 	const eventsQuery = {
@@ -108,6 +124,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
 		return {
 			...event,
+			text: replaceUrlWithTitle(event.text),
 			thumbnailUrl: thumbnailUrl ? new URL(thumbnailUrl).pathname : undefined,
 			videoUrl: event.videos?.[0]?.url ? new URL(event.videos[0].url).pathname : undefined,
 			videoMime: event.videos?.[0]?.mime,
@@ -130,12 +147,22 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		.filter((page: KirbyPage) => page.slug !== "events" && page.slug !== "recordings")
 		.map((page: KirbyPage) => {
 			const hasChildren = page.children && page.children.length > 0;
+			
+			const processedPage = {
+				...page,
+				text: replaceUrlWithTitle(page.text),
+				children: page.children?.map(child => ({
+					...child,
+					text: replaceUrlWithTitle(child.text)
+				}))
+			};
+
 			return {
-				id: page.id,
-				title: page.title,
-				slug: page.slug,
+				id: processedPage.id,
+				title: processedPage.title,
+				slug: processedPage.slug,
 				type: hasChildren ? "headerSection" : "mainSection",
-				content: hasChildren ? (page.children as KirbyPage[]) : { text: page.text },
+				content: hasChildren ? (processedPage.children as KirbyPage[]) : { text: processedPage.text },
 			};
 		});
 

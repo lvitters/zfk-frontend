@@ -1,7 +1,7 @@
 <script lang="ts">
 	import YearSelect from "$lib/components/YearSelect.svelte";
 	import "$lib/css/fonts.css";
-	import { onMount } from "svelte";
+	import { onMount, tick } from "svelte";
 	import DiagonalStrip from "$lib/DiagonalStrip.svelte";
 	import { slide } from "svelte/transition";
 	import type { ProgrammEvent } from "$lib/types";
@@ -34,11 +34,9 @@
 		(a: number, b: number) => Number(b) - Number(a),
 	);
 
-	$effect(() => {
-		if (!selectedYear && years.length > 0) {
-			selectedYear = years[0] as number;
-		}
-	});
+	if (!selectedYear && years.length > 0) {
+		selectedYear = years[0] as number;
+	}
 
 	let filteredEvents = $derived(events.filter((e: ProgrammEvent) => e.year === selectedYear));
 
@@ -52,10 +50,37 @@
 		};
 	}
 
+	let listContainer = $state<HTMLElement | null>(null);
+	let innerContainer = $state<HTMLElement | null>(null);
+	let transitionTimeout: ReturnType<typeof setTimeout> | null = null;
+
 	async function selectYear(year: number) {
+		if (year === selectedYear) return;
+
+		// 1. Lock current height
+		if (listContainer) {
+			const currentHeight = listContainer.offsetHeight;
+			listContainer.style.height = `${currentHeight}px`;
+		}
+
 		expandedEventId = null;
 		selectedYear = year;
-		// No scrolling needed as list updates in place
+
+		// 2. Wait for DOM update
+		await tick();
+
+		// 3. Animate to new height
+		if (listContainer && innerContainer) {
+			const newHeight = innerContainer.offsetHeight;
+			listContainer.style.height = `${newHeight}px`;
+
+			if (transitionTimeout) clearTimeout(transitionTimeout);
+			transitionTimeout = setTimeout(() => {
+				if (listContainer) {
+					listContainer.style.height = "auto";
+				}
+			}, 300); // Matches duration-300
+		}
 	}
 
 	let expandedEventId = $state<string | null>(null);
@@ -133,14 +158,20 @@
 		<YearSelect {years} year={selectedYear} {selectYear} />
 	</div>
 
-	{#each filteredEvents as event, index}
-		<div
-			class="event-row w-full border-b-2 border-[var(--text-color)] transition-colors last:border-b-0"
-			use:addRef={event.id}>
-			{@render previewRow(event, index)}
-			{#if expandedEventId === event.id}
-				{@render expandedEventContent(event)}
-			{/if}
+	<div
+		bind:this={listContainer}
+		class="w-full overflow-hidden transition-[height] duration-300 ease-in-out">
+		<div bind:this={innerContainer} class="w-full">
+			{#each filteredEvents as event, index}
+				<div
+					class="event-row w-full border-b-2 border-[var(--text-color)] transition-colors last:border-b-0"
+					use:addRef={event.id}>
+					{@render previewRow(event, index)}
+					{#if expandedEventId === event.id}
+						{@render expandedEventContent(event)}
+					{/if}
+				</div>
+			{/each}
 		</div>
-	{/each}
+	</div>
 </div>

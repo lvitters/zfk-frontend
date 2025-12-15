@@ -15,8 +15,8 @@
 }
 
 :root {
-	/* green: #082e33 petrol: #374151 */
-	--bg-color: #082e33;
+	/* cedric's green: #082e33 */
+	--bg-color: #1a2b3c;
 	--text-color: #ffffff;
 	--text-glow: 0 0 3px var(--text-color);
 	--item-bg-color: var(--text-color);
@@ -138,7 +138,7 @@ textarea {
 
 	/* SLIDE */
 	.kirby-content .gallery-slide {
-		@apply w-full flex-none snap-center flex items-center justify-center;
+		@apply flex w-full flex-none snap-center items-center justify-center;
 	}
 
 	/* IMAGE */
