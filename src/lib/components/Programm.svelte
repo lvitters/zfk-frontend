@@ -133,7 +133,7 @@
 
 			<!-- diagonal pixel row as bottom border -->
 			<div
-				class="absolute bottom-0 left-0 right-0 h-[12px] overflow-hidden"
+				class="absolute right-0 bottom-0 left-0 h-[12px] overflow-hidden"
 				style="mask-image: linear-gradient(to top, black, transparent); -webkit-mask-image: linear-gradient(to top, black, transparent);">
 				{#if event.thumbnailUrl}
 					<DiagonalStrip src={event.thumbnailUrl} class="h-full w-full object-fill" />

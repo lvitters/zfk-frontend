@@ -6,7 +6,7 @@
 <div class="text-glow-white flex w-full flex-wrap items-center gap-4 text-sm md:text-xl lg:text-2xl">
 	{#each years || [] as year}
 		<button
-			class="cursor-pointer whitespace-nowrap py-1 transition-colors hover:bg-[var(--text-color)] hover:text-[var(--bg-color)] {year ===
+			class="cursor-pointer py-1 whitespace-nowrap transition-colors hover:bg-[var(--text-color)] hover:text-[var(--bg-color)] {year ===
 			selectedYear
 				? 'bg-[var(--text-color)] text-[var(--bg-color)]'
 				: ''}"

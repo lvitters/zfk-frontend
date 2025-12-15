@@ -187,7 +187,7 @@
 
 		<!-- seekable progress bar area -->
 		<div
-			class="absolute bottom-0 left-0 right-0 h-[12px] cursor-pointer"
+			class="absolute right-0 bottom-0 left-0 h-[12px] cursor-pointer"
 			bind:this={progressBar}
 			role="button"
 			tabindex="0"
