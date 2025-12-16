@@ -34,8 +34,10 @@ declare global {
 		bind(event: string, callback: (data?: any) => void): void;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		load(url: string, options: any): void;
-		play(): void;
-		pause(): void;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		play(): Promise<any> | void;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		pause(): Promise<any> | void;
 		toggle(): void;
 		seekTo(milliseconds: number): void;
 		getDuration(callback: (duration: number) => void): void;

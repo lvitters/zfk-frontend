@@ -44,13 +44,7 @@
 			// console.log("SC Widget Ready");
 		});
 
-		scWidget.bind(window.SC.Widget.Events.PLAY, () => {
-			isPlaying.set(true);
-		});
-
-		scWidget.bind(window.SC.Widget.Events.PAUSE, () => {
-			isPlaying.set(false);
-		});
+		// Removed PLAY and PAUSE bindings to avoid loop with $effect
 
 		scWidget.bind(window.SC.Widget.Events.FINISH, () => {
 			isPlaying.set(false);
@@ -71,9 +65,41 @@
 		// also bind to ready/load to get duration
 	}
 
-	// sync $isPlaying store to audio element state (HTML5 ONLY)
+	// helper to safely call SC widget methods that might return rejected promises on abort
+	function safeWidgetAction(action: "play" | "pause") {
+		if (!scWidget) return;
+		try {
+			const result = action === "play" ? scWidget.play() : scWidget.pause();
+			// check if it returned a promise
+			if (result && typeof result.then === "function") {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				result.catch((e: any) => {
+					// ignore AbortError which happens when toggling fast
+					if (e?.name !== "AbortError") {
+						console.warn("SC Widget Error:", e);
+					}
+				});
+			}
+		} catch (e) {
+			console.warn("SC Widget Exception:", e);
+		}
+	}
+
+	// sync $isPlaying store to audio element state
 	$effect(() => {
-		if ($currentTrack?.isExternal) return; // skip for SC
+		if ($currentTrack?.isExternal) {
+			// handle SoundCloud
+			if (scWidget) {
+				if ($isPlaying) {
+					safeWidgetAction("play");
+				} else {
+					safeWidgetAction("pause");
+				}
+			}
+			return;
+		}
+
+		// handle HTML5 audio
 		if (!audio) return;
 		if ($isPlaying && audio.paused) {
 			audio.play().catch((e) => console.error("Play failed:", e));
@@ -146,13 +172,7 @@
 	function togglePlayback(event: MouseEvent) {
 		event.stopPropagation(); // prevent seeking when clicking play button
 		if ($currentTrack) {
-			if ($currentTrack.isExternal) {
-				if (scWidget) {
-					scWidget.toggle();
-				}
-			} else {
-				isPlaying.update((p) => !p);
-			}
+			isPlaying.update((p) => !p);
 		} else {
 			randomizeAndPlay();
 		}
@@ -263,7 +283,7 @@
 		height="166"
 		scrolling="no"
 		frameborder="no"
-		allow="autoplay"
+		allow="autoplay; encrypted-media"
 		src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&show_artwork=false"
 		class="hidden"
 		title="SoundCloud Player">
