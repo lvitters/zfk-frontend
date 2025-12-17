@@ -1,9 +1,9 @@
 <script lang="ts">
+	import Lightbox from "$lib/components/Lightbox.svelte";
+	import Footer from "$lib/components/Footer.svelte";
+	import { lightboxImage } from "$lib/stores";
 	let { children } = $props();
 	import "../app.css";
-	import Lightbox from "$lib/components/Lightbox.svelte";
-	import { lightboxImage } from "$lib/stores";
-	import Footer from "$lib/components/Footer.svelte";
 
 	function handleGlobalClick(event: MouseEvent) {
 		const target = event.target as HTMLElement;

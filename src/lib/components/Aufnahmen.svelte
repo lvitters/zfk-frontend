@@ -1,6 +1,5 @@
 <script lang="ts">
 	import YearSelect from "$lib/components/YearSelect.svelte";
-	import "$lib/css/fonts.css";
 	import { currentTrack, isPlaying } from "$lib/stores";
 	import type { Track } from "$lib/types";
 	import { tick } from "svelte";

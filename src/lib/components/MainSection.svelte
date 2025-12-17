@@ -1,5 +1,4 @@
 <script lang="ts">
-	import "$lib/css/fonts.css";
 	let { page } = $props();
 </script>
 

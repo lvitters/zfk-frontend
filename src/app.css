@@ -3,7 +3,7 @@
 @font-face {
 	font-family: "ClashDisplayVariable";
 	src: url("/fonts/ClashDisplay-Variable.woff2") format("woff2");
-	font-weight: 200 700;
+	font-weight: 200 900;
 	font-style: normal;
 }
 
@@ -77,38 +77,76 @@ textarea {
 
 /* kirby content */
 @layer components {
+	/* Reset margins to handle spacing contextually */
+	.kirby-content > * {
+		@apply mt-0 mb-0;
+	}
+
+	/* Standard Flow: Default spacing between stacked elements */
+	.kirby-content > * + * {
+		@apply mt-6 md:mt-8;
+	}
+
+	/* HEADINGS */
 	.kirby-content h1 {
-		@apply mt-12 mb-6 text-2xl font-bold md:mt-16 md:mb-8 md:text-4xl;
-		font-weight: 700;
+		@apply text-2xl md:text-4xl;
+		font-weight: 900;
+	}
+	/* If H1 follows something (rare), give it extra space */
+	.kirby-content > * + h1 {
+		@apply mt-12 md:mt-16;
 	}
 
 	.kirby-content h2 {
-		@apply mt-10 mb-5 text-xl font-bold md:mt-12 md:mb-6 md:text-2xl;
-		font-weight: 700;
+		@apply text-xl md:text-2xl;
+		font-weight: 600;
+	}
+	.kirby-content > * + h2 {
+		@apply mt-10 md:mt-12;
 	}
 
 	.kirby-content h3 {
-		@apply mt-8 mb-4 text-lg font-medium md:mt-10 md:mb-4 md:text-xl;
+		@apply text-lg md:text-xl;
 		font-weight: 500;
+	}
+	.kirby-content > * + h3 {
+		@apply mt-8 md:mt-10;
 	}
 
 	.kirby-content h4 {
-		@apply mt-6 mb-6 text-xl font-bold tracking-wide uppercase md:mt-8 md:mb-8 md:text-2xl;
+		@apply text-xl tracking-wide md:text-2xl;
 		font-weight: 700;
 	}
-
-	.kirby-content p {
-		@apply mt-4 mb-8 min-h-[1em];
-		white-space: pre-line;
+	.kirby-content > * + h4 {
+		@apply mt-8 md:mt-10;
 	}
 
+	/* TEXT */
+	.kirby-content p {
+		@apply min-h-[1em];
+		white-space: pre-line;
+		font-weight: 400;
+	}
+
+	/* Contextual: Tighten text following a heading (Grouping) */
+	.kirby-content h1 + p,
+	.kirby-content h2 + p,
+	.kirby-content h3 + p,
+	.kirby-content h4 + p {
+		@apply mt-2 md:mt-3;
+	}
+
+	/* MEDIA */
 	.kirby-content figure {
 		@apply my-6;
 	}
 
-	.kirby-content img {
+	.kirby-content img,
+	.kirby-content iframe {
 		@apply w-full cursor-pointer md:w-1/2 lg:w-1/3 xl:w-1/4;
 		filter: drop-shadow(0 0 3px var(--text-color));
+		/* Ensure media has space if it follows text */
+		@apply mt-8 md:mt-10;
 	}
 
 	.kirby-content a {
@@ -120,6 +158,7 @@ textarea {
 		user-select: text;
 	}
 
+	/* First element should have no top margin usually */
 	.kirby-content > :first-child {
 		margin-top: 0;
 	}
@@ -145,7 +184,7 @@ textarea {
 
 	/* IMAGE */
 	.kirby-content .gallery-wrapper img {
-		@apply block h-auto w-full object-cover;
+		@apply block h-auto w-full object-cover m-0;
 		filter: drop-shadow(0 0 0 var(--text-color));
 	}
 

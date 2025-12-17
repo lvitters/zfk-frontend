@@ -1,5 +1,4 @@
 <script lang="ts">
-	import "$lib/css/fonts.css";
 	import { slide } from "svelte/transition";
 	let { infoPages } = $props();
 	let expandedId = $state<string | null>(null);

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import YearSelect from "$lib/components/YearSelect.svelte";
-	import "$lib/css/fonts.css";
 	import { onMount, tick } from "svelte";
 	import DiagonalStrip from "$lib/components/DiagonalStrip.svelte";
 	import { slide } from "svelte/transition";

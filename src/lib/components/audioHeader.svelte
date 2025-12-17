@@ -44,7 +44,7 @@
 			// console.log("SC Widget Ready");
 		});
 
-		// Removed PLAY and PAUSE bindings to avoid loop with $effect
+		// removed PLAY and PAUSE bindings to avoid loop with $effect
 
 		scWidget.bind(window.SC.Widget.Events.FINISH, () => {
 			isPlaying.set(false);
@@ -58,10 +58,9 @@
 		});
 
 		scWidget.bind(window.SC.Widget.Events.Do, () => {
-			// "Do" seems to be undefined in types usually, but Duration change is key
+			// "do" seems to be undefined in types usually, but duration change is key
 			// some docs say READY gives duration, or load callback
 		});
-
 		// also bind to ready/load to get duration
 	}
 
@@ -111,17 +110,24 @@
 	// update audio source when current track changes
 	currentTrack.subscribe((track: Track | null) => {
 		if (track) {
+			// immediately stop playback to prevent overlap
+			isPlaying.set(false);
+
 			// reset state
 			currentTime = 0;
 			duration = 0;
-			isPlaying.set(false);
 
 			if (track.isExternal) {
-				// handle SoundCloud
+				// switching TO External (SoundCloud)
+
+				// 1. ensure HTML5 audio is completely stopped
 				if (audio) {
 					audio.pause();
-					audio.src = ""; // stop HTML5 download
+					audio.currentTime = 0; // reset position
+					// we keep src for now to avoid null errors, but pause is key
 				}
+
+				// 2. load SoundCloud
 				if (scWidget) {
 					scWidget.load(track.externalUrl || "", {
 						auto_play: true,
@@ -134,15 +140,20 @@
 							scWidget?.getDuration((d: number) => {
 								duration = d / 1000; // ms to s
 							});
+							// only auto-play if the user initiated this (which they did by clicking a track)
 							isPlaying.set(true);
 						},
 					});
 				}
 			} else {
-				// handle local file
+				// switching to local file
+
+				// 1. ensure SoundCloud is completely stopped
 				if (scWidget) {
 					scWidget.pause();
 				}
+
+				// 2. load Local File
 				src = track.filePath;
 				// HTML5 audio "autoplay" handled by the effect below or onloadedmetadata
 			}
@@ -154,8 +165,12 @@
 		if ($currentTrack?.isExternal) return;
 		if (audio && src) {
 			audio.load();
-			audio.play().catch((e) => console.error("Autoplay failed:", e));
-			isPlaying.set(true);
+			// we only want to auto-play if this change came from a user selection (new track)
+			// the currentTrack subscription sets isPlaying=false initially, so we set it true here
+			audio
+				.play()
+				.then(() => isPlaying.set(true))
+				.catch((e) => console.error("Autoplay failed:", e));
 		}
 	});
 
@@ -272,6 +287,7 @@
 			if (!$currentTrack?.isExternal) duration = (audio as HTMLAudioElement).duration;
 		}}
 		{src}
+		preload="metadata"
 		class="hidden">
 	</audio>
 
@@ -332,7 +348,7 @@
 
 		<!-- seekable progress bar area -->
 		<div
-			class="absolute right-0 bottom-0 left-0 h-[12px] cursor-pointer"
+			class="absolute bottom-0 left-0 right-0 h-[12px] cursor-pointer"
 			bind:this={progressBar}
 			role="button"
 			tabindex="0"
@@ -341,7 +357,7 @@
 			ontouchstart={onDragStart}>
 			<!-- playhead -->
 			<div
-				class="absolute bottom-0 z-20 flex h-[15px] w-[60px] items-center justify-center bg-[var(--text-color)] font-bold text-[var(--bg-color)]"
+				class="absolute bottom-0 z-20 flex h-[10px] w-[40px] items-center justify-center bg-[var(--text-color)] font-bold text-[var(--bg-color)] md:h-[15px] md:w-[60px]"
 				style="left: {duration ? (currentTime / duration) * 100 : 0}%; transform: translateX(-{duration
 					? (currentTime / duration) * 100
 					: 0}%); opacity: {$currentTrack ? 1 : 0};">

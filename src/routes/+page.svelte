@@ -36,6 +36,7 @@
 			'programm'
 				? 'bg-[var(--text-color)] text-[var(--bg-color)]'
 				: 'bg-[var(--bg-color)] hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
+			style="font-weight: 900;"
 			onclick={() => toggleSection("programm")}>
 			{eventsTitle}
 		</button>
