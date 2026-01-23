@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* fonts */
 @font-face {
 	font-family: "ClashDisplayVariable";
 	src: url("/fonts/ClashDisplay-Variable.woff2") format("woff2");
@@ -18,7 +19,7 @@
 	/* cedric's green: #082e33 */
 	--bg-color: #1a2b3c;
 	--text-color: #ffffff;
-	--text-glow: 0 0 3px var(--text-color);
+	--text-glow: 0 0 0.18em var(--text-color);
 	--item-bg-color: var(--text-color);
 	--item-text-color: var(--bg-color);
 }
@@ -129,7 +130,7 @@ textarea {
 		white-space: pre-line;
 		font-weight: 400;
 		width: min(100%, 70ch);
-		opacity: 0.8;
+		opacity: 0.85;
 	}
 
 	/* contextual: tighten text following a heading (grouping) */
@@ -153,7 +154,7 @@ textarea {
 	}
 
 	.kirby-content a {
-		@apply break-all underline hover:opacity-80;
+		@apply break-all underline hover:opacity-85;
 	}
 
 	/* logic breakers */

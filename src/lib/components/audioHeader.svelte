@@ -218,13 +218,6 @@
 	function onDragStart(event: MouseEvent | TouchEvent) {
 		if (!$currentTrack) return;
 
-		// ensure playing
-		if ($currentTrack.isExternal) {
-			if (scWidget) scWidget.play();
-		} else {
-			if (audio && audio.paused) isPlaying.set(true);
-		}
-
 		isDragging = true;
 
 		const clientX = "touches" in event ? event.touches[0].clientX : event.clientX;
@@ -258,7 +251,7 @@
 
 	// helper to format seconds into mm:ss or hh:mm:ss
 	const formatTime = (time: number) => {
-		if (isNaN(time)) return "0:00";
+		if (isNaN(time)) return "00:00";
 		const hours = Math.floor(time / 3600);
 		const minutes = Math.floor((time % 3600) / 60);
 		const seconds = Math.floor(time % 60);
@@ -267,7 +260,7 @@
 			return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 		}
 
-		return `${minutes}:${String(seconds).padStart(2, "0")}`;
+		return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 	};
 </script>
 
@@ -326,14 +319,28 @@
 		{#if $currentTrack}
 			<!-- track info (time + title) to the right of the logo -->
 			<div class="pointer-events-none relative z-20 ml-4 flex flex-1 flex-col items-start gap-1 pt-2">
-				<!-- time -->
-				<div class="shrink-0 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-70">
-					{formatTime(currentTime)} / {formatTime(duration)}
+				<!-- metadata -->
+				<div
+					class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] tabular-nums leading-none opacity-85">
+					{#if $currentTrack.isExternal && $currentTrack.externalUrl}
+						<a
+							href={$currentTrack.externalUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="pointer-events-auto inline-flex h-6 w-auto origin-left scale-150 items-center transition-transform duration-200 hover:scale-[1.8]"
+							aria-label="Listen on SoundCloud">
+							<img
+								src="/soundcloud_icon_white_transparent.png"
+								alt="SoundCloud"
+								class="h-full w-auto object-contain" />
+						</a>
+					{/if}
+					<span>{formatTime(currentTime)} / {formatTime(duration)}</span>
 				</div>
 
 				<!-- title -->
-				<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
-					{$currentTrack.title}
+				<div class="flex items-center gap-3 text-[clamp(1rem,3vw,1.5rem)] font-medium leading-none">
+					<span>{$currentTrack.title}</span>
 				</div>
 			</div>
 		{:else}
