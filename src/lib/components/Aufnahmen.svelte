@@ -55,7 +55,7 @@
 </script>
 
 <!-- display files list container -->
-<div class="flex w-full flex-col bg-[var(--bg-color)]">
+<div class="flex w-full flex-col">
 	<!-- year select header -->
 	<div class="w-full border-b-2 border-[var(--text-color)] p-4 md:px-6">
 		<YearSelect {years} year={selectedYear} {selectYear} />
@@ -67,7 +67,7 @@
 				{@const isActive = file.id === $currentTrack?.id}
 				<!-- individual file row -->
 				<button
-					class="group relative flex w-full cursor-pointer flex-col gap-1 border-b-2 border-[var(--text-color)] p-4 text-left duration-100 last:border-b-0 md:px-6 {isActive
+					class="group relative flex w-full cursor-pointer flex-col gap-1 border-b-2 border-[var(--text-color)] p-4 text-left last:border-b-0 md:px-6 {isActive
 						? 'bg-[var(--text-color)] text-[var(--bg-color)]'
 						: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
 					onclick={() => {
@@ -111,7 +111,7 @@
 						</span>
 					</div>
 					<!-- title -->
-					<div class="text-[clamp(1rem,3vw,1.5rem)] font-medium leading-none">
+					<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
 						{file.title}
 					</div>
 				</button>

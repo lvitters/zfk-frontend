@@ -15,6 +15,11 @@
 				return;
 			}
 
+			// ignore images inside links or buttons
+			if (target.closest("a") || target.closest("button")) {
+				return;
+			}
+
 			event.preventDefault();
 			event.stopPropagation();
 			lightboxImage.set((target as HTMLImageElement).src);

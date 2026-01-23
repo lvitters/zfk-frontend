@@ -104,7 +104,7 @@
 	<!-- preview row for event list -->
 	<div class="flex w-full justify-start">
 		<button
-			class="relative flex w-full cursor-pointer flex-col overflow-hidden p-4 text-left duration-100 focus:outline-none md:px-6 {expandedEventId ===
+			class="relative flex w-full cursor-pointer flex-col overflow-hidden p-4 text-left focus:outline-none md:px-6 {expandedEventId ===
 			event.id
 				? 'bg-[var(--text-color)] text-[var(--bg-color)]'
 				: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
@@ -125,14 +125,14 @@
 					{/if}
 				</div>
 				<!-- title -->
-				<div class="text-[clamp(1rem,3vw,1.5rem)] font-medium leading-none">
+				<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
 					{event.title}
 				</div>
 			</div>
 
 			<!-- diagonal pixel row as bottom border -->
 			<div
-				class="absolute bottom-0 left-0 right-0 h-[12px] overflow-hidden"
+				class="absolute right-0 bottom-0 left-0 h-[12px] overflow-hidden"
 				style="mask-image: linear-gradient(to top, black, transparent); -webkit-mask-image: linear-gradient(to top, black, transparent);">
 				{#if event.thumbnailUrl}
 					<DiagonalStrip src={event.thumbnailUrl} class="h-full w-full object-fill" />
@@ -153,7 +153,7 @@
 	</div>
 {/snippet}
 
-<div class="flex w-full flex-col bg-[var(--bg-color)]">
+<div class="flex w-full flex-col">
 	<!-- year select row -->
 	<div class="w-full border-b-2 border-[var(--text-color)] p-4 md:px-6">
 		<YearSelect {years} year={selectedYear} {selectYear} />
@@ -163,7 +163,7 @@
 		<div bind:this={innerContainer} class="w-full">
 			{#each filteredEvents as event, index}
 				<div
-					class="event-row w-full border-b-2 border-[var(--text-color)] transition-colors last:border-b-0"
+					class="event-row w-full border-b-2 border-[var(--text-color)] last:border-b-0"
 					use:addRef={event.id}>
 					{@render previewRow(event, index)}
 					{#if expandedEventId === event.id}

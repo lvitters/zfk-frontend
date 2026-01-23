@@ -23,7 +23,7 @@
 			</button>
 			{#if expandedId === page.id}
 				<div
-					class="kirby-content border-t-2 border-solid border-[var(--text-color)] bg-[var(--bg-color)] p-4 text-base leading-relaxed md:px-6"
+					class="kirby-content border-t-2 border-solid border-[var(--text-color)] p-4 text-base leading-relaxed md:px-6"
 					transition:slide>
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 					{@html page.text}

@@ -40,7 +40,7 @@
 		<!-- programm (events) section -->
 		<div class="group relative w-full border-b-2 border-[var(--text-color)]">
 			<button
-				class="relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] font-bold leading-none transition-colors duration-300 md:px-4 {expandedSection ===
+				class="relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] leading-none font-bold md:px-4 {expandedSection ===
 				'programm'
 					? 'bg-[var(--text-color)] text-[var(--bg-color)]'
 					: 'bg-[var(--bg-color)] hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
@@ -48,7 +48,7 @@
 				{eventsTitle}
 			</button>
 			{#if expandedSection === "programm"}
-				<div class="bg-[var(--bg-color)]" transition:slide>
+				<div transition:slide>
 					<Programm {events} bind:selectedYear={programmYear} />
 				</div>
 			{/if}
@@ -57,15 +57,15 @@
 		<!-- aufnahmen (recordings) section -->
 		<div class="relative w-full border-b-2 border-[var(--text-color)]">
 			<button
-				class="relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] font-bold leading-none transition-colors duration-300 md:px-4 {expandedSection ===
+				class="relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] leading-none font-bold md:px-4 {expandedSection ===
 				'aufnahmen'
 					? 'bg-[var(--text-color)] text-[var(--bg-color)]'
-					: 'bg-[var(--bg-color)] hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
+					: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
 				onclick={() => toggleSection("aufnahmen")}>
 				{recordingsTitle}
 			</button>
 			{#if expandedSection === "aufnahmen"}
-				<div class="bg-[var(--bg-color)]" transition:slide>
+				<div transition:slide>
 					<Aufnahmen {audioFiles} bind:selectedYear={aufnahmenYear} />
 				</div>
 			{/if}
@@ -75,15 +75,15 @@
 		{#each dynamicSections as section (section.id)}
 			<div class="relative w-full border-b-2 border-[var(--text-color)]">
 				<button
-					class="relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] font-bold leading-none transition-colors duration-300 md:px-4 {expandedSection ===
+					class="relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] leading-none font-bold md:px-4 {expandedSection ===
 					section.slug
 						? 'bg-[var(--text-color)] text-[var(--bg-color)]'
-						: 'bg-[var(--bg-color)] hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
+						: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
 					onclick={() => toggleSection(section.slug)}>
 					{section.title}
 				</button>
 				{#if expandedSection === section.slug}
-					<div class="bg-[var(--bg-color)]" transition:slide>
+					<div transition:slide>
 						{#if section.type === "headerSection"}
 							<Info infoPages={section.content} />
 						{:else if section.type === "mainSection"}

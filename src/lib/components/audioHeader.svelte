@@ -321,7 +321,7 @@
 			<div class="pointer-events-none relative z-20 ml-4 flex flex-1 flex-col items-start gap-1 pt-2">
 				<!-- metadata -->
 				<div
-					class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] tabular-nums leading-none opacity-85">
+					class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
 					{#if $currentTrack.isExternal && $currentTrack.externalUrl}
 						<a
 							href={$currentTrack.externalUrl}
@@ -339,7 +339,7 @@
 				</div>
 
 				<!-- title -->
-				<div class="flex items-center gap-3 text-[clamp(1rem,3vw,1.5rem)] font-medium leading-none">
+				<div class="flex items-center gap-3 text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
 					<span>{$currentTrack.title}</span>
 				</div>
 			</div>
