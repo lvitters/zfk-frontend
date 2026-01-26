@@ -125,14 +125,14 @@
 					{/if}
 				</div>
 				<!-- title -->
-				<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
+				<div class="text-[clamp(1rem,3vw,1.5rem)] font-medium leading-none">
 					{event.title}
 				</div>
 			</div>
 
 			<!-- diagonal pixel row as bottom border -->
 			<div
-				class="absolute right-0 bottom-0 left-0 h-[12px] overflow-hidden"
+				class="absolute bottom-0 left-0 right-0 h-[10px] overflow-hidden"
 				style="mask-image: linear-gradient(to top, black, transparent); -webkit-mask-image: linear-gradient(to top, black, transparent);">
 				{#if event.thumbnailUrl}
 					<DiagonalStrip src={event.thumbnailUrl} class="h-full w-full object-fill" />

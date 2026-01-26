@@ -8,16 +8,16 @@
 	font-style: normal;
 }
 
-@font-face {
+/* @font-face {
 	font-family: "ClashGroteskVariable";
 	src: url("/fonts/ClashGrotesk-Variable.woff2") format("woff2");
 	font-weight: normal;
 	font-style: normal;
-}
+} */
 
 :root {
 	/* cedric's green: #082e33 */
-	/* original blue: #1a2b3c -> hsl(210, 39%, 17%) */
+	/* wall paint blue: #1a2b3c -> hsl(210, 39%, 17%) */
 	--bg-hue: 210;
 	--bg-s: 100%;
 	--bg-l: 9%;
@@ -28,7 +28,7 @@
 	--item-bg-color: var(--text-color);
 	--item-text-color: var(--bg-color);
 
-	animation: hue-cycle 60s linear infinite;
+	animation: hue-cycle 20s linear infinite;
 }
 
 body {
