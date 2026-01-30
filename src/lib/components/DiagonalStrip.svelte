@@ -72,11 +72,16 @@
 	});
 </script>
 
-<div class={className} bind:this={container}>
+<div
+	class={"overflow-hidden " + className}
+	bind:this={container}
+	style="mask-image: linear-gradient(to top, black 25%, transparent); -webkit-mask-image: linear-gradient(to top, black 25%, transparent);">
 	<!-- the canvas is stretched to fill the container -->
 	<canvas
 		bind:this={canvas}
 		class="block h-full w-full"
-		style="image-rendering: pixelated; opacity: {isLoaded ? 1 : 0}; transition: opacity 0.3s;">
+		style="filter: blur(clamp(2px, 0.6vw, 6px)); transform: scale(1.2); opacity: {isLoaded
+			? 1
+			: 0}; transition: opacity .3s;">
 	</canvas>
 </div>

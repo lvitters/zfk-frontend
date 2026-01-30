@@ -40,7 +40,7 @@
 		<!-- programm (events) section -->
 		<div class="group relative w-full border-b-2 border-[var(--text-color)]">
 			<button
-				class="relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] font-bold leading-none md:px-4 {expandedSection ===
+				class="font-clash-display relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] font-bold leading-none md:px-4 {expandedSection ===
 				'programm'
 					? 'bg-[var(--text-color)] text-[var(--bg-color)]'
 					: 'bg-[var(--bg-color)] hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
@@ -57,7 +57,7 @@
 		<!-- aufnahmen (recordings) section -->
 		<div class="relative w-full border-b-2 border-[var(--text-color)]">
 			<button
-				class="relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] font-bold leading-none md:px-4 {expandedSection ===
+				class="font-clash-display relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] font-bold leading-none md:px-4 {expandedSection ===
 				'aufnahmen'
 					? 'bg-[var(--text-color)] text-[var(--bg-color)]'
 					: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
@@ -75,7 +75,7 @@
 		{#each dynamicSections as section (section.id)}
 			<div class="relative w-full border-b-2 border-[var(--text-color)]">
 				<button
-					class="relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] font-bold leading-none md:px-4 {expandedSection ===
+					class="font-clash-display relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(3rem,13vw,12rem)] font-bold leading-none md:px-4 {expandedSection ===
 					section.slug
 						? 'bg-[var(--text-color)] text-[var(--bg-color)]'
 						: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"

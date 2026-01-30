@@ -131,13 +131,11 @@
 			</div>
 
 			<!-- diagonal pixel row as bottom border -->
-			<div
-				class="absolute bottom-0 left-0 right-0 h-[10px] overflow-hidden"
-				style="mask-image: linear-gradient(to top, black, transparent); -webkit-mask-image: linear-gradient(to top, black, transparent);">
-				{#if event.thumbnailUrl}
-					<DiagonalStrip src={event.thumbnailUrl} class="h-full w-full object-fill" />
-				{/if}
-			</div>
+			{#if event.thumbnailUrl}
+				{#key event.id}
+					<DiagonalStrip src={event.thumbnailUrl} class="absolute bottom-0 left-0 right-0 h-[15px] w-full" />
+				{/key}
+			{/if}
 		</button>
 	</div>
 {/snippet}

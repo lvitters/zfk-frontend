@@ -8,19 +8,19 @@
 	font-style: normal;
 }
 
-/* @font-face {
+@font-face {
 	font-family: "ClashGroteskVariable";
 	src: url("/fonts/ClashGrotesk-Variable.woff2") format("woff2");
-	font-weight: normal;
+	font-weight: 200 900;
 	font-style: normal;
-} */
+}
 
 :root {
 	/* cedric's green: #082e33 */
 	/* wall paint blue: #1a2b3c -> hsl(210, 39%, 17%) */
 	--bg-hue: 210;
 	--bg-s: 100%;
-	--bg-l: 9%;
+	--bg-l: 7%;
 	--bg-color: hsl(var(--bg-hue), var(--bg-s), var(--bg-l));
 
 	--text-color: #ffffff;
@@ -31,8 +31,14 @@
 	animation: hue-cycle 20s linear infinite;
 }
 
-body {
+.font-clash-display {
 	font-family: "ClashDisplayVariable", sans-serif;
+}
+
+body {
+	font-family: "ClashGroteskVariable", sans-serif;
+	letter-spacing: 0.045em;
+	line-height: 1.2;
 	color: var(--text-color);
 	background-color: var(--bg-color);
 	text-shadow: var(--text-glow);
@@ -147,6 +153,7 @@ textarea {
 	.kirby-content p {
 		@apply min-h-[1em];
 		font-size: clamp(1rem, 1vw + 0.5rem, 1.25rem);
+		line-height: 1.4;
 		white-space: pre-line;
 		font-weight: 400;
 		width: min(100%, 70ch);

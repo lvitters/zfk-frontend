@@ -321,7 +321,7 @@
 			<div class="pointer-events-none relative z-20 ml-4 flex flex-1 flex-col items-start gap-1 pt-2">
 				<!-- metadata -->
 				<div
-					class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
+					class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] tabular-nums leading-none opacity-85">
 					{#if $currentTrack.isExternal && $currentTrack.externalUrl}
 						<a
 							href={$currentTrack.externalUrl}
@@ -339,14 +339,14 @@
 				</div>
 
 				<!-- title -->
-				<div class="flex items-center gap-3 text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
+				<div class="flex items-center gap-3 text-[clamp(1rem,3vw,1.5rem)] font-medium leading-none">
 					<span>{$currentTrack.title}</span>
 				</div>
 			</div>
 		{:else}
 			<div class="pointer-events-none relative z-20 ml-4 flex flex-1 items-center">
 				<!-- title, centered vertically -->
-				<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
+				<div class="text-[clamp(1rem,3vw,1.5rem)] font-medium leading-none">
 					Zentrum für <br />
 					Kollektivkultur e.V.
 				</div>
@@ -355,7 +355,7 @@
 
 		<!-- seekable progress bar area -->
 		<div
-			class="absolute right-0 bottom-0 left-0 h-[12px] cursor-pointer"
+			class="absolute bottom-0 left-0 right-0 h-[12px] cursor-pointer touch-none"
 			bind:this={progressBar}
 			role="button"
 			tabindex="0"
