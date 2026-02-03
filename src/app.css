@@ -20,8 +20,11 @@
 	/* wall paint blue: #1a2b3c -> hsl(210, 39%, 17%) */
 	--bg-hue: 210;
 	--bg-s: 100%;
-	--bg-l: 7%;
+	--bg-l: 10%;
 	--bg-color: hsl(var(--bg-hue), var(--bg-s), var(--bg-l));
+
+	--inverse-color: hsl(calc(var(--bg-hue) + 180), var(--bg-s), 50%);
+	--inverse-glow: 0 0 0.18em var(--inverse-color);
 
 	--text-color: #ffffff;
 	--text-glow: 0 0 0.18em var(--text-color);

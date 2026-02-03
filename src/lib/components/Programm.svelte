@@ -1,7 +1,6 @@
 <script lang="ts">
 	import YearSelect from "$lib/components/YearSelect.svelte";
 	import { onMount, tick } from "svelte";
-	import DiagonalStrip from "$lib/components/DiagonalStrip.svelte";
 	import { slide } from "svelte/transition";
 	import type { ProgrammEvent } from "$lib/types";
 
@@ -129,13 +128,6 @@
 					{event.title}
 				</div>
 			</div>
-
-			<!-- diagonal pixel row as bottom border -->
-			{#if event.thumbnailUrl}
-				{#key event.id}
-					<DiagonalStrip src={event.thumbnailUrl} class="absolute bottom-0 left-0 right-0 h-[15px] w-full" />
-				{/key}
-			{/if}
 		</button>
 	</div>
 {/snippet}

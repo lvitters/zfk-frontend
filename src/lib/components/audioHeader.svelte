@@ -321,13 +321,14 @@
 			<div class="pointer-events-none relative z-20 ml-4 flex flex-1 flex-col items-start gap-1 pt-2">
 				<!-- metadata -->
 				<div
-					class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] tabular-nums leading-none opacity-85">
+					class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
+					<span>{formatTime(currentTime)} / {formatTime(duration)}</span>
 					{#if $currentTrack.isExternal && $currentTrack.externalUrl}
 						<a
 							href={$currentTrack.externalUrl}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="pointer-events-auto inline-flex h-6 w-auto origin-left scale-150 items-center transition-transform duration-200 hover:scale-[1.8]"
+							class="pointer-events-auto inline-flex h-6 w-auto translate-y-[-2px] scale-150 items-center transition-transform duration-200 hover:scale-[1.8]"
 							aria-label="Listen on SoundCloud">
 							<img
 								src="/soundcloud_icon_white_transparent.png"
@@ -335,18 +336,17 @@
 								class="h-full w-auto object-contain" />
 						</a>
 					{/if}
-					<span>{formatTime(currentTime)} / {formatTime(duration)}</span>
 				</div>
 
 				<!-- title -->
-				<div class="flex items-center gap-3 text-[clamp(1rem,3vw,1.5rem)] font-medium leading-none">
+				<div class="flex items-center gap-3 text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
 					<span>{$currentTrack.title}</span>
 				</div>
 			</div>
 		{:else}
 			<div class="pointer-events-none relative z-20 ml-4 flex flex-1 items-center">
 				<!-- title, centered vertically -->
-				<div class="text-[clamp(1rem,3vw,1.5rem)] font-medium leading-none">
+				<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
 					Zentrum für <br />
 					Kollektivkultur e.V.
 				</div>
@@ -355,7 +355,7 @@
 
 		<!-- seekable progress bar area -->
 		<div
-			class="absolute bottom-0 left-0 right-0 h-[12px] cursor-pointer touch-none"
+			class="absolute right-0 bottom-0 left-0 h-[12px] cursor-pointer touch-none"
 			bind:this={progressBar}
 			role="button"
 			tabindex="0"
@@ -364,23 +364,21 @@
 			ontouchstart={onDragStart}>
 			<!-- playhead -->
 			<div
-				class="absolute bottom-0 z-20 flex h-[14px] w-[40px] items-center justify-center bg-[var(--text-color)] text-[12px] font-bold text-[var(--bg-color)] md:h-[18px] md:w-[60px] md:text-sm"
+				class="absolute bottom-0 z-20 flex h-[14px] w-[40px] items-center justify-center bg-[var(--text-color)] text-[12px] font-bold text-[var(--bg-color)] md:h-[15px] md:w-[60px] md:text-sm"
 				style="left: {duration ? (currentTime / duration) * 100 : 0}%; transform: translateX(-{duration
 					? (currentTime / duration) * 100
 					: 0}%); opacity: {$currentTrack ? 1 : 0};">
 				| | |
 			</div>
-			<!-- progress bar (gradient from bottom) -->
+			<!-- progress bar (inverse hue) -->
 			<div
-				class="pointer-events-none absolute bottom-0 left-0 z-10 h-[15px] overflow-hidden"
+				class="pointer-events-none absolute bottom-0 left-0 z-10 h-[15px]"
 				style="width: {duration ? (currentTime / duration) * 100 : 0}%; transition: {isDragging
 					? 'none'
 					: 'width 0.1s linear'};">
 				<div
-					class="h-full w-screen"
-					style="background-image: linear-gradient(270deg, #ff00ff, #ffc000, #ccff00, #00ffff, #0080ff, #8000ff, #ff00ff, #ffc000, #ccff00, #00ffff, #0080ff, #8000ff, #ff00ff, #ffc000, #ccff00, #00ffff, #0080ff, #8000ff, #ff00ff, #ffc000, #ccff00, #00ffff, #0080ff, #8000ff, #ff00ff); background-size: 400% 100%; animation: var(--animate-rainbow); animation-play-state: {$isPlaying
-						? 'running'
-						: 'paused'}; mask-image: linear-gradient(to top, black, transparent); -webkit-mask-image: linear-gradient(to top, black, transparent);">
+					class="h-full w-full"
+					style="background-color: var(--inverse-color); box-shadow: var(--inverse-glow);">
 				</div>
 			</div>
 		</div>

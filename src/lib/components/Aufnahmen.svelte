@@ -77,11 +77,14 @@
 							selectTrack(file);
 						}
 					}}>
-					<!-- date row with optional SoundCloud icon -->
+					<!-- date row -->
 					<div
 						class="flex h-6 w-full shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none opacity-85">
+						<span>
+							{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.
+						</span>
 						{#if file.isExternal}
-							<!-- SoundCloud logo aligned to the left of the date text -->
+							<!-- SoundCloud logo aligned to the right of the date -->
 							<a
 								href={file.externalUrl}
 								target="_blank"
@@ -89,7 +92,7 @@
 								onclick={(e) => {
 									e.stopPropagation(); // prevent selectTrack from being called when clicking the logo
 								}}
-								class="inline-flex h-full flex-shrink-0 origin-left scale-150 items-center transition-transform duration-200 hover:scale-[1.8]">
+								class="inline-flex h-6 flex-shrink-0 translate-y-[-2px] scale-150 items-center transition-transform duration-200 hover:scale-[1.8]">
 								<!-- White Logo (default: visible. active/hover: hidden) -->
 								<img
 									src="/soundcloud_icon_white_transparent.png"
@@ -106,9 +109,6 @@
 										: 'hidden group-hover:block'}" />
 							</a>
 						{/if}
-						<span>
-							{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.
-						</span>
 					</div>
 					<!-- title -->
 					<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
