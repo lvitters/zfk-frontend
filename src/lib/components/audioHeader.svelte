@@ -17,6 +17,7 @@
 	let isDragging = $state(false);
 	let progressBar: HTMLDivElement | undefined = $state();
 	let ignoreScEvents = false;
+	const SC_LOCK_DURATION = 500;
 
 	// helper to load SC Widget API if not present (handled by svelte:head, but good to check)
 	// we rely on window.SC from the script tag
@@ -34,7 +35,7 @@
 					setupScEvents();
 					clearInterval(interval);
 				}
-			}, 100);
+			}, SC_LOCK_DURATION);
 		}
 	});
 
@@ -97,7 +98,7 @@
 			// handle SoundCloud
 			if (scWidget) {
 				ignoreScEvents = true;
-				setTimeout(() => (ignoreScEvents = false), 500);
+				setTimeout(() => (ignoreScEvents = false), SC_LOCK_DURATION);
 
 				if ($isPlaying) {
 					safeWidgetAction("play");
