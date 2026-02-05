@@ -306,14 +306,13 @@
 			onclick={togglePlayback}
 			class="flex h-[clamp(98px,21vw,210px)] w-[clamp(98px,21vw,210px)] shrink-0 cursor-pointer items-center justify-center focus:outline-none"
 			aria-label={$isPlaying ? "Pause" : "Play"}>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				viewBox="0 0 384 384"
-				class="animate-spin-vinyl h-full w-full text-[var(--text-color)]"
-				style="animation-play-state: {$isPlaying ? 'running' : 'paused'}; fill: currentColor">
-				<path
-					d="M247.73,272.38l53.76-56.76h36.76l-71.95,71.78,49.69,51.19c41.6-35.22,68.02-87.82,68.02-146.59s-28.17-114.8-72.14-149.99l-18.99,4.04c-12.07,1.98-16.48,7.34-16.48,17.67v125.99h-26.57v-100.12h-17.96v-16.47l17.96-5.67c.02-30.16,8.15-39.31,31.8-45.28C254.86,8.02,224.37,0,192,0c-38.11,0-73.62,11.1-103.49,30.25h47.4l-19.76,22.31h-56.12C23.06,87.55,0,137.08,0,192c0,50.86,19.78,97.09,52.06,131.44v-107.82h26.99v131.64c31.7,23.1,70.73,36.74,112.95,36.74,38.1,0,73.6-11.1,103.46-30.23l-47.8-50.49.06-30.9ZM297.63,68.06h26.31v22.14h-26.31v-22.14ZM192.46,189.72h-125.81v-20.7L172.33,37.48l16.69-.19v19.02l-89.24,109.25v1.84h92.69v22.31Z" />
-			</svg>
+			<img
+				src="/logo_zfk_transparent.png"
+				alt="ZfK Logo"
+				class="animate-spin-vinyl h-full w-full object-contain"
+				style="animation-play-state: {$isPlaying
+					? 'running'
+					: 'paused'}; will-change: transform; filter: invert(1);" />
 		</button>
 
 		{#if $currentTrack}
@@ -376,10 +375,7 @@
 				style="width: {duration ? (currentTime / duration) * 100 : 0}%; transition: {isDragging
 					? 'none'
 					: 'width 0.1s linear'};">
-				<div
-					class="h-full w-full"
-					style="background-color: var(--inverse-color);">
-				</div>
+				<div class="h-full w-full" style="background-color: var(--inverse-color);"></div>
 			</div>
 		</div>
 	</div>

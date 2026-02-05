@@ -29,6 +29,11 @@ body {
 	user-select: none;
 }
 
+::selection {
+	background-color: var(--inverse-color);
+	color: var(--bg-color);
+}
+
 /* colors */
 :root {
 	min-width: 320px;
@@ -156,7 +161,7 @@ body {
 	}
 
 	.kirby-content a {
-		@apply break-all text-[var(--inverse-color)] underline hover:text-white;
+		@apply break-all text-white underline hover:text-[var(--inverse-color)];
 	}
 
 	/* logic breakers */
