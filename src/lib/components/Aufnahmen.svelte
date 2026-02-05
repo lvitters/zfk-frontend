@@ -79,7 +79,7 @@
 					}}>
 					<!-- date row -->
 					<div
-						class="flex h-6 w-full shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none opacity-85">
+						class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
 						<span>
 							{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.
 						</span>

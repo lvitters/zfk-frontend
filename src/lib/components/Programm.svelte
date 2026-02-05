@@ -112,13 +112,13 @@
 			onmouseleave={() => (isEntryHovered[index] = false)}>
 			<!-- content -->
 			<div class="flex w-full flex-col gap-1">
-				<div class="shrink-0 text-[clamp(1rem,3vw,1.5rem)] leading-none opacity-85">
-					<span class="mr-auto md:mr-2">
+				<div class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
+					<span>
 						{event.displayDate}
 					</span>
 
 					{#if event.displayTime}
-						<span class="ml-1">
+						<span>
 							{event.displayTime}
 						</span>
 					{/if}
