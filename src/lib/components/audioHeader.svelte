@@ -16,6 +16,7 @@
 
 	let isDragging = $state(false);
 	let progressBar: HTMLDivElement | undefined = $state();
+	let ignoreScEvents = false;
 
 	// helper to load SC Widget API if not present (handled by svelte:head, but good to check)
 	// we rely on window.SC from the script tag
@@ -44,7 +45,13 @@
 			// console.log("SC Widget Ready");
 		});
 
-		// removed PLAY and PAUSE bindings to avoid loop with $effect
+		scWidget.bind(window.SC.Widget.Events.PLAY, () => {
+			if (!ignoreScEvents) isPlaying.set(true);
+		});
+
+		scWidget.bind(window.SC.Widget.Events.PAUSE, () => {
+			if (!ignoreScEvents) isPlaying.set(false);
+		});
 
 		scWidget.bind(window.SC.Widget.Events.FINISH, () => {
 			isPlaying.set(false);
@@ -89,6 +96,9 @@
 		if ($currentTrack?.isExternal) {
 			// handle SoundCloud
 			if (scWidget) {
+				ignoreScEvents = true;
+				setTimeout(() => (ignoreScEvents = false), 500);
+
 				if ($isPlaying) {
 					safeWidgetAction("play");
 				} else {
@@ -301,13 +311,13 @@
 	<!-- audio header: spinning logo + track info + progress bar -->
 	<div
 		class="relative flex w-full items-center overflow-hidden border-b-2 border-[var(--text-color)] bg-[var(--bg-color)] p-4 py-6 md:py-8">
-		<!-- Theme Toggle (Top Right) -->
+		<!-- theme toggle (top right) -->
 		<button
 			class="group absolute top-5 right-4 z-50 cursor-pointer p-2 focus:outline-none md:top-8"
 			onclick={() => isDarkMode.update((d) => !d)}
 			aria-label="Toggle theme">
 			<div
-				class="h-6 w-6 bg-[var(--text-color)] group-hover:bg-[var(--highlight-color)]"
+				class="h-6 w-6 bg-[var(--text-color)] group-hover:bg-[var(--highlight-color)] group-active:bg-[var(--highlight-color)]"
 				style="
 					mask-image: url('data:image/svg+xml;utf8,{$isDarkMode
 					? `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 2v2%22/><path d=%22M12 20v2%22/><path d=%22m4.93 4.93 1.41 1.41%22/><path d=%22m17.66 17.66 1.41 1.41%22/><path d=%22M2 12h2%22/><path d=%22M20 12h2%22/><path d=%22m6.34 17.66-1.41 1.41%22/><path d=%22m19.07 4.93-1.41 1.41%22/><circle cx=%2212%22 cy=%2212%22 r=%224%22/></svg>`
@@ -328,12 +338,11 @@
 		<!-- spinning logo (leftmost) -->
 		<button
 			onclick={togglePlayback}
-			class="flex h-[clamp(112px,21vw,210px)] w-[clamp(112px,21vw,210px)] shrink-0 cursor-pointer items-center justify-center focus:outline-none"
+			class="group flex h-[clamp(112px,21vw,210px)] w-[clamp(112px,21vw,210px)] shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none"
 			aria-label={$isPlaying ? "Pause" : "Play"}>
 			<div
-				class="animate-spin-vinyl h-full w-full"
+				class="animate-spin-vinyl h-full w-full bg-[var(--text-color)] group-hover:bg-[var(--highlight-color)] group-active:bg-[var(--highlight-color)]"
 				style="
-					background-color: var(--text-color);
 					mask-image: url('/logo_zfk_transparent.png');
 					-webkit-mask-image: url('/logo_zfk_transparent.png');
 					mask-size: contain;
