@@ -2,8 +2,8 @@
 	import AudioHeader from "$lib/components/AudioHeader.svelte";
 	import Aufnahmen from "$lib/components/Aufnahmen.svelte";
 	import Programm from "$lib/components/Programm.svelte";
-	import Club from "$lib/components/MainSection.svelte";
-	import Info from "$lib/components/HeaderSection.svelte";
+	import MainSection from "$lib/components/MainSection.svelte";
+	import HeaderSection from "$lib/components/HeaderSection.svelte";
 	import { slide, fade } from "svelte/transition";
 	import { onMount } from "svelte";
 
@@ -85,9 +85,9 @@
 				{#if expandedSection === section.slug}
 					<div transition:slide>
 						{#if section.type === "headerSection"}
-							<Info infoPages={section.content} />
+							<HeaderSection items={section.content} />
 						{:else if section.type === "mainSection"}
-							<Club page={section.content} />
+							<MainSection page={section.content} />
 						{/if}
 					</div>
 				{/if}

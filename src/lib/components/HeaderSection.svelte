@@ -1,32 +1,32 @@
 <script lang="ts">
 	import { slide } from "svelte/transition";
-	let { infoPages } = $props();
+	let { items } = $props();
 	let expandedId = $state<string | null>(null);
 
-	// toggle the expanded state of an info page section
+	// toggle the expanded state of a section
 	function toggle(id: string) {
 		expandedId = expandedId === id ? null : id;
 	}
 </script>
 
 <div class="flex w-full flex-col">
-	{#each infoPages as page}
-		<!-- individual info page section with expandable content -->
+	{#each items as item}
+		<!-- individual section with expandable content -->
 		<div class="border-b-2 border-[var(--text-color)] last:border-b-0">
 			<button
 				class="flex w-full cursor-pointer items-center justify-between p-4 text-left text-2xl font-medium focus:outline-none md:px-6 md:text-3xl lg:text-4xl {expandedId ===
-				page.id
+				item.id
 					? 'bg-[var(--text-color)] text-[var(--bg-color)]'
 					: 'bg-[var(--bg-color)] hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
-				onclick={() => toggle(page.id)}>
-				{page.title}
+				onclick={() => toggle(item.id)}>
+				{item.title}
 			</button>
-			{#if expandedId === page.id}
+			{#if expandedId === item.id}
 				<div
 					class="kirby-content border-t-2 border-solid border-[var(--text-color)] p-4 text-base leading-relaxed md:px-6"
 					transition:slide>
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-					{@html page.text}
+					{@html item.text}
 				</div>
 			{/if}
 		</div>
