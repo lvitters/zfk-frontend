@@ -16,6 +16,7 @@
 }
 
 :root {
+	min-width: 320px;
 	/* cedric's green: #082e33 */
 	/* wall paint blue: #1a2b3c -> hsl(210, 39%, 17%) */
 	--bg-hue: 210;
@@ -37,6 +38,7 @@
 }
 
 body {
+	min-width: 320px;
 	font-family: "ClashGroteskVariable", sans-serif;
 	letter-spacing: 0.045em;
 	line-height: 1.2;
