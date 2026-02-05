@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { currentTrack, isPlaying } from "$lib/stores";
+	import { currentTrack, isPlaying, isDarkMode } from "$lib/stores";
 	import type { Track } from "$lib/types";
 	import { onMount } from "svelte";
 
@@ -301,15 +301,39 @@
 	<!-- audio header: spinning logo + track info + progress bar -->
 	<div
 		class="relative flex w-full items-center overflow-hidden border-b-2 border-[var(--text-color)] bg-[var(--bg-color)] p-4 py-6 md:py-8">
+		<!-- Theme Toggle (Top Right) -->
+		<button
+			class="group absolute top-5 right-4 z-50 cursor-pointer p-2 focus:outline-none md:top-8"
+			onclick={() => isDarkMode.update((d) => !d)}
+			aria-label="Toggle theme">
+			<div
+				class="h-6 w-6 bg-[var(--text-color)] group-hover:bg-[var(--highlight-color)]"
+				style="
+					mask-image: url('data:image/svg+xml;utf8,{$isDarkMode
+					? `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 2v2%22/><path d=%22M12 20v2%22/><path d=%22m4.93 4.93 1.41 1.41%22/><path d=%22m17.66 17.66 1.41 1.41%22/><path d=%22M2 12h2%22/><path d=%22M20 12h2%22/><path d=%22m6.34 17.66-1.41 1.41%22/><path d=%22m19.07 4.93-1.41 1.41%22/><circle cx=%2212%22 cy=%2212%22 r=%224%22/></svg>`
+					: `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z%22/></svg>`}');
+					-webkit-mask-image: url('data:image/svg+xml;utf8,{$isDarkMode
+					? `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 2v2%22/><path d=%22M12 20v2%22/><path d=%22m4.93 4.93 1.41 1.41%22/><path d=%22m17.66 17.66 1.41 1.41%22/><path d=%22M2 12h2%22/><path d=%22M20 12h2%22/><path d=%22m6.34 17.66-1.41 1.41%22/><path d=%22m19.07 4.93-1.41 1.41%22/><circle cx=%2212%22 cy=%2212%22 r=%224%22/></svg>`
+					: `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z%22/></svg>`}');
+					mask-size: contain;
+					-webkit-mask-size: contain;
+					mask-repeat: no-repeat;
+					-webkit-mask-repeat: no-repeat;
+					mask-position: center;
+					-webkit-mask-position: center;
+				">
+			</div>
+		</button>
+
 		<!-- spinning logo (leftmost) -->
 		<button
 			onclick={togglePlayback}
-			class="flex h-[clamp(98px,21vw,210px)] w-[clamp(98px,21vw,210px)] shrink-0 cursor-pointer items-center justify-center focus:outline-none"
+			class="flex h-[clamp(112px,21vw,210px)] w-[clamp(112px,21vw,210px)] shrink-0 cursor-pointer items-center justify-center focus:outline-none"
 			aria-label={$isPlaying ? "Pause" : "Play"}>
 			<div
 				class="animate-spin-vinyl h-full w-full"
 				style="
-					background-color: var(--text-color);
+					background-color: var(--highlight-color);
 					mask-image: url('/logo_zfk_transparent.png');
 					-webkit-mask-image: url('/logo_zfk_transparent.png');
 					mask-size: contain;
@@ -339,7 +363,7 @@
 							class="group pointer-events-auto inline-flex h-6 w-10 translate-y-[-4px] scale-180 items-center"
 							aria-label="Listen on SoundCloud">
 							<div
-								class="h-full w-full bg-[var(--text-color)] group-hover:bg-[var(--inverse-color)]"
+								class="h-full w-full bg-[var(--text-color)] group-hover:bg-[var(--highlight-color)]"
 								style="
 									mask-image: url('/soundcloud_icon_white_transparent.png');
 									-webkit-mask-image: url('/soundcloud_icon_white_transparent.png');
@@ -381,7 +405,7 @@
 			ontouchstart={onDragStart}>
 			<!-- playhead -->
 			<div
-				class="absolute bottom-0 z-20 flex h-[15px] w-[40px] items-center justify-center bg-[var(--text-color)] text-[12px] font-bold text-[var(--bg-color)] md:w-[60px] md:text-sm"
+				class="absolute bottom-0 z-20 flex h-[12px] w-[40px] items-center justify-center bg-[var(--text-color)] text-[10px] font-bold text-[var(--bg-color)] md:w-[60px] md:text-sm"
 				style="left: {duration ? (currentTime / duration) * 100 : 0}%; transform: translateX(-{duration
 					? (currentTime / duration) * 100
 					: 0}%); opacity: {$currentTrack ? 1 : 0};">
@@ -389,11 +413,11 @@
 			</div>
 			<!-- progress bar (inverse hue) -->
 			<div
-				class="pointer-events-none absolute bottom-0 left-0 z-10 h-[15px]"
+				class="pointer-events-none absolute bottom-0 left-0 z-10 h-[12px]"
 				style="width: {duration ? (currentTime / duration) * 100 : 0}%; transition: {isDragging
 					? 'none'
 					: 'width 0.1s linear'};">
-				<div class="h-full w-full" style="background-color: var(--inverse-color);"></div>
+				<div class="h-full w-full" style="background-color: var(--highlight-color);"></div>
 			</div>
 		</div>
 	</div>

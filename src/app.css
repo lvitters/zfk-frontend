@@ -35,15 +35,20 @@ body {
 	/* cedric's green: #082e33 */
 	/* wall paint blue: #1a2b3c -> hsl(210, 39%, 17%) */
 	--bg-hue: 210;
-	--bg-color: hsl(var(--bg-hue), 100%, 10%);
+	--bg-lightness: 10%;
+	--text-lightness: 90%;
+	--bg-color: hsl(var(--bg-hue), 100%, var(--bg-lightness));
 
-	--inverse-color: hsl(calc(var(--bg-hue) + 180), 100%, 50%);
-	--text-color: hsl(calc(var(--bg-hue) + 180), 100%, 90%);
+	--highlight-color: hsl(calc(var(--bg-hue) + 180), 100%, 50%);
+	--text-color: hsl(calc(var(--bg-hue) + 180), 100%, var(--text-lightness));
 
-	transition: --bg-hue 20s ease-in-out; /* needs to match hue interval in +layout.svelte */
+	transition:
+		--bg-hue 20s ease-in-out,
+		--bg-lightness 5s ease-in-out,
+		--text-lightness 5s ease-in-out; /* needs to match hue interval in +layout.svelte */
 }
 ::selection {
-	background-color: var(--inverse-color);
+	background-color: var(--highlight-color);
 	color: var(--bg-color);
 }
 
@@ -52,6 +57,18 @@ body {
 	syntax: "<number>";
 	inherits: true;
 	initial-value: 210;
+}
+
+@property --bg-lightness {
+	syntax: "<percentage>";
+	inherits: true;
+	initial-value: 10%;
+}
+
+@property --text-lightness {
+	syntax: "<percentage>";
+	inherits: true;
+	initial-value: 90%;
 }
 
 /* spin vinyl animation */
@@ -146,7 +163,7 @@ body {
 	}
 
 	.kirby-content a {
-		@apply break-all text-white underline hover:text-[var(--inverse-color)];
+		@apply break-all text-[var(--text-color)] underline hover:text-[var(--highlight-color)];
 	}
 
 	/* logic breakers */

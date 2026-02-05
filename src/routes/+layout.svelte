@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Lightbox from "$lib/components/Lightbox.svelte";
 	import Footer from "$lib/components/Footer.svelte";
-	import { lightboxImage } from "$lib/stores";
+	import { lightboxImage, isDarkMode } from "$lib/stores";
 	let { children } = $props();
 	import "../app.css";
 
@@ -25,6 +25,12 @@
 			lightboxImage.set((target as HTMLImageElement).src);
 		}
 	}
+
+	// theme toggle reaction
+	$effect(() => {
+		document.documentElement.style.setProperty("--bg-lightness", $isDarkMode ? "10%" : "90%");
+		document.documentElement.style.setProperty("--text-lightness", $isDarkMode ? "90%" : "10%");
+	});
 
 	// hue update
 	$effect(() => {

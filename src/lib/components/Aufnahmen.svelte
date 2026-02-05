@@ -97,7 +97,7 @@
 								<div
 									class="h-full w-full {isActive
 										? 'bg-[var(--bg-color)]'
-										: 'bg-[var(--text-color)] group-hover/row:bg-[var(--bg-color)]'} group-hover/icon:!bg-[var(--inverse-color)]"
+										: 'bg-[var(--text-color)] group-hover/row:bg-[var(--bg-color)]'} group-hover/icon:!bg-[var(--highlight-color)]"
 									style="
 										mask-image: url('/soundcloud_icon_white_transparent.png');
 										-webkit-mask-image: url('/soundcloud_icon_white_transparent.png');
