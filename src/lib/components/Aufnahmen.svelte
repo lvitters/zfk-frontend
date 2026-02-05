@@ -57,7 +57,7 @@
 <!-- display files list container -->
 <div class="flex w-full flex-col">
 	<!-- year select header -->
-	<div class="w-full border-b-2 border-[var(--text-color)] p-4 md:px-6">
+	<div class="w-full border-b-2 border-[var(--text-color)] p-2 md:px-4">
 		<YearSelect {years} year={selectedYear} {selectYear} />
 	</div>
 

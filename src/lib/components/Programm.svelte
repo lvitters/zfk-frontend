@@ -112,7 +112,8 @@
 			onmouseleave={() => (isEntryHovered[index] = false)}>
 			<!-- content -->
 			<div class="flex w-full flex-col gap-1">
-				<div class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
+				<div
+					class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
 					<span>
 						{event.displayDate}
 					</span>
@@ -124,7 +125,7 @@
 					{/if}
 				</div>
 				<!-- title -->
-				<div class="text-[clamp(1rem,3vw,1.5rem)] font-medium leading-none">
+				<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
 					{event.title}
 				</div>
 			</div>
@@ -145,7 +146,7 @@
 
 <div class="flex w-full flex-col">
 	<!-- year select row -->
-	<div class="w-full border-b-2 border-[var(--text-color)] p-4 md:px-6">
+	<div class="w-full border-b-2 border-[var(--text-color)] p-2 md:px-4">
 		<YearSelect {years} year={selectedYear} {selectYear} />
 	</div>
 
