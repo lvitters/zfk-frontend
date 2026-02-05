@@ -355,7 +355,7 @@
 
 		<!-- seekable progress bar area -->
 		<div
-			class="absolute right-0 bottom-0 left-0 h-[12px] cursor-pointer touch-none"
+			class="absolute right-0 bottom-0 left-0 h-[15px] cursor-pointer touch-none"
 			bind:this={progressBar}
 			role="button"
 			tabindex="0"
@@ -364,7 +364,7 @@
 			ontouchstart={onDragStart}>
 			<!-- playhead -->
 			<div
-				class="absolute bottom-0 z-20 flex h-[14px] w-[40px] items-center justify-center bg-[var(--text-color)] text-[12px] font-bold text-[var(--bg-color)] md:h-[15px] md:w-[60px] md:text-sm"
+				class="absolute bottom-0 z-20 flex h-[15px] w-[40px] items-center justify-center bg-[var(--text-color)] text-[12px] font-bold text-[var(--bg-color)] md:w-[60px] md:text-sm"
 				style="left: {duration ? (currentTime / duration) * 100 : 0}%; transform: translateX(-{duration
 					? (currentTime / duration) * 100
 					: 0}%); opacity: {$currentTrack ? 1 : 0};">
