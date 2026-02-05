@@ -29,44 +29,29 @@ body {
 	user-select: none;
 }
 
-::selection {
-	background-color: var(--inverse-color);
-	color: var(--bg-color);
-}
-
 /* colors */
 :root {
 	min-width: 320px;
 	/* cedric's green: #082e33 */
 	/* wall paint blue: #1a2b3c -> hsl(210, 39%, 17%) */
 	--bg-hue: 210;
-	--bg-s: 100%;
-	--bg-l: 10%;
-	--bg-color: hsl(var(--bg-hue), var(--bg-s), var(--bg-l));
+	--bg-color: hsl(var(--bg-hue), 100%, 10%);
 
-	--inverse-color: hsl(calc(var(--bg-hue) + 180), var(--bg-s), 50%);
+	--inverse-color: hsl(calc(var(--bg-hue) + 180), 100%, 50%);
+	--text-color: hsl(calc(var(--bg-hue) + 180), 100%, 90%);
 
-	--text-color: #ffffff;
-	--item-bg-color: var(--text-color);
-	--item-text-color: var(--bg-color);
-
-	animation: hue-cycle 60s linear infinite;
+	transition: --bg-hue 20s ease-in-out; /* needs to match hue interval in +layout.svelte */
+}
+::selection {
+	background-color: var(--inverse-color);
+	color: var(--bg-color);
 }
 
-/* background color animation */
+/* background color property definition */
 @property --bg-hue {
 	syntax: "<number>";
 	inherits: true;
 	initial-value: 210;
-}
-
-@keyframes hue-cycle {
-	from {
-		--bg-hue: 210;
-	}
-	to {
-		--bg-hue: 570;
-	}
 }
 
 /* spin vinyl animation */

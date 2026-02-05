@@ -306,13 +306,22 @@
 			onclick={togglePlayback}
 			class="flex h-[clamp(98px,21vw,210px)] w-[clamp(98px,21vw,210px)] shrink-0 cursor-pointer items-center justify-center focus:outline-none"
 			aria-label={$isPlaying ? "Pause" : "Play"}>
-			<img
-				src="/logo_zfk_transparent.png"
-				alt="ZfK Logo"
-				class="animate-spin-vinyl h-full w-full object-contain"
-				style="animation-play-state: {$isPlaying
-					? 'running'
-					: 'paused'}; will-change: transform; filter: invert(1);" />
+			<div
+				class="animate-spin-vinyl h-full w-full"
+				style="
+					background-color: var(--text-color);
+					mask-image: url('/logo_zfk_transparent.png');
+					-webkit-mask-image: url('/logo_zfk_transparent.png');
+					mask-size: contain;
+					-webkit-mask-size: contain;
+					mask-repeat: no-repeat;
+					-webkit-mask-repeat: no-repeat;
+					mask-position: center;
+					-webkit-mask-position: center;
+					animation-play-state: {$isPlaying ? 'running' : 'paused'};
+					will-change: transform;
+				">
+			</div>
 		</button>
 
 		{#if $currentTrack}
@@ -327,12 +336,21 @@
 							href={$currentTrack.externalUrl}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="pointer-events-auto inline-flex h-6 w-auto translate-y-[-2px] scale-150 items-center transition-transform duration-200 hover:scale-[1.8]"
+							class="group pointer-events-auto inline-flex h-6 w-10 translate-y-[-4px] scale-180 items-center"
 							aria-label="Listen on SoundCloud">
-							<img
-								src="/soundcloud_icon_white_transparent.png"
-								alt="SoundCloud"
-								class="h-full w-auto object-contain" />
+							<div
+								class="h-full w-full bg-[var(--text-color)] group-hover:bg-[var(--inverse-color)]"
+								style="
+									mask-image: url('/soundcloud_icon_white_transparent.png');
+									-webkit-mask-image: url('/soundcloud_icon_white_transparent.png');
+									mask-size: contain;
+									-webkit-mask-size: contain;
+									mask-repeat: no-repeat;
+									-webkit-mask-repeat: no-repeat;
+									mask-position: center;
+									-webkit-mask-position: center;
+								">
+							</div>
 						</a>
 					{/if}
 				</div>

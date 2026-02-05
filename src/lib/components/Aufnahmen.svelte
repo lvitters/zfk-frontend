@@ -67,7 +67,7 @@
 				{@const isActive = file.id === $currentTrack?.id}
 				<!-- individual file row -->
 				<button
-					class="group relative flex w-full cursor-pointer flex-col gap-1 border-b-2 border-[var(--text-color)] p-4 text-left last:border-b-0 md:px-6 {isActive
+					class="group/row relative flex w-full cursor-pointer flex-col gap-1 border-b-2 border-[var(--text-color)] p-4 text-left last:border-b-0 md:px-6 {isActive
 						? 'bg-[var(--text-color)] text-[var(--bg-color)]'
 						: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
 					onclick={() => {
@@ -92,21 +92,23 @@
 								onclick={(e) => {
 									e.stopPropagation(); // prevent selectTrack from being called when clicking the logo
 								}}
-								class="inline-flex h-6 flex-shrink-0 translate-y-[-2px] scale-150 items-center transition-transform duration-200 hover:scale-[1.8]">
-								<!-- White Logo (default: visible. active/hover: hidden) -->
-								<img
-									src="/soundcloud_icon_white_transparent.png"
-									alt="SoundCloud"
-									class="h-full w-auto object-contain opacity-100 {isActive
-										? 'hidden'
-										: 'block group-hover:hidden'}" />
-								<!-- Black Logo (default: hidden. active/hover: visible) -->
-								<img
-									src="/soundcloud_icon_black_transparent.png"
-									alt="SoundCloud"
-									class="h-full w-auto object-contain opacity-100 {isActive
-										? 'block'
-										: 'hidden group-hover:block'}" />
+								class="group/icon pointer-events-auto inline-flex h-6 w-10 translate-y-[-4px] scale-180 items-center"
+								aria-label="Listen on SoundCloud">
+								<div
+									class="h-full w-full {isActive
+										? 'bg-[var(--bg-color)]'
+										: 'bg-[var(--text-color)] group-hover/row:bg-[var(--bg-color)]'} group-hover/icon:!bg-[var(--inverse-color)]"
+									style="
+										mask-image: url('/soundcloud_icon_white_transparent.png');
+										-webkit-mask-image: url('/soundcloud_icon_white_transparent.png');
+										mask-size: contain;
+										-webkit-mask-size: contain;
+										mask-repeat: no-repeat;
+										-webkit-mask-repeat: no-repeat;
+										mask-position: center;
+										-webkit-mask-position: center;
+									">
+								</div>
 							</a>
 						{/if}
 					</div>

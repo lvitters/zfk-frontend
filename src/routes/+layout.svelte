@@ -5,6 +5,7 @@
 	let { children } = $props();
 	import "../app.css";
 
+	// open lightbox
 	function handleGlobalClick(event: MouseEvent) {
 		const target = event.target as HTMLElement;
 		// check if the clicked element is an image and has a src
@@ -20,11 +21,31 @@
 				return;
 			}
 
-			event.preventDefault();
 			event.stopPropagation();
 			lightboxImage.set((target as HTMLImageElement).src);
 		}
 	}
+
+	// hue update
+	$effect(() => {
+		let currentHue = 210; // initial value from CSS
+
+		const updateHue = () => {
+			const targetHue = Math.floor(Math.random() * 360);
+			// calculate shortest path (diff between -180 and 180)
+			const diff = ((targetHue - (currentHue % 360) + 540) % 360) - 180;
+			currentHue += diff;
+			document.documentElement.style.setProperty("--bg-hue", currentHue.toString());
+		};
+
+		// initial update
+		updateHue();
+
+		// interval in millis
+		const interval = setInterval(updateHue, 20000);
+
+		return () => clearInterval(interval);
+	});
 </script>
 
 <svelte:window onclick={handleGlobalClick} />
