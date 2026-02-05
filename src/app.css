@@ -15,6 +15,21 @@
 	font-style: normal;
 }
 
+.font-clash-display {
+	font-family: "ClashDisplayVariable", sans-serif;
+}
+
+body {
+	min-width: 320px;
+	font-family: "ClashGroteskVariable", sans-serif;
+	letter-spacing: 0.045em;
+	line-height: 1.2;
+	color: var(--text-color);
+	background-color: var(--bg-color);
+	user-select: none;
+}
+
+/* colors */
 :root {
 	min-width: 320px;
 	/* cedric's green: #082e33 */
@@ -30,21 +45,7 @@
 	--item-bg-color: var(--text-color);
 	--item-text-color: var(--bg-color);
 
-	animation: hue-cycle 20s linear infinite;
-}
-
-.font-clash-display {
-	font-family: "ClashDisplayVariable", sans-serif;
-}
-
-body {
-	min-width: 320px;
-	font-family: "ClashGroteskVariable", sans-serif;
-	letter-spacing: 0.045em;
-	line-height: 1.2;
-	color: var(--text-color);
-	background-color: var(--bg-color);
-	user-select: none;
+	animation: hue-cycle 60s linear infinite;
 }
 
 /* background color animation */
@@ -63,33 +64,13 @@ body {
 	}
 }
 
-/* rainbow play progress animation */
+/* spin vinyl animation */
 @theme {
-	--animate-scroll-left: scroll-left 20s linear infinite;
 	--animate-spin-vinyl: spin-vinyl 4s linear infinite;
-	--animate-rainbow: rainbow 12s ease infinite;
-
-	@keyframes scroll-left {
-		0% {
-			transform: translateX(0);
-		}
-		100% {
-			transform: translateX(-50%);
-		}
-	}
 
 	@keyframes spin-vinyl {
 		to {
 			transform: rotate(360deg);
-		}
-	}
-
-	@keyframes rainbow {
-		0% {
-			background-position: 100% 0%;
-		}
-		100% {
-			background-position: 0% 0%;
 		}
 	}
 }
@@ -144,7 +125,7 @@ body {
 		@apply mt-8 md:mt-10;
 	}
 
-	/* text */
+	/* regular text */
 	.kirby-content p {
 		@apply min-h-[1em];
 		font-size: clamp(1rem, 1vw + 0.5rem, 1.25rem);
@@ -175,7 +156,7 @@ body {
 	}
 
 	.kirby-content a {
-		@apply break-all underline hover:opacity-85;
+		@apply break-all text-[var(--inverse-color)] underline hover:text-white;
 	}
 
 	/* logic breakers */
@@ -233,12 +214,4 @@ body {
 	.kirby-content button.gallery-btn:hover {
 		@apply bg-[var(--text-color)] text-[var(--bg-color)];
 	}
-
-	/* Positioning
-	.kirby-content .gallery-btn.prev {
-		@apply;
-	}
-	.kirby-content .gallery-btn.next {
-		@apply;
-	} */
 }
