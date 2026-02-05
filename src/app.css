@@ -141,6 +141,9 @@ body {
 		font-weight: 400;
 		width: min(100%, 70ch);
 		opacity: 0.85;
+		overflow-wrap: break-word;
+		word-break: normal;
+		hyphens: none;
 	}
 
 	/* contextual: tighten text following a heading (grouping) */
@@ -163,7 +166,7 @@ body {
 	}
 
 	.kirby-content a {
-		@apply break-all text-[var(--text-color)] underline hover:text-[var(--highlight-color)];
+		@apply break-words text-[var(--text-color)] underline hover:text-[var(--highlight-color)];
 	}
 
 	/* logic breakers */
@@ -217,8 +220,15 @@ body {
            bg-[var(--bg-color)] text-4xl text-[var(--text-color)];
 	}
 
-	/* button hover state */
-	.kirby-content button.gallery-btn:hover {
+	/* button hover state (desktop only) */
+	@media (hover: hover) {
+		.kirby-content button.gallery-btn:hover {
+			@apply bg-[var(--text-color)] text-[var(--bg-color)];
+		}
+	}
+
+	/* button active state (mobile click feedback) */
+	.kirby-content button.gallery-btn:active {
 		@apply bg-[var(--text-color)] text-[var(--bg-color)];
 	}
 }

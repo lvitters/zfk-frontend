@@ -92,7 +92,8 @@
 								onclick={(e) => {
 									e.stopPropagation(); // prevent selectTrack from being called when clicking the logo
 								}}
-								class="group/icon pointer-events-auto inline-flex h-6 w-10 translate-y-[-4px] scale-180 items-center"
+								class="group/icon pointer-events-auto inline-flex items-center"
+								style="height: 1em; width: 1.6em; transform: translateY(-0.12em) scale(2);"
 								aria-label="Listen on SoundCloud">
 								<div
 									class="h-full w-full {isActive

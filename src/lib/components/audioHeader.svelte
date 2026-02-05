@@ -333,7 +333,7 @@
 			<div
 				class="animate-spin-vinyl h-full w-full"
 				style="
-					background-color: var(--highlight-color);
+					background-color: var(--text-color);
 					mask-image: url('/logo_zfk_transparent.png');
 					-webkit-mask-image: url('/logo_zfk_transparent.png');
 					mask-size: contain;
@@ -360,7 +360,8 @@
 							href={$currentTrack.externalUrl}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="group pointer-events-auto inline-flex h-6 w-10 translate-y-[-4px] scale-180 items-center"
+							class="group pointer-events-auto inline-flex items-center"
+							style="height: 1em; width: 1.6em; transform: translateY(-0.12em) scale(2);"
 							aria-label="Listen on SoundCloud">
 							<div
 								class="h-full w-full bg-[var(--text-color)] group-hover:bg-[var(--highlight-color)]"
