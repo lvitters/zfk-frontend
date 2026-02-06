@@ -2,8 +2,18 @@
 	import Lightbox from "$lib/components/Lightbox.svelte";
 	import Footer from "$lib/components/Footer.svelte";
 	import { lightboxImage, isDarkMode } from "$lib/stores";
+	import { onMount } from "svelte";
 	let { children } = $props();
 	import "../app.css";
+
+	// set init theme (darkMode)
+	onMount(() => {
+		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+		isDarkMode.set(mediaQuery.matches);
+		const handler = (e: MediaQueryListEvent) => isDarkMode.set(e.matches);
+		mediaQuery.addEventListener("change", handler);
+		return () => mediaQuery.removeEventListener("change", handler);
+	});
 
 	// open lightbox
 	function handleGlobalClick(event: MouseEvent) {
