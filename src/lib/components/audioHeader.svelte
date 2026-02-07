@@ -15,7 +15,16 @@
 	let src = $state("");
 
 	let isDragging = $state(false);
+	let hasBeenActivated = $state(false);
 	let progressBar: HTMLDivElement | undefined = $state();
+
+	// monitor track/playback to mark as activated
+	$effect(() => {
+		if ($currentTrack || $isPlaying) {
+			hasBeenActivated = true;
+		}
+	});
+
 	let ignoreScEvents = false;
 	const SC_LOCK_DURATION = 500;
 
@@ -77,18 +86,10 @@
 		if (!scWidget) return;
 		try {
 			const result = action === "play" ? scWidget.play() : scWidget.pause();
-			// check if it returned a promise
-			if (result && typeof result.then === "function") {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				result.catch((e: any) => {
-					// ignore AbortError which happens when toggling fast
-					if (e?.name !== "AbortError") {
-						console.warn("SC Widget Error:", e);
-					}
-				});
-			}
+			// completely suppress any promise rejections (like AbortError) from the widget
+			Promise.resolve(result).catch(() => {});
 		} catch (e) {
-			console.warn("SC Widget Exception:", e);
+			// ignore synchronous exceptions
 		}
 	}
 
@@ -112,7 +113,9 @@
 		// handle HTML5 audio
 		if (!audio) return;
 		if ($isPlaying && audio.paused) {
-			audio.play().catch((e) => console.error("Play failed:", e));
+			audio.play().catch((e) => {
+				if (e.name !== "AbortError") console.error("Play failed:", e);
+			});
 		} else if (!$isPlaying && !audio.paused) {
 			audio.pause();
 		}
@@ -342,7 +345,9 @@
 			class="group flex h-[clamp(112px,21vw,210px)] w-[clamp(112px,21vw,210px)] shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none"
 			aria-label={$isPlaying ? "Pause" : "Play"}>
 			<div
-				class="animate-spin-vinyl h-full w-full bg-[var(--text-color)] group-hover:bg-[var(--highlight-color)] group-active:bg-[var(--highlight-color)]"
+				class="animate-spin-vinyl h-full w-full {hasBeenActivated
+					? 'bg-[var(--text-color)]'
+					: 'bg-[var(--highlight-color)]'} group-hover:bg-[var(--highlight-color)] group-active:bg-[var(--highlight-color)]"
 				style="
 					mask-image: url('/logo_zfk_transparent.png');
 					-webkit-mask-image: url('/logo_zfk_transparent.png');

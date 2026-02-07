@@ -102,6 +102,10 @@ export const load: PageLoad = async ({ fetch }) => {
 			title: true,
 			slug: true,
 			text: "page.text.toBlocks.toHtml",
+			images: {
+				query: "page.images",
+				select: { url: true, uuid: true },
+			},
 			children: {
 				query: "page.children.listed",
 				select: {
@@ -109,6 +113,10 @@ export const load: PageLoad = async ({ fetch }) => {
 					title: true,
 					slug: true,
 					text: "page.text.toBlocks.toHtml",
+					images: {
+						query: "page.images",
+						select: { url: true, uuid: true },
+					},
 				},
 			},
 		},
@@ -205,8 +213,11 @@ export const load: PageLoad = async ({ fetch }) => {
 	});
 
 	// process dynamic sections data
-	const dynamicSections: DynamicSection[] = ((pagesResult || []) as KirbyPage[])
-		.filter((page: KirbyPage) => page.slug !== "events" && page.slug !== "recordings")
+	const pages = (pagesResult || []) as KirbyPage[];
+	const bunkerPageRaw = pages.find((p) => p.slug === "bunker");
+
+	const dynamicSections: DynamicSection[] = pages
+		.filter((page: KirbyPage) => page.slug !== "events" && page.slug !== "recordings" && page.slug !== "bunker")
 		.map((page: KirbyPage) => {
 			const hasChildren = page.children && page.children.length > 0;
 
@@ -232,6 +243,16 @@ export const load: PageLoad = async ({ fetch }) => {
 		events,
 		audioFiles,
 		dynamicSections,
+		bunkerPage: bunkerPageRaw
+			? {
+					title: bunkerPageRaw.title,
+					text: replaceUrlWithTitle(bunkerPageRaw.text),
+					images: bunkerPageRaw.images?.map((img: KirbyImage) => ({
+						...img,
+						url: fixKirbyUrl(img.url),
+					})),
+				}
+			: null,
 		eventsTitle: eventsTitleResult as string,
 		recordingsTitle: recordingsTitleResult as string,
 	};

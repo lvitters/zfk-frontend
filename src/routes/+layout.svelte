@@ -3,6 +3,7 @@
 	import Footer from "$lib/components/Footer.svelte";
 	import { lightboxImage, isDarkMode } from "$lib/stores";
 	import { onMount } from "svelte";
+	import { afterNavigate } from "$app/navigation";
 	let { children } = $props();
 	import "../app.css";
 
@@ -43,20 +44,31 @@
 	});
 
 	// hue update
-	$effect(() => {
-		let currentHue = 210; // initial value from CSS
+	let currentHue = 210;
+	const updateHue = () => {
+		const targetHue = Math.floor(Math.random() * 360);
+		// calculate shortest path (diff between -180 and 180)
+		const diff = ((targetHue - (currentHue % 360) + 540) % 360) - 180;
+		currentHue += diff;
+		document.documentElement.style.setProperty("--bg-hue", currentHue.toString());
+	};
 
-		const updateHue = () => {
-			const targetHue = Math.floor(Math.random() * 360);
-			// calculate shortest path (diff between -180 and 180)
-			const diff = ((targetHue - (currentHue % 360) + 540) % 360) - 180;
-			currentHue += diff;
-			document.documentElement.style.setProperty("--bg-hue", currentHue.toString());
-		};
+	onMount(() => {
+		// sync currentHue with the random value set in app.html
+		const style = getComputedStyle(document.documentElement);
+		currentHue = parseInt(style.getPropertyValue("--bg-hue")) || 210;
 
-		// initial update
+		// start first transition immediately
 		updateHue();
 
+		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+		isDarkMode.set(mediaQuery.matches);
+		const handler = (e: MediaQueryListEvent) => isDarkMode.set(e.matches);
+		mediaQuery.addEventListener("change", handler);
+		return () => mediaQuery.removeEventListener("change", handler);
+	});
+
+	$effect(() => {
 		// interval in millis
 		const interval = setInterval(updateHue, 20000);
 

@@ -2,13 +2,14 @@
 	import AudioHeader from "$lib/components/AudioHeader.svelte";
 	import Aufnahmen from "$lib/components/Aufnahmen.svelte";
 	import Programm from "$lib/components/Programm.svelte";
+	import Bunker from "$lib/components/Bunker.svelte";
 	import MainSection from "$lib/components/MainSection.svelte";
 	import HeaderSection from "$lib/components/HeaderSection.svelte";
 	import { slide, fade } from "svelte/transition";
 	import { onMount } from "svelte";
 
 	let { data } = $props();
-	let { events, audioFiles, dynamicSections, eventsTitle, recordingsTitle } = data;
+	let { events, audioFiles, dynamicSections, bunkerPage, eventsTitle, recordingsTitle } = data;
 
 	let expandedSection = $state(null as string | null);
 	let programmYear = $state<number | undefined>();
@@ -70,6 +71,25 @@
 				</div>
 			{/if}
 		</div>
+
+		<!-- bunker section -->
+		{#if bunkerPage}
+			<div class="relative w-full border-b-2 border-[var(--text-color)]">
+				<button
+					class="font-clash-display relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(2.5rem,13vw,12rem)] leading-none font-bold md:px-4 {expandedSection ===
+					'bunker'
+						? 'bg-[var(--text-color)] text-[var(--bg-color)]'
+						: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
+					onclick={() => toggleSection("bunker")}>
+					{bunkerPage.title}
+				</button>
+				{#if expandedSection === "bunker"}
+					<div transition:slide>
+						<Bunker page={bunkerPage} />
+					</div>
+				{/if}
+			</div>
+		{/if}
 
 		<!-- dynamic sections (cms pages) -->
 		{#each dynamicSections as section (section.id)}
