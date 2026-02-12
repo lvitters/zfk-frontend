@@ -42,10 +42,11 @@ body {
 	--highlight-color: hsl(calc(var(--bg-hue) + 180), 100%, 50%);
 	--text-color: hsl(calc(var(--bg-hue) + 180), 100%, var(--text-lightness));
 
+	/* hue transition needs to match hue interval +layout.svelte */
 	transition:
-		--bg-hue 20s ease-in-out,
-		--bg-lightness 5s ease-in-out,
-		--text-lightness 5s ease-in-out; /* needs to match hue interval in +layout.svelte */
+		--bg-hue 60s ease-in-out,
+		--bg-lightness 6s ease-in-out,
+		--text-lightness 6s ease-in-out;
 }
 ::selection {
 	background-color: var(--highlight-color);

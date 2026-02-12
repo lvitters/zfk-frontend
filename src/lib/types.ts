@@ -20,14 +20,6 @@ export type Section =
 	| { type: "headerSection"; id: string; title: string; slug: string; content: KirbyPage[] }
 	| { type: "mainSection"; id: string; title: string; slug: string; content: { text?: string } };
 
-export interface DynamicSection {
-	id: string;
-	title: string;
-	slug: string;
-	type: "headerSection" | "mainSection";
-	content: KirbyPage[] | { text?: string }; // content for headerSection is children (KirbyPage[]), for mainSection is { text: string }
-}
-
 export interface Track {
 	id: string;
 	year: string;

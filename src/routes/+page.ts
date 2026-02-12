@@ -1,6 +1,6 @@
 import { dev } from "$app/environment";
 import { kql } from "$lib/kirby";
-import type { DynamicSection, KirbyImage, KirbyPage, ProgrammEvent, Section, Track } from "$lib/types";
+import type { KirbyImage, KirbyPage, ProgrammEvent, Section, Track } from "$lib/types";
 import type { PageLoad } from "./$types";
 
 // helper to replace raw URLs with their title attribute in HTML
@@ -18,13 +18,13 @@ const replaceUrlWithTitle = (html: string | undefined): string | undefined => {
 };
 
 // helper to transform Kirby urls to relative production paths
-const fixKirbyUrl = (url: string | undefined) => {
+const fixKirbyUrl = (url: string | undefined): string => {
 	if (url && url.includes("/media/")) {
 		const mediaPath = url.substring(url.indexOf("/media/"));
 		// assume backend is deployed to /backend subfolder
 		return `/backend${mediaPath}`;
 	}
-	return url;
+	return url || "";
 };
 
 // helper to extract relative media path for dev proxy
@@ -205,7 +205,7 @@ export const load: PageLoad = async ({ fetch }) => {
 
 	// process all pages into an ordered sections array
 	const pages = (pagesResult || []) as KirbyPage[];
-	const sections: Section[] = pages.map((page: KirbyPage) => {
+	const sections: Section[] = pages.map((page: KirbyPage): Section => {
 		if (page.slug === "events") {
 			return {
 				type: "events",
