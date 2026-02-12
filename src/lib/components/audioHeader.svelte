@@ -1,18 +1,12 @@
 <script lang="ts">
-	import { currentTrack, isPlaying, isDarkMode } from "$lib/stores";
-	import type { Track } from "$lib/types";
+	import { audioController } from "$lib/audioController.svelte";
+	import { isDarkMode } from "$lib/stores";
 	import { onMount } from "svelte";
 
 	let { audioFiles = [] } = $props();
 
-	let audio: HTMLAudioElement | undefined = $state();
-	let scIframe: HTMLIFrameElement | undefined = $state();
-	// eslint-disable-next-line no-undef
-	let scWidget: SoundCloudWidget | undefined = $state(); // SC.Widget instance
-
-	let currentTime = $state(0);
-	let duration = $state(0);
-	let src = $state("");
+	let audioEl: HTMLAudioElement | undefined = $state();
+	let scIframeEl: HTMLIFrameElement | undefined = $state();
 
 	let isDragging = $state(false);
 	let hasBeenActivated = $state(false);
@@ -20,188 +14,31 @@
 
 	// monitor track/playback to mark as activated
 	$effect(() => {
-		if ($currentTrack || $isPlaying) {
+		if (audioController.currentTrack || audioController.isPlaying) {
 			hasBeenActivated = true;
 		}
 	});
 
-	let ignoreScEvents = false;
-	const SC_LOCK_DURATION = 500;
-
-	// helper to load SC Widget API if not present (handled by svelte:head, but good to check)
-	// we rely on window.SC from the script tag
-
 	onMount(() => {
-		// initialize SC Widget if iframe exists
-		if (scIframe && window.SC) {
-			scWidget = window.SC.Widget(scIframe);
-			setupScEvents();
-		} else {
-			// poll for SC API availability just in case
-			const interval = setInterval(() => {
-				if (window.SC && scIframe) {
-					scWidget = window.SC.Widget(scIframe);
-					setupScEvents();
-					clearInterval(interval);
-				}
-			}, SC_LOCK_DURATION);
-		}
-	});
-
-	function setupScEvents() {
-		if (!scWidget) return;
-
-		scWidget.bind(window.SC.Widget.Events.READY, () => {
-			// console.log("SC Widget Ready");
-		});
-
-		scWidget.bind(window.SC.Widget.Events.PLAY, () => {
-			if (!ignoreScEvents) isPlaying.set(true);
-		});
-
-		scWidget.bind(window.SC.Widget.Events.PAUSE, () => {
-			if (!ignoreScEvents) isPlaying.set(false);
-		});
-
-		scWidget.bind(window.SC.Widget.Events.FINISH, () => {
-			isPlaying.set(false);
-		});
-
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		scWidget.bind(window.SC.Widget.Events.PLAY_PROGRESS, (data: any) => {
-			if (!isDragging && $currentTrack?.isExternal) {
-				currentTime = data.currentPosition / 1000; // ms to s
-			}
-		});
-
-		scWidget.bind(window.SC.Widget.Events.Do, () => {
-			// "do" seems to be undefined in types usually, but duration change is key
-			// some docs say READY gives duration, or load callback
-		});
-		// also bind to ready/load to get duration
-	}
-
-	// helper to safely call SC widget methods that might return rejected promises on abort
-	function safeWidgetAction(action: "play" | "pause") {
-		if (!scWidget) return;
-		try {
-			const result = action === "play" ? scWidget.play() : scWidget.pause();
-			// completely suppress any promise rejections (like AbortError) from the widget
-			Promise.resolve(result).catch(() => {});
-		} catch (e) {
-			// ignore synchronous exceptions
-		}
-	}
-
-	// sync $isPlaying store to audio element state
-	$effect(() => {
-		if ($currentTrack?.isExternal) {
-			// handle SoundCloud
-			if (scWidget) {
-				ignoreScEvents = true;
-				setTimeout(() => (ignoreScEvents = false), SC_LOCK_DURATION);
-
-				if ($isPlaying) {
-					safeWidgetAction("play");
-				} else {
-					safeWidgetAction("pause");
-				}
-			}
-			return;
-		}
-
-		// handle HTML5 audio
-		if (!audio) return;
-		if ($isPlaying && audio.paused) {
-			audio.play().catch((e) => {
-				if (e.name !== "AbortError") console.error("Play failed:", e);
-			});
-		} else if (!$isPlaying && !audio.paused) {
-			audio.pause();
-		}
-	});
-
-	// update audio source when current track changes
-	currentTrack.subscribe((track: Track | null) => {
-		if (track) {
-			// immediately stop playback to prevent overlap
-			isPlaying.set(false);
-
-			// reset state
-			currentTime = 0;
-			duration = 0;
-
-			if (track.isExternal) {
-				// switching TO External (SoundCloud)
-
-				// 1. ensure HTML5 audio is completely stopped
-				if (audio) {
-					audio.pause();
-					audio.currentTime = 0; // reset position
-					// we keep src for now to avoid null errors, but pause is key
-				}
-
-				// 2. load SoundCloud
-				if (scWidget) {
-					scWidget.load(track.externalUrl || "", {
-						auto_play: true,
-						show_artwork: false,
-						buying: false, // hide buy button
-						sharing: false,
-						download: false,
-						show_playcount: false,
-						callback: () => {
-							scWidget?.getDuration((d: number) => {
-								duration = d / 1000; // ms to s
-							});
-							// only auto-play if the user initiated this (which they did by clicking a track)
-							isPlaying.set(true);
-						},
-					});
-				}
-			} else {
-				// switching to local file
-
-				// 1. ensure SoundCloud is completely stopped
-				if (scWidget) {
-					scWidget.pause();
-				}
-
-				// 2. load Local File
-				src = track.filePath;
-				// HTML5 audio "autoplay" handled by the effect below or onloadedmetadata
-			}
-		}
-	});
-
-	// autoplay when src changes or audio element becomes available (HTML5 ONLY)
-	$effect(() => {
-		if ($currentTrack?.isExternal) return;
-		if (audio && src) {
-			audio.load();
-			// we only want to auto-play if this change came from a user selection (new track)
-			// the currentTrack subscription sets isPlaying=false initially, so we set it true here
-			audio
-				.play()
-				.then(() => isPlaying.set(true))
-				.catch((e) => console.error("Autoplay failed:", e));
+		if (audioEl && scIframeEl) {
+			audioController.setElements(audioEl, scIframeEl);
 		}
 	});
 
 	// pick a random track from the list and play it
-	async function randomizeAndPlay() {
+	function randomizeAndPlay() {
 		if (audioFiles && audioFiles.length > 0) {
 			const randomIndex = Math.floor(Math.random() * audioFiles.length);
 			const randomTrack = audioFiles[randomIndex];
-			currentTrack.set(randomTrack);
+			audioController.play(randomTrack);
 		}
 	}
 
 	// toggle play/pause state or start random track if none selected
 	function togglePlayback(event: MouseEvent) {
 		event.stopPropagation(); // prevent seeking when clicking play button
-		if ($currentTrack) {
-			isPlaying.update((p) => !p);
+		if (audioController.currentTrack) {
+			audioController.toggle();
 		} else {
 			randomizeAndPlay();
 		}
@@ -209,28 +46,26 @@
 
 	// update current time based on click/drag position
 	function updateTime(clientX: number) {
-		if (!progressBar || !duration) return;
-		if (!$currentTrack) return;
+		if (!progressBar || !audioController.duration) return;
+		if (!audioController.currentTrack) return;
 
 		const rect = progressBar.getBoundingClientRect();
 		const x = clientX - rect.left;
 		const width = rect.width;
 		const ratio = Math.max(0, Math.min(1, x / width));
-		const newTime = ratio * duration;
+		const newTime = ratio * audioController.duration;
 
-		if ($currentTrack.isExternal) {
-			if (scWidget) {
-				scWidget.seekTo(newTime * 1000); // s to ms
-			}
-		} else {
-			if (audio) audio.currentTime = newTime;
-		}
-		currentTime = newTime;
+		// update controller immediately for responsive UI during drag?
+		// usually better to just seek on end, or seek continuously.
+		// controller's seek updates the actual audio, which updates currentTime via events.
+		// to make dragging smooth, we might want to override the displayed time locally.
+		// but for now let's just seek.
+		audioController.seek(newTime);
 	}
 
 	// start dragging the progress bar
 	function onDragStart(event: MouseEvent | TouchEvent) {
-		if (!$currentTrack) return;
+		if (!audioController.currentTrack) return;
 
 		isDragging = true;
 
@@ -284,23 +119,11 @@
 
 <div class="flex w-full flex-col">
 	<!-- HTML5 Audio -->
-	<audio
-		bind:this={audio}
-		bind:duration
-		bind:currentTime
-		onplay={() => isPlaying.set(true)}
-		onpause={() => isPlaying.set(false)}
-		onloadedmetadata={() => {
-			if (!$currentTrack?.isExternal) duration = (audio as HTMLAudioElement).duration;
-		}}
-		{src}
-		preload="metadata"
-		class="hidden">
-	</audio>
+	<audio bind:this={audioEl} preload="metadata" class="hidden"></audio>
 
 	<!-- SoundCloud Widget Iframe (hidden) -->
 	<iframe
-		bind:this={scIframe}
+		bind:this={scIframeEl}
 		id="sc-widget"
 		width="100%"
 		height="166"
@@ -343,7 +166,7 @@
 		<button
 			onclick={togglePlayback}
 			class="group flex h-[clamp(112px,21vw,210px)] w-[clamp(112px,21vw,210px)] shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none"
-			aria-label={$isPlaying ? "Pause" : "Play"}>
+			aria-label={audioController.isPlaying ? "Pause" : "Play"}>
 			<div
 				class="animate-spin-vinyl h-full w-full {hasBeenActivated
 					? 'bg-[var(--text-color)]'
@@ -357,22 +180,22 @@
 					-webkit-mask-repeat: no-repeat;
 					mask-position: center;
 					-webkit-mask-position: center;
-					animation-play-state: {$isPlaying ? 'running' : 'paused'};
+					animation-play-state: {audioController.isPlaying ? 'running' : 'paused'};
 					will-change: transform;
 				">
 			</div>
 		</button>
 
-		{#if $currentTrack}
+		{#if audioController.currentTrack}
 			<!-- track info (time + title) to the right of the logo -->
 			<div class="pointer-events-none relative z-20 ml-4 flex flex-1 flex-col items-start gap-1 pt-2">
 				<!-- metadata -->
 				<div
 					class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
-					<span>{formatTime(currentTime)} / {formatTime(duration)}</span>
-					{#if $currentTrack.isExternal && $currentTrack.externalUrl}
+					<span>{formatTime(audioController.currentTime)} / {formatTime(audioController.duration)}</span>
+					{#if audioController.currentTrack.isExternal && audioController.currentTrack.externalUrl}
 						<a
-							href={$currentTrack.externalUrl}
+							href={audioController.currentTrack.externalUrl}
 							target="_blank"
 							rel="noopener noreferrer"
 							class="group pointer-events-auto inline-flex items-center"
@@ -397,7 +220,7 @@
 
 				<!-- title -->
 				<div class="flex items-center gap-3 text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
-					<span>{$currentTrack.title}</span>
+					<span>{audioController.currentTrack.title}</span>
 				</div>
 			</div>
 		{:else}
@@ -422,17 +245,19 @@
 			<!-- playhead -->
 			<div
 				class="absolute bottom-0 z-20 flex h-[12px] w-[40px] items-center justify-center bg-[var(--text-color)] text-[10px] font-bold text-[var(--bg-color)] md:w-[60px] md:text-sm"
-				style="left: {duration ? (currentTime / duration) * 100 : 0}%; transform: translateX(-{duration
-					? (currentTime / duration) * 100
-					: 0}%); opacity: {$currentTrack ? 1 : 0};">
+				style="left: {audioController.duration
+					? (audioController.currentTime / audioController.duration) * 100
+					: 0}%; transform: translateX(-{audioController.duration
+					? (audioController.currentTime / audioController.duration) * 100
+					: 0}%); opacity: {audioController.currentTrack ? 1 : 0};">
 				| | |
 			</div>
 			<!-- progress bar (inverse hue) -->
 			<div
 				class="pointer-events-none absolute bottom-0 left-0 z-10 h-[12px]"
-				style="width: {duration ? (currentTime / duration) * 100 : 0}%; transition: {isDragging
-					? 'none'
-					: 'width 0.1s linear'};">
+				style="width: {audioController.duration
+					? (audioController.currentTime / audioController.duration) * 100
+					: 0}%; transition: {isDragging ? 'none' : 'width 0.1s linear'};">
 				<div class="h-full w-full" style="background-color: var(--highlight-color);"></div>
 			</div>
 		</div>

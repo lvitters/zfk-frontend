@@ -8,23 +8,28 @@ export default defineConfig(({ mode }) => {
 	// assuming KIRBY_API_URL is something like http://localhost:8000/api/query
 	const kirbyUrl = env.KIRBY_API_URL ? new URL(env.KIRBY_API_URL).origin : "http://localhost:8000";
 
+	const proxyConfig = {
+		// proxy /backend requests to the kirby backend (rewriting the path)
+		"/backend": {
+			target: kirbyUrl,
+			changeOrigin: true,
+			rewrite: (path) => path.replace(/^\/backend/, ""),
+		},
+		// legacy proxies
+		"/media": kirbyUrl,
+		"/assets": kirbyUrl,
+	};
+
 	return {
 		plugins: [sveltekit(), tailwindcss()],
 		server: {
-			proxy: {
-				// proxy /backend requests to the kirby backend (rewriting the path)
-				"/backend": {
-					target: kirbyUrl,
-					changeOrigin: true,
-					rewrite: (path) => path.replace(/^\/backend/, ""),
-				},
-				// legacy proxies
-				"/media": kirbyUrl,
-				"/assets": kirbyUrl,
-			},
+			proxy: proxyConfig,
 			fs: {
 				allow: ["./db", "../audio"], // allow vite to serve files from the db folder
 			},
+		},
+		preview: {
+			proxy: proxyConfig,
 		},
 	};
 });

@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { audioController } from "$lib/audioController.svelte";
 	import YearSelect from "$lib/components/YearSelect.svelte";
-	import { currentTrack, isPlaying } from "$lib/stores";
 	import type { Track } from "$lib/types";
 	import { tick } from "svelte";
 
@@ -50,7 +50,7 @@
 
 	// select a track to play
 	function selectTrack(track: Track) {
-		currentTrack.set(track);
+		audioController.play(track);
 	}
 </script>
 
@@ -64,7 +64,7 @@
 	<div bind:this={listContainer} class="w-full overflow-hidden transition-[height] duration-300 ease-in-out">
 		<div bind:this={innerContainer} class="w-full">
 			{#each filteredAudioFiles as file}
-				{@const isActive = file.id === $currentTrack?.id}
+				{@const isActive = file.id === audioController.currentTrack?.id}
 				<!-- individual file row -->
 				<button
 					class="group/row relative flex w-full cursor-pointer flex-col gap-1 border-b-2 border-[var(--text-color)] p-4 text-left last:border-b-0 md:px-6 {isActive
@@ -72,7 +72,7 @@
 						: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
 					onclick={() => {
 						if (isActive) {
-							isPlaying.update((p) => !p);
+							audioController.toggle();
 						} else {
 							selectTrack(file);
 						}
