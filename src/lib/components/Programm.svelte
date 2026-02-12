@@ -7,6 +7,28 @@
 	let { events: rawEvents, selectedYear = $bindable() }: { events: ProgrammEvent[] | null; selectedYear?: number } =
 		$props();
 
+	function extractFirstImageAttributes(html: string): { src?: string; srcset?: string; sizes?: string } | null {
+		if (!html) return null;
+		const imgMatch = html.match(/<img[^>]+>/i);
+		if (!imgMatch) return null;
+
+		const imgTag = imgMatch[0];
+		const getAttr = (name: string) => {
+			const match = imgTag.match(new RegExp(`${name}=(['"])(.*?)\\1`, "i"));
+			return match ? match[2] : undefined;
+		};
+
+		const src = getAttr("src");
+		if (src) {
+			return {
+				src,
+				srcset: getAttr("srcset"),
+				sizes: getAttr("sizes"),
+			};
+		}
+		return null;
+	}
+
 	// calculate events once
 	const events = (rawEvents || []).map((e: ProgrammEvent) => {
 		let displayDate = e.formattedDate.split(".").slice(0, 2).join(".");
@@ -24,6 +46,7 @@
 			displayDate,
 			displayTime,
 			fullText: e.text,
+			firstImageAttrs: e.text ? extractFirstImageAttributes(e.text) : null,
 		};
 	});
 
@@ -165,3 +188,17 @@
 		</div>
 	</div>
 </div>
+
+<!-- Preload images for the selected year so they appear immediately on expand -->
+<svelte:head>
+	{#each filteredEvents as event}
+		{#if event.firstImageAttrs}
+			<link
+				rel="preload"
+				as="image"
+				href={event.firstImageAttrs.src}
+				imagesrcset={event.firstImageAttrs.srcset}
+				imagesizes={event.firstImageAttrs.sizes} />
+		{/if}
+	{/each}
+</svelte:head>

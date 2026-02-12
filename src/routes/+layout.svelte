@@ -70,7 +70,7 @@
 
 	$effect(() => {
 		// interval in millis (needs to match hue transition in app.css)
-		const interval = setInterval(updateHue, 60000);
+		const interval = setInterval(updateHue, 40000);
 
 		return () => clearInterval(interval);
 	});

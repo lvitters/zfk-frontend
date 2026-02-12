@@ -68,4 +68,9 @@ export interface ProgrammEvent {
 	images?: KirbyImage[];
 	imageBlocks?: ImageBlock[]; // Now typed!
 	videos?: KirbyVideo[];
+	firstImageAttrs?: {
+		src?: string;
+		srcset?: string;
+		sizes?: string;
+	} | null;
 }

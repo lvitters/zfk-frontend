@@ -44,7 +44,7 @@ body {
 
 	/* hue transition needs to match hue interval +layout.svelte */
 	transition:
-		--bg-hue 60s ease-in-out,
+		--bg-hue 40s ease-in-out,
 		--bg-lightness 6s ease-in-out,
 		--text-lightness 6s ease-in-out;
 }
