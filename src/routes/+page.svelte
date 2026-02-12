@@ -9,7 +9,7 @@
 	import { onMount } from "svelte";
 
 	let { data } = $props();
-	let { events, audioFiles, dynamicSections, bunkerPage, eventsTitle, recordingsTitle } = data;
+	let { events, audioFiles, sections } = data;
 
 	let expandedSection = $state(null as string | null);
 	let programmYear = $state<number | undefined>();
@@ -38,73 +38,26 @@
 			<AudioHeader {audioFiles} />
 		</div>
 
-		<!-- programm (events) section -->
-		<div class="group relative w-full border-b-2 border-[var(--text-color)]">
-			<button
-				class="font-clash-display relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(2.5rem,13vw,12rem)] leading-none font-bold md:px-4 {expandedSection ===
-				'programm'
-					? 'bg-[var(--text-color)] text-[var(--bg-color)]'
-					: 'bg-[var(--bg-color)] hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
-				onclick={() => toggleSection("programm")}>
-				{eventsTitle}
-			</button>
-			{#if expandedSection === "programm"}
-				<div transition:slide>
-					<Programm {events} bind:selectedYear={programmYear} />
-				</div>
-			{/if}
-		</div>
-
-		<!-- aufnahmen (recordings) section -->
-		<div class="relative w-full border-b-2 border-[var(--text-color)]">
-			<button
-				class="font-clash-display relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(2.5rem,13vw,12rem)] leading-none font-bold md:px-4 {expandedSection ===
-				'aufnahmen'
-					? 'bg-[var(--text-color)] text-[var(--bg-color)]'
-					: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
-				onclick={() => toggleSection("aufnahmen")}>
-				{recordingsTitle}
-			</button>
-			{#if expandedSection === "aufnahmen"}
-				<div transition:slide>
-					<Aufnahmen {audioFiles} bind:selectedYear={aufnahmenYear} />
-				</div>
-			{/if}
-		</div>
-
-		<!-- bunker section -->
-		{#if bunkerPage}
-			<div class="relative w-full border-b-2 border-[var(--text-color)]">
-				<button
-					class="font-clash-display relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(2.5rem,13vw,12rem)] leading-none font-bold md:px-4 {expandedSection ===
-					'bunker'
-						? 'bg-[var(--text-color)] text-[var(--bg-color)]'
-						: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
-					onclick={() => toggleSection("bunker")}>
-					{bunkerPage.title}
-				</button>
-				{#if expandedSection === "bunker"}
-					<div transition:slide>
-						<Bunker page={bunkerPage} />
-					</div>
-				{/if}
-			</div>
-		{/if}
-
-		<!-- dynamic sections (cms pages) -->
-		{#each dynamicSections as section (section.id)}
+		<!-- dynamic sections (cms pages in their ordered sequence) -->
+		{#each sections as section (section.id)}
 			<div class="relative w-full border-b-2 border-[var(--text-color)]">
 				<button
 					class="font-clash-display relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(2.5rem,13vw,12rem)] leading-none font-bold md:px-4 {expandedSection ===
 					section.slug
 						? 'bg-[var(--text-color)] text-[var(--bg-color)]'
-						: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
+						: 'bg-[var(--bg-color)] hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
 					onclick={() => toggleSection(section.slug)}>
 					{section.title}
 				</button>
 				{#if expandedSection === section.slug}
 					<div transition:slide>
-						{#if section.type === "headerSection"}
+						{#if section.type === "events"}
+							<Programm {events} bind:selectedYear={programmYear} />
+						{:else if section.type === "recordings"}
+							<Aufnahmen {audioFiles} bind:selectedYear={aufnahmenYear} />
+						{:else if section.type === "bunker"}
+							<Bunker page={section.content} />
+						{:else if section.type === "headerSection"}
 							<HeaderSection items={section.content} />
 						{:else if section.type === "mainSection"}
 							<MainSection page={section.content} />

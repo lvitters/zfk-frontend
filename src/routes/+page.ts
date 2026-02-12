@@ -1,6 +1,6 @@
 import { dev } from "$app/environment";
 import { kql } from "$lib/kirby";
-import type { DynamicSection, KirbyImage, KirbyPage, ProgrammEvent, Track } from "$lib/types";
+import type { DynamicSection, KirbyImage, KirbyPage, ProgrammEvent, Section, Track } from "$lib/types";
 import type { PageLoad } from "./$types";
 
 // helper to replace raw URLs with their title attribute in HTML
@@ -123,22 +123,13 @@ export const load: PageLoad = async ({ fetch }) => {
 	};
 
 	// 4. events page title query
-	const eventsTitleQuery = {
-		query: "page('events').title",
-	};
-
-	// 5. recordings page title query
-	const recordingsTitleQuery = {
-		query: "page('recordings').title",
-	};
+	// (removed redundant title queries as they are included in pagesQuery)
 
 	// fetch all data in parallel
-	const [eventsResult, audioResult, pagesResult, eventsTitleResult, recordingsTitleResult] = await Promise.all([
+	const [eventsResult, audioResult, pagesResult] = await Promise.all([
 		kql(eventsQuery, fetch),
 		kql(audioQuery, fetch),
 		kql(pagesQuery, fetch),
-		kql(eventsTitleQuery, fetch),
-		kql(recordingsTitleQuery, fetch),
 	]);
 
 	// process events data
@@ -212,48 +203,71 @@ export const load: PageLoad = async ({ fetch }) => {
 		return new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime();
 	});
 
-	// process dynamic sections data
+	// process all pages into an ordered sections array
 	const pages = (pagesResult || []) as KirbyPage[];
-	const bunkerPageRaw = pages.find((p) => p.slug === "bunker");
+	const sections: Section[] = pages.map((page: KirbyPage) => {
+		if (page.slug === "events") {
+			return {
+				type: "events",
+				id: page.id,
+				title: page.title,
+				slug: page.slug,
+			};
+		}
 
-	const dynamicSections: DynamicSection[] = pages
-		.filter((page: KirbyPage) => page.slug !== "events" && page.slug !== "recordings" && page.slug !== "bunker")
-		.map((page: KirbyPage) => {
-			const hasChildren = page.children && page.children.length > 0;
+		if (page.slug === "recordings") {
+			return {
+				type: "recordings",
+				id: page.id,
+				title: page.title,
+				slug: page.slug,
+			};
+		}
 
-			const processedPage = {
-				...page,
-				text: replaceUrlWithTitle(page.text),
-				children: page.children?.map((child) => ({
+		if (page.slug === "bunker") {
+			return {
+				type: "bunker",
+				id: page.id,
+				title: page.title,
+				slug: page.slug,
+				content: {
+					text: replaceUrlWithTitle(page.text),
+					images: page.images?.map((img: KirbyImage) => ({
+						...img,
+						url: fixKirbyUrl(img.url),
+					})),
+				},
+			};
+		}
+
+		const hasChildren = page.children && page.children.length > 0;
+		if (hasChildren) {
+			return {
+				type: "headerSection",
+				id: page.id,
+				title: page.title,
+				slug: page.slug,
+				content: (page.children || []).map((child) => ({
 					...child,
 					text: replaceUrlWithTitle(child.text),
 				})),
 			};
+		}
 
-			return {
-				id: processedPage.id,
-				title: processedPage.title,
-				slug: processedPage.slug,
-				type: hasChildren ? "headerSection" : "mainSection",
-				content: hasChildren ? (processedPage.children as KirbyPage[]) : { text: processedPage.text },
-			};
-		});
+		return {
+			type: "mainSection",
+			id: page.id,
+			title: page.title,
+			slug: page.slug,
+			content: {
+				text: replaceUrlWithTitle(page.text),
+			},
+		};
+	});
 
 	return {
 		events,
 		audioFiles,
-		dynamicSections,
-		bunkerPage: bunkerPageRaw
-			? {
-					title: bunkerPageRaw.title,
-					text: replaceUrlWithTitle(bunkerPageRaw.text),
-					images: bunkerPageRaw.images?.map((img: KirbyImage) => ({
-						...img,
-						url: fixKirbyUrl(img.url),
-					})),
-				}
-			: null,
-		eventsTitle: eventsTitleResult as string,
-		recordingsTitle: recordingsTitleResult as string,
+		sections,
 	};
 };

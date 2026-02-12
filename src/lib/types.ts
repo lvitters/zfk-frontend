@@ -4,7 +4,21 @@ export interface KirbyPage {
 	slug: string;
 	text?: string;
 	children?: KirbyPage[]; // Children are also KirbyPages
+	images?: KirbyImage[];
 }
+
+export type Section =
+	| { type: "events"; id: string; title: string; slug: string }
+	| { type: "recordings"; id: string; title: string; slug: string }
+	| {
+			type: "bunker";
+			id: string;
+			title: string;
+			slug: string;
+			content: { text?: string; images?: KirbyImage[] };
+	  }
+	| { type: "headerSection"; id: string; title: string; slug: string; content: KirbyPage[] }
+	| { type: "mainSection"; id: string; title: string; slug: string; content: { text?: string } };
 
 export interface DynamicSection {
 	id: string;
