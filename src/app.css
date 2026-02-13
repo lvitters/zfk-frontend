@@ -100,6 +100,10 @@ body {
 		@apply font-bold;
 		font-size: clamp(1.5rem, 5vw, 3rem);
 		font-weight: 900;
+		width: max-content;
+		padding: 5px;
+		color: var(--bg-color);
+		background-color: var(--text-color);
 	}
 	/* if H1 follows something (rare), give it extra space */
 	.kirby-content > * + h1 {
@@ -130,7 +134,7 @@ body {
 		font-weight: 700;
 	}
 	.kirby-content > * + h4 {
-		@apply mt-8 md:mt-10;
+		@apply mt-2 md:mt-4;
 	}
 
 	/* regular text */
