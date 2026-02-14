@@ -15,6 +15,7 @@ class AudioController {
 
 	private ignoreScEvents = false;
 	private scLockDuration = 500;
+	private isUnlocked = false;
 
 	// bind DOM elements
 	setElements(audio: HTMLAudioElement, scIframe: HTMLIFrameElement) {
@@ -96,8 +97,35 @@ class AudioController {
 		});
 	}
 
+	private unlock() {
+		if (this.isUnlocked) return;
+
+		// unlock HTML5 audio
+		if (this.audio) {
+			const p = this.audio.play();
+			if (p !== undefined) {
+				p.then(() => this.audio?.pause()).catch(() => {});
+			}
+		}
+
+		// unlock SoundCloud widget
+		if (this.scWidget) {
+			try {
+				this.scWidget.play();
+				this.scWidget.pause();
+			} catch (e) {
+				// ignore
+			}
+		}
+
+		this.isUnlocked = true;
+	}
+
 	// play a specific track
 	async play(track: Track) {
+		// unlock on first interaction
+		this.unlock();
+
 		// if playing same track, just toggle
 		if (this.currentTrack?.id === track.id) {
 			this.toggle();
@@ -122,6 +150,9 @@ class AudioController {
 	toggle() {
 		if (!this.currentTrack) return;
 
+		// ensure unlocked
+		this.unlock();
+
 		if (this.isPlaying) {
 			this.pause();
 		} else {
@@ -145,7 +176,10 @@ class AudioController {
 		if (this.currentTrack?.isExternal) {
 			this.safeWidgetAction("play");
 		} else {
-			this.audio?.play().catch((e) => console.error("Play failed:", e));
+			this.audio?.play().catch((e) => {
+				console.error("Play failed:", e);
+				this.isPlaying = false;
+			});
 		}
 	}
 
@@ -165,30 +199,37 @@ class AudioController {
 
 		// stop local audio
 		if (this.audio) {
-			this.audio.pause();
-			this.audio.currentTime = 0;
-			// clear src to stop network activity
-			this.audio.removeAttribute("src");
-			this.audio.load();
+			try {
+				this.audio.pause();
+				this.audio.src = "";
+				this.audio.load();
+				this.audio.currentTime = 0;
+			} catch (e) {
+				// ignore
+			}
 		}
 
 		// stop SC widget
 		if (this.scWidget) {
-			this.scWidget.pause();
-			// we can't easily "unload" the iframe content without reloading it
-			// but pausing is usually enough for the widget api
+			try {
+				this.scWidget.pause();
+			} catch (e) {
+				// ignore
+			}
 		}
 	}
 
 	private async playLocal(track: Track) {
 		if (!this.audio) return;
-		this.audio.src = track.filePath;
-		this.audio.load();
+		
 		try {
+			this.audio.src = track.filePath;
+			this.audio.load();
 			await this.audio.play();
-			this.isPlaying = true;
+			// isPlaying will be set by onplay listener
 		} catch (e) {
 			console.error("Autoplay local failed:", e);
+			this.isPlaying = false;
 		}
 	}
 
@@ -209,6 +250,12 @@ class AudioController {
 				this.scWidget.getDuration((d: number) => {
 					this.duration = d / 1000;
 				});
+				// explicitly call play to ensure it starts on mobile
+				try {
+					this.scWidget.play();
+				} catch (e) {
+					// ignore
+				}
 				this.isPlaying = true;
 			},
 		});

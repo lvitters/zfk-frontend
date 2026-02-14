@@ -118,20 +118,20 @@
 </svelte:head>
 
 <div class="flex w-full flex-col">
-	<!-- HTML5 Audio -->
-	<audio bind:this={audioEl} preload="metadata" class="hidden"></audio>
+	<!-- HTML5 Audio (hidden but active) -->
+	<audio bind:this={audioEl} preload="metadata" style="display: none;"></audio>
 
-	<!-- SoundCloud Widget Iframe (hidden) -->
+	<!-- SoundCloud Widget Iframe (hidden but active) -->
 	<iframe
 		bind:this={scIframeEl}
 		id="sc-widget"
-		width="100%"
-		height="166"
+		width="10"
+		height="10"
 		scrolling="no"
 		frameborder="no"
 		allow="autoplay; encrypted-media"
 		src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&show_artwork=false"
-		class="hidden"
+		style="position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none;"
 		title="SoundCloud Player">
 	</iframe>
 
