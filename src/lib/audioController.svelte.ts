@@ -1,157 +1,65 @@
 import { type Track } from "./types";
 
 class AudioController {
-	// reactive state
+	// Reactive state
 	isPlaying = $state(false);
 	currentTrack = $state<Track | null>(null);
 	currentTime = $state(0);
 	duration = $state(0);
+	isBuffering = $state(false);
 
-	// internal references
+	// Internal references
 	private audio: HTMLAudioElement | null = null;
 	private scIframe: HTMLIFrameElement | null = null;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private scWidget: any | null = null;
 
-	private ignoreScEvents = false;
-	private scLockDuration = 500;
-	private isUnlocked = false;
+	// Constants
+	private readonly SC_POLL_INTERVAL = 500;
 
-	// bind DOM elements
+	/**
+	 * Initialize the controller with DOM elements.
+	 * Must be called in onMount.
+	 */
 	setElements(audio: HTMLAudioElement, scIframe: HTMLIFrameElement) {
 		this.audio = audio;
 		this.scIframe = scIframe;
 
-		// setup HTML5 audio listeners
-		if (this.audio) {
-			this.audio.onplay = () => (this.isPlaying = true);
-			this.audio.onpause = () => (this.isPlaying = false);
-			this.audio.onended = () => (this.isPlaying = false);
-			this.audio.ontimeupdate = () => {
-				if (this.audio && !this.currentTrack?.isExternal) {
-					this.currentTime = this.audio.currentTime;
-				}
-			};
-			this.audio.onloadedmetadata = () => {
-				if (this.audio && !this.currentTrack?.isExternal) {
-					this.duration = this.audio.duration;
-				}
-			};
-		}
-
-		// init SC widget if possible
-		this.initScWidget();
+		this._setupLocalAudio();
+		this._initScWidget();
 	}
 
-	// initialize SoundCloud widget
-	private initScWidget() {
-		if (typeof window === "undefined") return;
-
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const SC = (window as any).SC;
-
-		if (this.scIframe && SC) {
-			this.scWidget = SC.Widget(this.scIframe);
-			this.setupScEvents();
-		} else {
-			// retry if SC not ready
-			const interval = setInterval(() => {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const SC = (window as any).SC;
-				if (SC && this.scIframe) {
-					this.scWidget = SC.Widget(this.scIframe);
-					this.setupScEvents();
-					clearInterval(interval);
-				}
-			}, 500);
-		}
-	}
-
-	private setupScEvents() {
-		if (!this.scWidget) return;
-
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const SC = (window as any).SC;
-
-		this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-			if (!this.ignoreScEvents) this.isPlaying = true;
-		});
-
-		this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
-			if (!this.ignoreScEvents) this.isPlaying = false;
-		});
-
-		this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-			this.isPlaying = false;
-		});
-
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		this.scWidget.bind(SC.Widget.Events.PLAY_PROGRESS, (data: any) => {
-			if (this.currentTrack?.isExternal) {
-				this.currentTime = data.currentPosition / 1000; // ms to s
-			}
-		});
-
-		this.scWidget.bind(SC.Widget.Events.READY, () => {
-			// console.log("SC Widget Ready");
-		});
-	}
-
-	private unlock() {
-		if (this.isUnlocked) return;
-
-		// unlock HTML5 audio
-		if (this.audio) {
-			const p = this.audio.play();
-			if (p !== undefined) {
-				p.then(() => this.audio?.pause()).catch(() => {});
-			}
-		}
-
-		// unlock SoundCloud widget
-		if (this.scWidget) {
-			try {
-				this.scWidget.play();
-				this.scWidget.pause();
-			} catch (e) {
-				// ignore
-			}
-		}
-
-		this.isUnlocked = true;
-	}
-
-	// play a specific track
+	/**
+	 * Play a track.
+	 * If the track is already current, toggle playback.
+	 * If it's a new track, stop the current one and start the new one.
+	 */
 	async play(track: Track) {
-		// unlock on first interaction
-		this.unlock();
-
-		// if playing same track, just toggle
 		if (this.currentTrack?.id === track.id) {
 			this.toggle();
 			return;
 		}
 
-		// stop previous
-		this.stopAll();
+		// Stop previous track properly
+		this.stop();
 
 		this.currentTrack = track;
 		this.currentTime = 0;
 		this.duration = 0;
+		this.isBuffering = true;
 
 		if (track.isExternal) {
-			await this.playExternal(track);
+			await this._playExternal(track);
 		} else {
-			await this.playLocal(track);
+			await this._playLocal(track);
 		}
 	}
 
-	// toggle play/pause
+	/**
+	 * Toggle play/pause for the current track.
+	 */
 	toggle() {
 		if (!this.currentTrack) return;
-
-		// ensure unlocked
-		this.unlock();
 
 		if (this.isPlaying) {
 			this.pause();
@@ -160,84 +68,227 @@ class AudioController {
 		}
 	}
 
-	// pause current playback
+	/**
+	 * Pause playback.
+	 */
 	pause() {
-		this.isPlaying = false;
 		if (this.currentTrack?.isExternal) {
-			this.safeWidgetAction("pause");
+			this.scWidget?.pause();
 		} else {
 			this.audio?.pause();
 		}
+		// State updates are handled by event listeners
 	}
 
-	// resume playback
+	/**
+	 * Resume playback.
+	 */
 	resume() {
-		this.isPlaying = true;
 		if (this.currentTrack?.isExternal) {
-			this.safeWidgetAction("play");
+			this.scWidget?.play();
 		} else {
-			this.audio?.play().catch((e) => {
-				console.error("Play failed:", e);
-				this.isPlaying = false;
-			});
+			this.audio?.play().catch((e) => console.error("Resume failed:", e));
 		}
+		// State updates are handled by event listeners
 	}
 
-	// seek to time (seconds)
-	seek(time: number) {
-		this.currentTime = time;
-		if (this.currentTrack?.isExternal) {
-			this.scWidget?.seekTo(time * 1000); // s to ms
-		} else {
-			if (this.audio) this.audio.currentTime = time;
-		}
-	}
-
-	// stop everything and clear sources
-	private stopAll() {
-		this.isPlaying = false;
-
-		// stop local audio
+	/**
+	 * Stop playback and reset state.
+	 */
+	stop() {
 		if (this.audio) {
-			try {
-				this.audio.pause();
-				this.audio.src = "";
-				this.audio.load();
-				this.audio.currentTime = 0;
-			} catch (e) {
-				// ignore
-			}
+			this.audio.pause();
+			this.audio.currentTime = 0;
+			// Don't nuke src immediately if not needed, but can help
+			this.audio.removeAttribute("src");
+			this.audio.load();
 		}
 
-		// stop SC widget
 		if (this.scWidget) {
-			try {
-				this.scWidget.pause();
-			} catch (e) {
-				// ignore
+			this.scWidget.pause();
+		}
+
+		this.isPlaying = false;
+		this.isBuffering = false;
+	}
+
+	/**
+	 * Seek to a specific time (in seconds).
+	 */
+	seek(time: number) {
+		if (!this.currentTrack) return;
+
+		// Clamp time
+		time = Math.max(0, Math.min(time, this.duration));
+
+		if (this.currentTrack.isExternal) {
+			this.scWidget?.seekTo(time * 1000);
+			// SC widget events will update currentTime
+		} else {
+			if (this.audio) {
+				this.audio.currentTime = time;
+				// Immediate update for UI responsiveness
+				this.currentTime = time;
 			}
 		}
 	}
 
-	private async playLocal(track: Track) {
+	// --- Internal Methods ---
+
+	private _setupLocalAudio() {
 		if (!this.audio) return;
+
+		this.audio.onplay = () => {
+			if (!this.currentTrack?.isExternal) {
+				this.isPlaying = true;
+				this.isBuffering = false;
+			}
+		};
+
+		this.audio.onpause = () => {
+			if (!this.currentTrack?.isExternal) {
+				this.isPlaying = false;
+			}
+		};
+
+		this.audio.onended = () => {
+			if (!this.currentTrack?.isExternal) {
+				this.isPlaying = false;
+				this.currentTime = 0;
+			}
+		};
+
+		this.audio.ontimeupdate = () => {
+			if (this.audio && !this.currentTrack?.isExternal && !this.audio.seeking) {
+				this.currentTime = this.audio.currentTime;
+			}
+		};
+
+		this.audio.onloadedmetadata = () => {
+			if (this.audio && !this.currentTrack?.isExternal) {
+				this.duration = this.audio.duration;
+				this.isBuffering = false;
+			}
+		};
+
+		this.audio.onwaiting = () => {
+			if (!this.currentTrack?.isExternal) {
+				this.isBuffering = true;
+			}
+		};
+
+		this.audio.onplaying = () => {
+			if (!this.currentTrack?.isExternal) {
+				this.isBuffering = false;
+			}
+		};
+
+		this.audio.onerror = (e) => {
+			console.error("Audio Error:", e);
+			if (!this.currentTrack?.isExternal) {
+				this.isPlaying = false;
+				this.isBuffering = false;
+			}
+		};
+	}
+
+	private _initScWidget() {
+		if (typeof window === "undefined") return;
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const SC = (window as any).SC;
+
+		if (this.scIframe && SC) {
+			// Check if widget is already initialized on this iframe
+			if (!this.scWidget) {
+				this.scWidget = SC.Widget(this.scIframe);
+				this._bindScEvents();
+			}
+		} else {
+			// Retry loop
+			const timer = setInterval(() => {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const SC = (window as any).SC;
+				if (SC && this.scIframe) {
+					if (!this.scWidget) {
+						this.scWidget = SC.Widget(this.scIframe);
+						this._bindScEvents();
+					}
+					clearInterval(timer);
+				}
+			}, this.SC_POLL_INTERVAL);
+		}
+	}
+
+	private _bindScEvents() {
+		if (!this.scWidget) return;
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const SC = (window as any).SC;
+
+		this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+			if (this.currentTrack?.isExternal) {
+				this.isPlaying = true;
+				this.isBuffering = false;
+			}
+		});
+
+		this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
+			if (this.currentTrack?.isExternal) {
+				this.isPlaying = false;
+			}
+		});
+
+		this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+			if (this.currentTrack?.isExternal) {
+				this.isPlaying = false;
+				this.currentTime = 0;
+			}
+		});
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		this.scWidget.bind(SC.Widget.Events.PLAY_PROGRESS, (data: any) => {
+			if (this.currentTrack?.isExternal) {
+				this.currentTime = data.currentPosition / 1000;
+			}
+		});
+
+		this.scWidget.bind(SC.Widget.Events.READY, () => {
+			// Ready
+		});
 		
+		this.scWidget.bind(SC.Widget.Events.ERROR, () => {
+			this.isBuffering = false;
+			this.isPlaying = false;
+		});
+	}
+
+	private async _playLocal(track: Track) {
+		if (!this.audio) return;
+
 		try {
 			this.audio.src = track.filePath;
 			this.audio.load();
-			await this.audio.play();
-			// isPlaying will be set by onplay listener
+			
+			const p = this.audio.play();
+			if (p !== undefined) {
+				await p;
+			}
 		} catch (e) {
-			console.error("Autoplay local failed:", e);
+			console.error("Local play failed:", e);
+			this.isBuffering = false;
 			this.isPlaying = false;
 		}
 	}
 
-	private async playExternal(track: Track) {
-		if (!this.scWidget || !track.externalUrl) return;
+	private async _playExternal(track: Track) {
+		if (!this.scWidget || !track.externalUrl) {
+			this.isBuffering = false;
+			return;
+		}
 
-		this.ignoreScEvents = true;
-		setTimeout(() => (this.ignoreScEvents = false), this.scLockDuration);
+		// Re-bind events because widget instance might change behavior on load
+		this._bindScEvents();
 
 		this.scWidget.load(track.externalUrl, {
 			auto_play: true,
@@ -250,25 +301,16 @@ class AudioController {
 				this.scWidget.getDuration((d: number) => {
 					this.duration = d / 1000;
 				});
-				// explicitly call play to ensure it starts on mobile
-				try {
-					this.scWidget.play();
-				} catch (e) {
-					// ignore
-				}
-				this.isPlaying = true;
+				this.isBuffering = false;
+				
+				// Force play if auto_play fails (mobile fallback attempt)
+				this.scWidget.isPaused((paused: boolean) => {
+					if (paused) {
+						this.scWidget.play();
+					}
+				});
 			},
 		});
-	}
-
-	private safeWidgetAction(action: "play" | "pause") {
-		if (!this.scWidget) return;
-		try {
-			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-			action === "play" ? this.scWidget.play() : this.scWidget.pause();
-		} catch (e) {
-			console.error("SC Widget Action failed:", e);
-		}
 	}
 }
 
