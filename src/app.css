@@ -100,10 +100,6 @@ body {
 		@apply font-bold;
 		font-size: clamp(1.5rem, 5vw, 3rem);
 		font-weight: 900;
-		width: max-content;
-		padding: 5px;
-		color: var(--bg-color);
-		background-color: var(--text-color);
 	}
 	/* if H1 follows something (rare), give it extra space */
 	.kirby-content > * + h1 {
