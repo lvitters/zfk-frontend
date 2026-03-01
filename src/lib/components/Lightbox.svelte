@@ -24,11 +24,11 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
-		class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90"
+		class="fixed inset-0 z-100 flex items-center justify-center bg-black/90"
 		onclick={close}
 		transition:fade={{ duration: 200 }}>
 		<button
-			class="absolute top-4 right-4 z-[100] cursor-pointer p-2 text-4xl leading-none text-white hover:text-[var(--highlight-color)] focus:outline-none"
+			class="absolute top-4 right-4 z-100 cursor-pointer p-2 text-4xl leading-none text-white hover:text-(--highlight-color) focus:outline-none"
 			aria-label="close image">
 			&times;
 		</button>

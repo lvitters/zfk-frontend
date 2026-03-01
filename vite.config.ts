@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
 		"/backend": {
 			target: kirbyUrl,
 			changeOrigin: true,
-			rewrite: (path) => path.replace(/^\/backend/, ""),
+			rewrite: (path: string) => path.replace(/^\/backend/, ""),
 		},
 		// legacy proxies
 		"/media": kirbyUrl,
@@ -24,9 +24,6 @@ export default defineConfig(({ mode }) => {
 		plugins: [sveltekit(), tailwindcss()],
 		server: {
 			proxy: proxyConfig,
-			fs: {
-				allow: ["./db", "../audio"], // allow vite to serve files from the db folder
-			},
 		},
 		preview: {
 			proxy: proxyConfig,

@@ -9,11 +9,15 @@
 	let filteredAudioFiles = $derived(audioFiles.filter((file) => file.year === selectedYear));
 
 	// extract unique years and sort them in descending order
-	const years = Array.from(new Set(audioFiles.map((file) => file.year))).sort((a, b) => Number(b) - Number(a));
+	const years = $derived(
+		Array.from(new Set(audioFiles.map((file) => file.year))).sort((a, b) => Number(b) - Number(a)),
+	);
 
-	if (!selectedYear && years.length > 0) {
-		selectedYear = years[0];
-	}
+	$effect(() => {
+		if (!selectedYear && years.length > 0) {
+			selectedYear = years[0];
+		}
+	});
 
 	let listContainer = $state<HTMLElement | null>(null);
 	let innerContainer = $state<HTMLElement | null>(null);
@@ -57,7 +61,7 @@
 <!-- display files list container -->
 <div class="flex w-full flex-col">
 	<!-- year select header -->
-	<div class="w-full border-b-2 border-[var(--text-color)] p-2 md:px-4">
+	<div class="w-full border-b-2 border-(--text-color) p-2 md:px-4">
 		<YearSelect {years} year={selectedYear} {selectYear} />
 	</div>
 
@@ -67,9 +71,9 @@
 				{@const isActive = file.id === audioController.currentTrack?.id}
 				<!-- individual file row -->
 				<button
-					class="group/row relative flex w-full cursor-pointer flex-col gap-1 border-b-2 border-[var(--text-color)] p-4 text-left last:border-b-0 md:px-6 {isActive
-						? 'bg-[var(--text-color)] text-[var(--bg-color)]'
-						: 'hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
+					class="group/row relative flex w-full cursor-pointer flex-col gap-1 border-b-2 border-(--text-color) p-4 text-left last:border-b-0 md:px-6 {isActive
+						? 'bg-(--text-color) text-(--bg-color)'
+						: 'hover:bg-(--text-color) hover:text-(--bg-color)'}"
 					onclick={() => {
 						if (isActive) {
 							audioController.toggle();
@@ -97,8 +101,8 @@
 								aria-label="Listen on SoundCloud">
 								<div
 									class="h-full w-full {isActive
-										? 'bg-[var(--bg-color)]'
-										: 'bg-[var(--text-color)] group-hover/row:bg-[var(--bg-color)]'} group-hover/icon:!bg-[var(--highlight-color)]"
+										? 'bg-(--bg-color)'
+										: 'bg-(--text-color) group-hover/row:bg-(--bg-color)'} group-hover/icon:bg-(--highlight-color)!"
 									style="
 										mask-image: url('/soundcloud_icon_white_transparent.png');
 										-webkit-mask-image: url('/soundcloud_icon_white_transparent.png');

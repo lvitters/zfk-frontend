@@ -137,14 +137,14 @@
 
 	<!-- audio header: spinning logo + track info + progress bar -->
 	<div
-		class="relative flex w-full items-center overflow-hidden border-b-2 border-[var(--text-color)] bg-[var(--bg-color)] p-4 py-6 md:py-8">
+		class="relative flex w-full items-center overflow-hidden border-b-2 border-(--text-color) bg-(--bg-color) p-4 py-6 md:py-8">
 		<!-- theme toggle (top right) -->
 		<button
 			class="group absolute top-5 right-4 z-50 cursor-pointer p-2 focus:outline-none md:top-8"
 			onclick={() => isDarkMode.update((d) => !d)}
 			aria-label="Toggle theme">
 			<div
-				class="h-6 w-6 bg-[var(--text-color)] group-hover:bg-[var(--highlight-color)] group-active:bg-[var(--highlight-color)]"
+				class="h-6 w-6 bg-(--text-color) group-hover:bg-(--highlight-color) group-active:bg-(--highlight-color)"
 				style="
 					mask-image: url('data:image/svg+xml;utf8,{$isDarkMode
 					? `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 2v2%22/><path d=%22M12 20v2%22/><path d=%22m4.93 4.93 1.41 1.41%22/><path d=%22m17.66 17.66 1.41 1.41%22/><path d=%22M2 12h2%22/><path d=%22M20 12h2%22/><path d=%22m6.34 17.66-1.41 1.41%22/><path d=%22m19.07 4.93-1.41 1.41%22/><circle cx=%2212%22 cy=%2212%22 r=%224%22/></svg>`
@@ -169,8 +169,8 @@
 			aria-label={audioController.isPlaying ? "Pause" : "Play"}>
 			<div
 				class="animate-spin-vinyl h-full w-full {hasBeenActivated
-					? 'bg-[var(--text-color)]'
-					: 'bg-[var(--highlight-color)]'} group-hover:bg-[var(--highlight-color)] group-active:bg-[var(--highlight-color)]"
+					? 'bg-(--text-color)'
+					: 'bg-(--highlight-color)'} group-hover:bg-(--highlight-color) group-active:bg-(--highlight-color)"
 				style="
 					mask-image: url('/logo_zfk_transparent.png');
 					-webkit-mask-image: url('/logo_zfk_transparent.png');
@@ -202,7 +202,7 @@
 							style="height: 1em; width: 1.6em; transform: translateY(-0.12em) scale(2);"
 							aria-label="Listen on SoundCloud">
 							<div
-								class="h-full w-full bg-[var(--text-color)] group-hover:bg-[var(--highlight-color)]"
+								class="h-full w-full bg-(--text-color) group-hover:bg-(--highlight-color)"
 								style="
 									mask-image: url('/soundcloud_icon_white_transparent.png');
 									-webkit-mask-image: url('/soundcloud_icon_white_transparent.png');
@@ -235,7 +235,7 @@
 
 		<!-- seekable progress bar area -->
 		<div
-			class="absolute right-0 bottom-0 left-0 h-[15px] cursor-pointer touch-none"
+			class="absolute right-0 bottom-0 left-0 h-3.75 cursor-pointer touch-none"
 			bind:this={progressBar}
 			role="button"
 			tabindex="0"
@@ -244,7 +244,7 @@
 			ontouchstart={onDragStart}>
 			<!-- playhead -->
 			<div
-				class="absolute bottom-0 z-20 flex h-[12px] w-[40px] items-center justify-center bg-[var(--text-color)] text-[10px] font-bold text-[var(--bg-color)] md:w-[60px] md:text-sm"
+				class="absolute bottom-0 z-20 flex h-3 w-10 items-center justify-center bg-(--text-color) text-[10px] font-bold text-(--bg-color) md:w-15 md:text-sm"
 				style="left: {audioController.duration
 					? (audioController.currentTime / audioController.duration) * 100
 					: 0}%; transform: translateX(-{audioController.duration
@@ -254,7 +254,7 @@
 			</div>
 			<!-- progress bar (inverse hue) -->
 			<div
-				class="pointer-events-none absolute bottom-0 left-0 z-10 h-[12px]"
+				class="pointer-events-none absolute bottom-0 left-0 z-10 h-3"
 				style="width: {audioController.duration
 					? (audioController.currentTime / audioController.duration) * 100
 					: 0}%; transition: {isDragging ? 'none' : 'width 0.1s linear'};">

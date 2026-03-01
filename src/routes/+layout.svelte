@@ -78,9 +78,9 @@
 
 <svelte:window onclick={handleGlobalClick} />
 
-<div class="flex min-h-screen w-full flex-col bg-[var(--bg-color)]">
+<div class="flex min-h-screen w-full flex-col bg-(--bg-color)">
 	<Lightbox />
-	<main class="flex-grow">
+	<main class="grow">
 		{@render children()}
 	</main>
 	<Footer />

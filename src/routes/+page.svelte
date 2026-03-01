@@ -9,7 +9,9 @@
 	import { onMount } from "svelte";
 
 	let { data } = $props();
-	let { events, audioFiles, sections } = data;
+	let events = $derived(data.events);
+	let audioFiles = $derived(data.audioFiles);
+	let sections = $derived(data.sections);
 
 	let expandedSection = $state(null as string | null);
 	let programmYear = $state<number | undefined>();
@@ -34,18 +36,18 @@
 {#if visible}
 	<div transition:fade={{ duration: 500 }} class="flex min-h-screen w-full flex-col px-2 md:px-6 lg:px-8">
 		<!-- AudioHeader component -->
-		<div class="top-0 z-50 w-full bg-[var(--bg-color)]">
+		<div class="top-0 z-50 w-full bg-(--bg-color)">
 			<AudioHeader {audioFiles} />
 		</div>
 
 		<!-- dynamic sections (cms pages in their ordered sequence) -->
 		{#each sections as section (section.id)}
-			<div class="relative w-full border-b-2 border-[var(--text-color)]">
+			<div class="relative w-full border-b-2 border-(--text-color)">
 				<button
 					class="font-clash-display relative z-20 flex w-full cursor-pointer items-center py-2 pl-2 text-left text-[clamp(2.5rem,13vw,12rem)] leading-none font-bold md:px-4 {expandedSection ===
 					section.slug
-						? 'bg-[var(--text-color)] text-[var(--bg-color)]'
-						: 'bg-[var(--bg-color)] hover:bg-[var(--text-color)] hover:text-[var(--bg-color)]'}"
+						? 'bg-(--text-color) text-(--bg-color)'
+						: 'bg-(--bg-color) hover:bg-(--text-color) hover:text-(--bg-color)'}"
 					onclick={() => toggleSection(section.slug)}>
 					{section.title}
 				</button>
