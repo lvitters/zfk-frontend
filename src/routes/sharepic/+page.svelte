@@ -24,6 +24,15 @@
 	const years = [currentYear, currentYear - 1];
 
 	let localDarkMode = $state(false);
+	let aspectRatio = $state("4:5");
+	let innerHeight = $state(0);
+
+	let scale = $derived.by(() => {
+		if (innerHeight === 0) return 0.5;
+		const targetHeight = aspectRatio === "4:5" ? 1350 : 1440;
+		// leave some padding (80px top/bottom)
+		return Math.min(0.8, (innerHeight - 160) / targetHeight);
+	});
 
 	// svelte-ignore non_reactive_update
 	let sharepicEl: HTMLElement;
@@ -48,18 +57,22 @@
 	async function saveAsPng() {
 		if (!sharepicEl) return;
 		
+		const width = 1080;
+		const height = aspectRatio === "4:5" ? 1350 : 1440;
+		
 		try {
 			const dataUrl = await toPng(sharepicEl, {
-				width: 1080,
-				height: 1350,
+				width: width,
+				height: height,
 				style: {
 					transform: 'scale(1)',
-					transformOrigin: 'top left'
-				}
+					transformOrigin: 'top left',
+				},
+				pixelRatio: 1
 			});
 			
 			const link = document.createElement('a');
-			link.download = `zfk-sharepic-${activeMonth}.png`;
+			link.download = `zfk-sharepic-${activeMonth}-${aspectRatio.replace(":", "-")}.png`;
 			link.href = dataUrl;
 			link.click();
 		} catch (err) {
@@ -67,6 +80,8 @@
 		}
 	}
 </script>
+
+<svelte:window bind:innerHeight />
 
 <svelte:head>
 	<title>sharepic: {activeMonth}</title>
@@ -79,6 +94,11 @@
 			onclick={saveAsPng}>
 			SAVE AS PNG
 		</button>
+		<button
+			class="cursor-pointer bg-(--text-color) px-6 py-3 font-bold text-(--bg-color) shadow-xl hover:bg-(--highlight-color)"
+			onclick={() => aspectRatio = aspectRatio === "4:5" ? "3:4" : "4:5"}>
+			TOGGLE ASPECT ({aspectRatio})
+		</button>
 	</div>
 
 	<div
@@ -87,9 +107,15 @@
 		<div
 			id="sharepic"
 			bind:this={sharepicEl}
-			class="relative flex h-337.5 w-270 flex-col overflow-hidden bg-(--bg-color) p-8 text-(--text-color)">
+			style="
+				width: 1080px; 
+				height: {aspectRatio === '4:5' ? '1350px' : '1440px'}; 
+				--sharepic-height: {aspectRatio === '4:5' ? '1350px' : '1440px'};
+				transform: scale({scale});
+			"
+			class="relative flex flex-col overflow-hidden bg-(--bg-color) p-8 text-(--text-color) origin-top">
 			
-			<div class="relative flex w-full items-center overflow-hidden border-b-2 border-(--text-color) bg-(--bg-color) py-10">
+			<div class="relative flex w-full items-center overflow-hidden border-b-2 border-(--text-color) bg-(--bg-color) py-10 shrink-0">
 				<button
 					class="group absolute top-0 right-0 z-50 cursor-pointer p-2 focus:outline-none no-print"
 					onclick={() => localDarkMode = !localDarkMode}
@@ -139,17 +165,17 @@
 				</div>
 			</div>
 
-			<div class="relative w-full border-b-2 border-(--text-color) bg-(--text-color) text-(--bg-color)">
+			<div class="relative w-full border-b-2 border-(--text-color) bg-(--text-color) text-(--bg-color) shrink-0">
 				<div class="font-clash-display py-4 px-4 text-[120px] leading-none font-bold uppercase">
 					APRIL
 				</div>
 			</div>
 
-			<div class="w-full border-b-2 border-(--text-color) py-4 px-4">
+			<div class="w-full border-b-2 border-(--text-color) py-4 px-4 shrink-0">
 				<YearSelect {years} year={currentYear} selectYear={() => {}} />
 			</div>
 
-			<main class="flex grow flex-col">
+			<main class="flex grow flex-col overflow-hidden">
 				{#each events as event}
 					<div class="flex w-full flex-col border-b-2 border-(--text-color) last:border-b-0">
 						<div class="flex w-full flex-col gap-1 py-8 text-left">
@@ -167,7 +193,7 @@
 				{/each}
 			</main>
 
-			<footer class="mt-auto flex items-end justify-end border-t-2 border-(--text-color) py-8">
+			<footer class="mt-auto flex items-end justify-end border-t-2 border-(--text-color) py-8 shrink-0">
 				<div class="text-3xl font-medium tracking-[0.2em] uppercase text-(--highlight-color)">
 					Osterstraße 19X, Eingang Am Deich
 				</div>
@@ -181,15 +207,16 @@
 		margin: 0;
 		padding: 0;
 		background-color: var(--bg-color);
-		overflow-x: hidden;
+		overflow: hidden;
 	}
 
 	.sharepic-wrapper {
 		display: flex;
 		justify-content: center;
 		align-items: flex-start;
-		min-height: 100vh;
-		padding: 4rem 0;
+		height: 100vh;
+		width: 100vw;
+		padding: 80px 0;
 		transition: none !important;
 	}
 
@@ -216,7 +243,7 @@
 			padding: 0 !important;
 			margin: 0 !important;
 			display: block !important;
-			height: 1350px !important;
+			height: var(--sharepic-height) !important;
 			width: 1080px !important;
 		}
 
@@ -227,25 +254,16 @@
 			border: none !important;
 			box-shadow: none !important;
 			width: 1080px !important;
-			height: 1350px !important;
+			height: var(--sharepic-height) !important;
 			print-color-adjust: exact;
 			-webkit-print-color-adjust: exact;
+			transform: scale(1) !important;
+			transform-origin: top left !important;
 		}
 
 		@page {
-			size: 1080px 1350px;
+			size: 1080px var(--sharepic-height);
 			margin: 0;
-		}
-	}
-
-	@media (max-width: 1200px) {
-		#sharepic {
-			transform: scale(0.6);
-			transform-origin: top center;
-		}
-		.sharepic-wrapper {
-			height: 900px;
-			overflow: hidden;
 		}
 	}
 </style>
