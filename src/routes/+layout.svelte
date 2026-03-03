@@ -4,8 +4,12 @@
 	import { lightboxImage, isDarkMode } from "$lib/stores";
 	import { onMount } from "svelte";
 	import { afterNavigate } from "$app/navigation";
+	import { page } from "$app/state";
 	let { children } = $props();
 	import "../app.css";
+
+	// sharepic route is for dev mode only and doesn't need global layout
+	const isSharepic = $derived(page.url.pathname.startsWith("/sharepic"));
 
 	// set init theme (darkMode)
 	onMount(() => {
@@ -78,10 +82,14 @@
 
 <svelte:window onclick={handleGlobalClick} />
 
-<div class="flex min-h-screen w-full flex-col bg-(--bg-color)">
-	<Lightbox />
-	<main class="grow">
-		{@render children()}
-	</main>
-	<Footer />
-</div>
+{#if isSharepic}
+	{@render children()}
+{:else}
+	<div class="flex min-h-screen w-full flex-col bg-(--bg-color)">
+		<Lightbox />
+		<main class="grow">
+			{@render children()}
+		</main>
+		<Footer />
+	</div>
+{/if}

@@ -6,8 +6,8 @@
 
 	const programData: Record<string, { date: string; time: string; title: string }[]> = {
 		april: [
-			{ date: "13.03.", time: "20:00", title: "HDMI record release" },
-			{ date: "20.03.", time: "16:00", title: "Bunker An'n Diek Opening" },
+			{ date: "14.03.", time: "20:00", title: "HDMI record release" },
+			{ date: "18.03.", time: "16:00", title: "Bunker An'n Diek Opening" },
 			{ date: "27.03.", time: "23:00", title: "Platzhalter" },
 		],
 		mai: [
@@ -24,8 +24,22 @@
 	const years = [currentYear, currentYear - 1];
 
 	let localDarkMode = $state(false);
+	let localHue = $state(210);
 	let aspectRatio = $state("4:5");
 	let innerHeight = $state(0);
+
+	let colors = $derived.by(() => {
+		const bgL = localDarkMode ? "10%" : "90%";
+		const textL = localDarkMode ? "90%" : "10%";
+		const hue = localHue;
+		const complementaryHue = (hue + 180) % 360;
+
+		return {
+			bg: `hsl(${hue}, 100%, ${bgL})`,
+			text: `hsl(${complementaryHue}, 100%, ${textL})`,
+			highlight: `hsl(${complementaryHue}, 100%, 50%)`
+		};
+	});
 
 	let scale = $derived.by(() => {
 		if (innerHeight === 0) return 0.5;
@@ -39,19 +53,17 @@
 	// svelte-ignore non_reactive_update
 	let wrapperEl: HTMLElement;
 
-	onMount(() => {
-		localDarkMode = Math.random() > 0.5;
-
-		const currentHue = Math.floor(Math.random() * 360).toString();
-		
+	$effect(() => {
 		if (wrapperEl) {
-			wrapperEl.style.setProperty("--bg-hue", currentHue);
+			wrapperEl.style.setProperty("--bg-color", colors.bg);
+			wrapperEl.style.setProperty("--text-color", colors.text);
+			wrapperEl.style.setProperty("--highlight-color", colors.highlight);
 		}
 	});
 
-	$effect(() => {
-		document.documentElement.style.setProperty("--bg-lightness", localDarkMode ? "10%" : "90%");
-		document.documentElement.style.setProperty("--text-lightness", localDarkMode ? "90%" : "10%");
+	onMount(() => {
+		localDarkMode = Math.random() > 0.5;
+		localHue = Math.floor(Math.random() * 360);
 	});
 
 	async function saveAsPng() {
@@ -88,25 +100,24 @@
 </svelte:head>
 
 {#if dev}
-	<div class="fixed top-8 left-8 z-50 flex flex-col gap-4 no-print">
-		<button
-			class="cursor-pointer bg-(--text-color) px-6 py-3 font-bold text-(--bg-color) shadow-xl hover:bg-(--highlight-color)"
-			onclick={saveAsPng}>
-			SAVE AS PNG
-		</button>
-		<button
-			class="cursor-pointer bg-(--text-color) px-6 py-3 font-bold text-(--bg-color) shadow-xl hover:bg-(--highlight-color)"
-			onclick={() => aspectRatio = aspectRatio === "4:5" ? "3:4" : "4:5"}>
-			TOGGLE ASPECT ({aspectRatio})
-		</button>
-	</div>
+	<div bind:this={wrapperEl}>
+		<div class="fixed top-8 left-8 z-50 flex flex-col gap-4 no-print">
+			<button
+				class="cursor-pointer bg-(--text-color) px-6 py-3 font-bold text-(--bg-color) shadow-xl hover:bg-(--highlight-color)"
+				onclick={saveAsPng}>
+				SAVE AS PNG
+			</button>
+			<button
+				class="cursor-pointer bg-(--text-color) px-6 py-3 font-bold text-(--bg-color) shadow-xl hover:bg-(--highlight-color)"
+				onclick={() => aspectRatio = aspectRatio === "4:5" ? "3:4" : "4:5"}>
+				TOGGLE ASPECT ({aspectRatio})
+			</button>
+		</div>
 
-	<div
-		class="sharepic-wrapper"
-		bind:this={wrapperEl}>
-		<div
-			id="sharepic"
-			bind:this={sharepicEl}
+		<div class="sharepic-wrapper">
+			<div
+				id="sharepic"
+				bind:this={sharepicEl}
 			style="
 				width: 1080px; 
 				height: {aspectRatio === '4:5' ? '1350px' : '1440px'}; 
@@ -158,8 +169,7 @@
 
 				<div class="ml-8 flex flex-1 items-center">
 					<div class="text-4xl font-medium leading-tight">
-						BUNKER 
-						<br>
+						BUNKER <br>
 						AN'N DIEK
 					</div>
 				</div>
@@ -193,21 +203,23 @@
 				{/each}
 			</main>
 
-			<footer class="mt-auto flex items-end justify-end border-t-2 border-(--text-color) py-8 shrink-0">
-				<div class="text-3xl font-medium tracking-[0.2em] uppercase text-(--highlight-color)">
+			<footer class="mt-auto flex items-end justify-end border-t-2 border-(--highlight-color) py-8 shrink-0">
+				<div class="text-3xl font-medium tracking-[0.2em] uppercase text-(--text-color)">
 					Osterstraße 19X, Eingang Am Deich
 				</div>
 			</footer>
 		</div>
 	</div>
+</div>
 {/if}
 
 <style>
 	:global(html, body) {
 		margin: 0;
 		padding: 0;
-		background-color: var(--bg-color);
+		background-color: white !important;
 		overflow: hidden;
+		transition: none !important;
 	}
 
 	.sharepic-wrapper {
@@ -223,6 +235,10 @@
 	#sharepic {
 		box-shadow: 0 0 100px rgba(0, 0, 0, 0.5);
 		flex-shrink: 0;
+		transition: none !important;
+	}
+
+	#sharepic * {
 		transition: none !important;
 	}
 
