@@ -49,7 +49,7 @@
 						? 'bg-(--text-color) text-(--bg-color)'
 						: 'bg-(--bg-color) hover:bg-(--text-color) hover:text-(--bg-color)'}"
 					onclick={() => toggleSection(section.slug)}>
-					{section.title}
+					{@html section.title}
 				</button>
 				{#if expandedSection === section.slug}
 					<div transition:slide>
