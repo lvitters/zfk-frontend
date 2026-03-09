@@ -167,7 +167,7 @@ body {
 	}
 
 	.kirby-content a {
-		@apply break-words text-[var(--text-color)] underline hover:text-[var(--highlight-color)];
+		@apply wrap-break-word text-(--text-color) underline hover:text-(--highlight-color);
 	}
 
 	/* logic breakers */
@@ -217,19 +217,19 @@ body {
 	/* gallery buttons (individual) */
 	.kirby-content button.gallery-btn {
 		@apply flex cursor-pointer items-center
-           justify-center border-2 border-[var(--text-color)]
-           bg-[var(--bg-color)] text-4xl text-[var(--text-color)];
+           justify-center border-2 border-(--text-color)
+           bg-(--bg-color) text-4xl text-(--text-color);
 	}
 
 	/* button hover state (desktop only) */
 	@media (hover: hover) {
 		.kirby-content button.gallery-btn:hover {
-			@apply bg-[var(--text-color)] text-[var(--bg-color)];
+			@apply bg-(--text-color) text-(--bg-color);
 		}
 	}
 
 	/* button active state (mobile click feedback) */
 	.kirby-content button.gallery-btn:active {
-		@apply bg-[var(--text-color)] text-[var(--bg-color)];
+		@apply bg-(--text-color) text-(--bg-color);
 	}
 }

@@ -4,16 +4,16 @@
 	import { dev } from "$app/environment";
 	import { onMount } from "svelte";
 
-	const programData: Record<string, { date: string; time: string; title: string }[]> = {
-		april: [
-			{ date: "14.03.", time: "20:00", title: "HDMI record release" },
-			{ date: "18.03.", time: "16:00", title: "Bunker An'n Diek Opening" },
-			{ date: "27.03.", time: "23:00", title: "Platzhalter" },
+	const programData: Record<string, { dateAndTime: string; title: string; subtitle: string }[]> = {
+		märz: [
+			{ dateAndTime: "14.03.  20:00", title: "HDMI Records", subtitle: "Release Event" },
+			{ dateAndTime: "18.03.  20:00", title: "Bunker An'n Diek", subtitle: "Soft Opening" },
+			{ dateAndTime: "28.03.  23:00", title: "Doppelkornzert", subtitle: "Die Behörde + Nein Danke" },
 		],
-		mai: [
-			{ date: "03 - 04.05", time: "20:00", title: "Phantasia" },
-			{ date: "11.05.", time: "23:00", title: "Platzhalter" },
-			{ date: "17.05.", time: "23:00", title: "Platzhalter" },
+		april: [
+			{ dateAndTime: "04.05 + 05.05   22.00 - 22:00 Uhr", title: "Phantasia", subtitle: "higher suchen" },
+			{ dateAndTime: "14.04   19:00 - 23:00 Uhr", title: "Scopture", subtitle: "Barabend mit Lichtinstallation" },
+			{ dateAndTime: "18.04   23:00 Uhr", title: "Platzhalter", subtitle: "platz wird gehalten" },
 		],
 	};
 
@@ -189,14 +189,14 @@
 				{#each events as event}
 					<div class="flex w-full flex-col border-b-2 border-(--text-color) last:border-b-0">
 						<div class="flex w-full flex-col gap-1 py-8 text-left">
-							<div class="flex shrink-0 items-center gap-6 text-4xl leading-none tabular-nums opacity-85">
-								<span>{event.date}</span>
-								{#if event.time}
-									<span>{event.time}</span>
-								{/if}
+							<div class="flex shrink-0 items-center gap-6 text-4xl whitespace-pre leading-none tabular-nums opacity-85">
+								<span>{event.dateAndTime}</span>
 							</div>
-							<div class="mt-2 text-5xl font-medium leading-tight">
-								{event.title}
+							<div class="mt-2 text-5xl font-bold leading-tight">
+								{event.title}							
+								{#if event.subtitle}
+									<span class="ml-4 text-4xl font-medium leading-tight">{event.subtitle}</span>
+								{/if}
 							</div>
 						</div>
 					</div>
