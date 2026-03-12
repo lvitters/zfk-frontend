@@ -4,20 +4,30 @@
 	import { dev } from "$app/environment";
 	import { onMount } from "svelte";
 
-	const programData: Record<string, { dateAndTime: string; title: string; subtitle: string }[]> = {
+	const programData: Record<string, { dateAndTime: string; title: string; subtitle: string; details: string }[]> = {
 		märz: [
-			{ dateAndTime: "14.03.  20:00", title: "HDMI Records", subtitle: "Release Event" },
-			{ dateAndTime: "18.03.  20:00", title: "Bunker An'n Diek", subtitle: "Soft Opening" },
-			{ dateAndTime: "28.03.  23:00", title: "Doppelkornzert", subtitle: "Die Behörde + Nein Danke" },
+			{ dateAndTime: "14.03   22:00", title: "HDMI Records", subtitle: "Release Event", details: "" },
+			{ dateAndTime: "18.03   20:00", title: "Bunker An'n Diek", subtitle: "Soft Opening", details: "" },
+			{
+				dateAndTime: "28.03   20:00  Einlass",
+				title: "Die Behörde + Nein Danke",
+				subtitle: "Doppelkornzert",
+				details: "aftershow: DJ eXpresso fuckers",
+			},
 		],
 		april: [
-			{ dateAndTime: "04.05 + 05.05   22.00 - 22:00 Uhr", title: "Phantasia", subtitle: "higher suchen" },
-			{ dateAndTime: "14.04   19:00 - 23:00 Uhr", title: "Scopture", subtitle: "Barabend mit Lichtinstallation" },
-			{ dateAndTime: "18.04   23:00 Uhr", title: "Platzhalter", subtitle: "platz wird gehalten" },
+			{ dateAndTime: "04.05 + 05.05   23.00 - 17:00", title: "Phantasia", subtitle: "Rave", details: "" },
+			{
+				dateAndTime: "14.04   19:00 - 23:00",
+				title: "Scopture",
+				subtitle: "Barabend",
+				details: "mit Lichtinstallation und DJs",
+			},
+			{ dateAndTime: "18.04   23:00", title: "Platzhalter", subtitle: "platz wird gehalten", details: "" },
 		],
 	};
 
-	const activeMonth = "april";
+	const activeMonth = "märz";
 
 	const events = programData[activeMonth] || [];
 	const currentYear = new Date().getFullYear();
@@ -37,7 +47,7 @@
 		return {
 			bg: `hsl(${hue}, 100%, ${bgL})`,
 			text: `hsl(${complementaryHue}, 100%, ${textL})`,
-			highlight: `hsl(${complementaryHue}, 100%, 50%)`
+			highlight: `hsl(${complementaryHue}, 100%, 50%)`,
 		};
 	});
 
@@ -68,27 +78,27 @@
 
 	async function saveAsPng() {
 		if (!sharepicEl) return;
-		
+
 		const width = 1080;
 		const height = aspectRatio === "4:5" ? 1350 : 1440;
-		
+
 		try {
 			const dataUrl = await toPng(sharepicEl, {
 				width: width,
 				height: height,
 				style: {
-					transform: 'scale(1)',
-					transformOrigin: 'top left',
+					transform: "scale(1)",
+					transformOrigin: "top left",
 				},
-				pixelRatio: 1
+				pixelRatio: 1,
 			});
-			
-			const link = document.createElement('a');
+
+			const link = document.createElement("a");
 			link.download = `zfk-sharepic-${activeMonth}-${aspectRatio.replace(":", "-")}.png`;
 			link.href = dataUrl;
 			link.click();
 		} catch (err) {
-			console.error('Failed to save PNG', err);
+			console.error("Failed to save PNG", err);
 		}
 	}
 </script>
@@ -101,7 +111,7 @@
 
 {#if dev}
 	<div bind:this={wrapperEl}>
-		<div class="fixed top-8 left-8 z-50 flex flex-col gap-4 no-print">
+		<div class="no-print fixed top-8 left-8 z-50 flex flex-col gap-4">
 			<button
 				class="cursor-pointer bg-(--text-color) px-6 py-3 font-bold text-(--bg-color) shadow-xl hover:bg-(--highlight-color)"
 				onclick={saveAsPng}>
@@ -109,7 +119,7 @@
 			</button>
 			<button
 				class="cursor-pointer bg-(--text-color) px-6 py-3 font-bold text-(--bg-color) shadow-xl hover:bg-(--highlight-color)"
-				onclick={() => aspectRatio = aspectRatio === "4:5" ? "3:4" : "4:5"}>
+				onclick={() => (aspectRatio = aspectRatio === "4:5" ? "3:4" : "4:5")}>
 				TOGGLE ASPECT ({aspectRatio})
 			</button>
 		</div>
@@ -118,28 +128,28 @@
 			<div
 				id="sharepic"
 				bind:this={sharepicEl}
-			style="
+				style="
 				width: 1080px; 
 				height: {aspectRatio === '4:5' ? '1350px' : '1440px'}; 
 				--sharepic-height: {aspectRatio === '4:5' ? '1350px' : '1440px'};
 				transform: scale({scale});
 			"
-			class="relative flex flex-col overflow-hidden bg-(--bg-color) p-8 text-(--text-color) origin-top">
-			
-			<div class="relative flex w-full items-center overflow-hidden border-b-2 border-(--text-color) bg-(--bg-color) py-10 shrink-0">
-				<button
-					class="group absolute top-0 right-0 z-50 cursor-pointer p-2 focus:outline-none no-print"
-					onclick={() => localDarkMode = !localDarkMode}
-					aria-label="Toggle theme">
-					<div
-						class="h-10 w-10 bg-(--text-color) group-hover:bg-(--highlight-color)"
-						style="
+				class="relative flex origin-top flex-col overflow-hidden bg-(--bg-color) p-8 text-(--text-color)">
+				<div
+					class="relative flex w-full shrink-0 items-center overflow-hidden border-b-2 border-(--text-color) bg-(--bg-color) py-10">
+					<button
+						class="group no-print absolute top-0 right-0 z-50 cursor-pointer p-2 focus:outline-none"
+						onclick={() => (localDarkMode = !localDarkMode)}
+						aria-label="Toggle theme">
+						<div
+							class="h-10 w-10 bg-(--text-color) group-hover:bg-(--highlight-color)"
+							style="
 							mask-image: url('data:image/svg+xml;utf8,{localDarkMode
-							? `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z%22/></svg>`
-							: `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 2v2%22/><path d=%22M12 20v2%22/><path d=%22m4.93 4.93 1.41 1.41%22/><path d=%22m17.66 17.66 1.41 1.41%22/><path d=%22M2 12h2%22/><path d=%22M20 12h2%22/><path d=%22m6.34 17.66-1.41 1.41%22/><path d=%22m19.07 4.93-1.41 1.41%22/><circle cx=%2212%22 cy=%2212%22 r=%224%22/></svg>`}');
+								? `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z%22/></svg>`
+								: `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 2v2%22/><path d=%22M12 20v2%22/><path d=%22m4.93 4.93 1.41 1.41%22/><path d=%22m17.66 17.66 1.41 1.41%22/><path d=%22M2 12h2%22/><path d=%22M20 12h2%22/><path d=%22m6.34 17.66-1.41 1.41%22/><path d=%22m19.07 4.93-1.41 1.41%22/><circle cx=%2212%22 cy=%2212%22 r=%224%22/></svg>`}');
 							-webkit-mask-image: url('data:image/svg+xml;utf8,{localDarkMode
-							? `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z%22/></svg>`
-							: `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 2v2%22/><path d=%22M12 20v2%22/><path d=%22m4.93 4.93 1.41 1.41%22/><path d=%22m17.66 17.66 1.41 1.41%22/><path d=%22M2 12h2%22/><path d=%22M20 12h2%22/><path d=%22m6.34 17.66-1.41 1.41%22/><path d=%22m19.07 4.93-1.41 1.41%22/><circle cx=%2212%22 cy=%2212%22 r=%224%22/></svg>`}');
+								? `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z%22/></svg>`
+								: `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 2v2%22/><path d=%22M12 20v2%22/><path d=%22m4.93 4.93 1.41 1.41%22/><path d=%22m17.66 17.66 1.41 1.41%22/><path d=%22M2 12h2%22/><path d=%22M20 12h2%22/><path d=%22m6.34 17.66-1.41 1.41%22/><path d=%22m19.07 4.93-1.41 1.41%22/><circle cx=%2212%22 cy=%2212%22 r=%224%22/></svg>`}');
 							mask-size: contain;
 							-webkit-mask-size: contain;
 							mask-repeat: no-repeat;
@@ -147,13 +157,13 @@
 							mask-position: center;
 							-webkit-mask-position: center;
 						">
-					</div>
-				</button>
+						</div>
+					</button>
 
-				<div class="flex h-50 w-50 shrink-0 items-center justify-center rounded-full">
-					<div
-						class="animate-spin-vinyl h-full w-full bg-(--highlight-color)"
-						style="
+					<div class="flex h-50 w-50 shrink-0 items-center justify-center rounded-full">
+						<div
+							class="animate-spin-vinyl h-full w-full bg-(--highlight-color)"
+							style="
 							mask-image: url('/logo_zfk_transparent.png');
 							-webkit-mask-image: url('/logo_zfk_transparent.png');
 							mask-size: contain;
@@ -164,53 +174,60 @@
 							-webkit-mask-position: center;
 							will-change: transform;
 						">
-					</div>
-				</div>
-
-				<div class="ml-8 flex flex-1 items-center">
-					<div class="text-4xl font-medium leading-tight">
-						BUNKER <br>
-						AN'N DIEK
-					</div>
-				</div>
-			</div>
-
-			<div class="relative w-full border-b-2 border-(--text-color) bg-(--text-color) text-(--bg-color) shrink-0">
-				<div class="font-clash-display py-4 px-4 text-[120px] leading-none font-bold uppercase">
-					APRIL
-				</div>
-			</div>
-
-			<div class="w-full border-b-2 border-(--text-color) py-4 px-4 shrink-0">
-				<YearSelect {years} year={currentYear} selectYear={() => {}} />
-			</div>
-
-			<main class="flex grow flex-col overflow-hidden">
-				{#each events as event}
-					<div class="flex w-full flex-col border-b-2 border-(--text-color) last:border-b-0">
-						<div class="flex w-full flex-col gap-1 py-8 text-left">
-							<div class="flex shrink-0 items-center gap-6 text-4xl whitespace-pre leading-none tabular-nums opacity-85">
-								<span>{event.dateAndTime}</span>
-							</div>
-							<div class="mt-2 text-5xl font-bold leading-tight">
-								{event.title}							
-								{#if event.subtitle}
-									<span class="ml-4 text-4xl font-medium leading-tight">{event.subtitle}</span>
-								{/if}
-							</div>
 						</div>
 					</div>
-				{/each}
-			</main>
 
-			<footer class="mt-auto flex items-end justify-end border-t-2 border-(--highlight-color) py-8 shrink-0">
-				<div class="text-3xl font-medium tracking-[0.2em] uppercase text-(--text-color)">
-					Osterstraße 19X, Eingang Am Deich
+					<div class="ml-8 flex flex-1 items-center">
+						<div class="text-4xl leading-tight font-medium">
+							BUNKER <br />
+							AN'N DIEK
+						</div>
+					</div>
 				</div>
-			</footer>
+
+				<div
+					class="relative w-full shrink-0 border-b-2 border-(--text-color) bg-(--text-color) text-(--bg-color)">
+					<div class="font-clash-display px-4 py-4 text-[120px] leading-none font-bold uppercase">
+						{activeMonth}
+					</div>
+				</div>
+
+				<div class="w-full shrink-0 border-b-2 border-(--text-color) px-4 py-4">
+					<YearSelect {years} year={currentYear} selectYear={() => {}} />
+				</div>
+
+				<main class="flex grow flex-col overflow-hidden">
+					{#each events as event}
+						<div class="flex w-full flex-col border-b-2 border-(--text-color) last:border-b-0">
+							<div class="flex w-full flex-col gap-1 py-8 text-left">
+								<div
+									class="flex shrink-0 items-center gap-6 text-4xl leading-none whitespace-pre tabular-nums opacity-85">
+									<span>{event.dateAndTime}</span>
+								</div>
+								<div class="mt-2 text-5xl leading-tight font-medium">
+									{event.title}
+									{#if event.subtitle}
+										<span class="font-regular ml-4 text-4xl leading-none">{event.subtitle}</span>
+									{/if}
+								</div>
+								<div class="mt-1 text-3xl leading-none font-normal">
+									{#if event.details}
+										<span>{event.details}</span>
+									{/if}
+								</div>
+							</div>
+						</div>
+					{/each}
+				</main>
+
+				<footer class="mt-auto flex shrink-0 items-end justify-end border-t-2 border-(--highlight-color) py-8">
+					<div class="text-3xl font-medium tracking-[0.2em] text-(--text-color) uppercase">
+						Osterstraße 19X, Eingang Am Deich
+					</div>
+				</footer>
+			</div>
 		</div>
 	</div>
-</div>
 {/if}
 
 <style>
