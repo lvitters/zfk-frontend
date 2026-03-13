@@ -1,9 +1,9 @@
 import { dev } from "$app/environment";
 import { kql } from "$lib/kirby";
 import type { KirbyImage, KirbyPage, ProgrammEvent, Section, Track } from "$lib/types";
-import type { PageLoad } from "./$types";
+import type { PageServerLoad } from "./$types";
 
-// helper to replace raw URLs with their title attribute in HTML
+// replace raw URLs with their title attribute in HTML
 const replaceUrlWithTitle = (html: string | undefined): string | undefined => {
 	if (!html) return html;
 	return html.replace(/<a\s+(?:[^>]*?\s+)?title="([^"]*)"(?:[^>]*?)>(.*?)<\/a>/gi, (match, title, text) => {
@@ -17,7 +17,7 @@ const replaceUrlWithTitle = (html: string | undefined): string | undefined => {
 	});
 };
 
-// helper to transform Kirby urls to relative production paths
+// ransform Kirby urls to relative production paths
 const fixKirbyUrl = (url: string | undefined): string => {
 	if (url && url.includes("/media/")) {
 		const mediaPath = url.substring(url.indexOf("/media/"));
@@ -27,7 +27,7 @@ const fixKirbyUrl = (url: string | undefined): string => {
 	return url || "";
 };
 
-// helper to extract relative media path for dev proxy
+// extract relative media path for dev proxy
 const getRelativeMediaPath = (url: string | undefined) => {
 	if (url && url.includes("/media/")) {
 		return url.substring(url.indexOf("/media/"));
@@ -35,79 +35,70 @@ const getRelativeMediaPath = (url: string | undefined) => {
 	return url || "";
 };
 
-// main client-side load function to fetch data from Kirby
-export const load: PageLoad = async ({ fetch }) => {
-	// 1. events query
-	const eventsQuery = {
-		query: "page('events').children.listed.sortBy('date', 'desc')",
+// main server-side load function to fetch data from Kirby
+export const load: PageServerLoad = async ({ fetch }) => {
+	// combine all queries into one single object for KQL
+	const megaQuery = {
+		query: "site",
 		select: {
-			title: true,
-			date: true,
-			time: true,
-			endDate: true,
-			text: "page.text.toBlocks.toHtml",
-			formattedDate: "page.date.toDate('d.m.Y')",
-			formattedEndDate: "page.endDate.toDate('d.m.Y')",
-			url: true,
-			id: "page.id",
-			images: {
-				query: "page.images",
-				select: { url: true, uuid: true },
-			},
-			imageBlocks: {
-				query: "page.text.toBlocks.filterBy('type', 'image')",
-				select: { content: true },
-			},
-			videos: {
-				query: "page.videos.limit(1)",
-				select: { url: true, mime: true },
-			},
-		},
-	};
-
-	// 2. recordings query
-	const audioQuery = {
-		query: "page('recordings')",
-		select: {
-			files: {
-				query: "page.files",
+			// 1. events
+			events: {
+				query: "page('events').children.listed.sortBy('date', 'desc')",
 				select: {
-					id: "file.uuid",
-					filename: "file.filename",
-					title: "file.titel.value",
-					year: "file.datum.toDate('Y')",
-					displayDate: "file.datum.toDate('d.m.Y')",
-					sortDate: "file.datum.toDate('Y-m-d')",
-					filePath: "file.url",
+					title: true,
+					date: true,
+					time: true,
+					endDate: true,
+					text: "page.text.toBlocks.toHtml",
+					formattedDate: "page.date.toDate('d.m.Y')",
+					formattedEndDate: "page.endDate.toDate('d.m.Y')",
+					url: true,
+					id: "page.id",
+					images: {
+						query: "page.images",
+						select: { url: true, uuid: true },
+					},
+					imageBlocks: {
+						query: "page.text.toBlocks.filterBy('type', 'image')",
+						select: { content: true },
+					},
+					videos: {
+						query: "page.videos.limit(1)",
+						select: { url: true, mime: true },
+					},
 				},
 			},
-			soundcloudLinks: {
-				query: "page.soundcloud_links.toStructure",
+			// 2. recordings
+			audio: {
+				query: "page('recordings')",
 				select: {
-					title: "structureItem.title.value",
-					sortDate: "structureItem.date.toDate('Y-m-d')",
-					displayDate: "structureItem.date.toDate('d.m.Y')",
-					year: "structureItem.date.toDate('Y')",
-					url: "structureItem.url.value",
+					files: {
+						query: "page.files",
+						select: {
+							id: "file.uuid",
+							filename: "file.filename",
+							title: "file.titel.value",
+							year: "file.datum.toDate('Y')",
+							displayDate: "file.datum.toDate('d.m.Y')",
+							sortDate: "file.datum.toDate('Y-m-d')",
+							filePath: "file.url",
+						},
+					},
+					soundcloudLinks: {
+						query: "page.soundcloud_links.toStructure",
+						select: {
+							title: "structureItem.title.value",
+							sortDate: "structureItem.date.toDate('Y-m-d')",
+							displayDate: "structureItem.date.toDate('d.m.Y')",
+							year: "structureItem.date.toDate('Y')",
+							url: "structureItem.url.value",
+						},
+					},
 				},
 			},
-		},
-	};
-
-	// 3. generic pages query (for all other sections)
-	const pagesQuery = {
-		query: "site.children.listed",
-		select: {
-			id: true,
-			title: true,
-			slug: true,
-			text: "page.text.toBlocks.toHtml",
-			images: {
-				query: "page.images",
-				select: { url: true, uuid: true },
-			},
-			children: {
-				query: "page.children.listed",
+			// 3. all other sections
+			pages: {
+				query: "site.children.listed",
 				select: {
 					id: true,
 					title: true,
@@ -117,23 +108,44 @@ export const load: PageLoad = async ({ fetch }) => {
 						query: "page.images",
 						select: { url: true, uuid: true },
 					},
+					children: {
+						query: "page.children.listed",
+						select: {
+							id: true,
+							title: true,
+							slug: true,
+							text: "page.text.toBlocks.toHtml",
+							images: {
+								query: "page.images",
+								select: { url: true, uuid: true },
+							},
+						},
+					},
 				},
 			},
 		},
 	};
 
-	// 4. events page title query
-	// (removed redundant title queries as they are included in pagesQuery)
+	// fetch all data in a single request
+	const result = (await kql(megaQuery, fetch)) as {
+		events: ProgrammEvent[];
+		audio: {
+			files: Track[];
+			soundcloudLinks: { title: string; sortDate: string; displayDate: string; year: string; url: string }[];
+		};
+		pages: KirbyPage[];
+	};
 
-	// fetch all data in parallel
-	const [eventsResult, audioResult, pagesResult] = await Promise.all([
-		kql(eventsQuery, fetch),
-		kql(audioQuery, fetch),
-		kql(pagesQuery, fetch),
-	]);
+	if (!result) {
+		return {
+			events: [],
+			audioFiles: [],
+			sections: [],
+		};
+	}
 
 	// process events data
-	const events = ((eventsResult || []) as ProgrammEvent[]).map((event: ProgrammEvent) => {
+	const events = (result.events || []).map((event: ProgrammEvent) => {
 		let thumbnailUrl = event.images?.[0]?.url;
 
 		// logic to find the first image block and use it as thumbnail
@@ -165,10 +177,7 @@ export const load: PageLoad = async ({ fetch }) => {
 	});
 
 	// process audio files data
-	const rawAudioData = audioResult as {
-		files: Track[];
-		soundcloudLinks: { title: string; sortDate: string; displayDate: string; year: string; url: string }[];
-	};
+	const rawAudioData = result.audio;
 
 	// process local audio files
 	const localFiles = (rawAudioData?.files || [])
@@ -204,7 +213,7 @@ export const load: PageLoad = async ({ fetch }) => {
 	});
 
 	// process all pages into an ordered sections array
-	const pages = (pagesResult || []) as KirbyPage[];
+	const pages = (result.pages || []) as KirbyPage[];
 	const sections: Section[] = pages.map((page: KirbyPage): Section => {
 		if (page.slug === "events") {
 			return {
