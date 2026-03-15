@@ -1,4 +1,5 @@
 import { error } from "@sveltejs/kit";
+import { env } from "$env/dynamic/private";
 import fs from "fs";
 import path from "path";
 
@@ -13,9 +14,14 @@ export async function GET({ url, request }) {
 
 	console.log("[Stream API] Requesting file:", filePath);
 
-	// resolve relative to zfk-frontend root (where package.json is)
-	// we assume zfk-backend is a sibling of zfk-frontend
-	const backendMediaDir = path.resolve("..", "zfk-backend");
+	// use KIRBY_BACKEND_PATH from .env or default to sibling directory
+	const backendMediaDir = env.KIRBY_BACKEND_PATH || path.resolve("..", "zfk-backend");
+	
+	if (!fs.existsSync(backendMediaDir)) {
+		console.error(`[Stream API] Local backend directory not found at: ${backendMediaDir}`);
+		throw error(500, `Local backend directory not found. Please check KIRBY_BACKEND_PATH in .env`);
+	}
+
 	console.log("[Stream API] Backend Dir:", backendMediaDir);
 
 	// construct the full path. 'filePath' is expected to be like '/media/pages/...'
@@ -24,7 +30,7 @@ export async function GET({ url, request }) {
 	const requestedPath = path.resolve(backendMediaDir, relativeFilePath);
 	console.log("[Stream API] Resolved Path:", requestedPath);
 
-	// security: ensure the resolved path is actually inside zfk-backend
+	// security: ensure the resolved path is actually inside backend directory
 	if (!requestedPath.startsWith(backendMediaDir)) {
 		console.error("Path traversal attempt:", requestedPath);
 		throw error(403, "Forbidden");

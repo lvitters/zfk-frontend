@@ -1,4 +1,5 @@
 import { dev } from "$app/environment";
+import { env } from "$env/dynamic/private";
 import { kql } from "$lib/kirby";
 import type { KirbyImage, KirbyPage, ProgrammEvent, Section, Track } from "$lib/types";
 import type { PageServerLoad } from "./$types";
@@ -37,6 +38,8 @@ const getRelativeMediaPath = (url: string | undefined) => {
 
 // main server-side load function to fetch data from Kirby
 export const load: PageServerLoad = async ({ fetch }) => {
+	const isLocalBackend = dev && (env.KIRBY_API_URL?.includes("localhost") || env.KIRBY_API_URL?.includes("127.0.0.1"));
+
 	// combine all queries into one single object for KQL
 	const megaQuery = {
 		query: "site",
@@ -183,13 +186,14 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	const localFiles = (rawAudioData?.files || [])
 		.filter((file: Track) => file.title && file.displayDate)
 		.map((file: Track) => {
-			if (dev) {
-				// in dev mode, use the stream api to handle range requests (seeking)
+			if (isLocalBackend) {
+				// in dev mode WITH a local backend, use the stream api to handle range requests (seeking)
 				// which the local php server might not support
 				const relativePath = getRelativeMediaPath(file.filePath);
 				file.filePath = `/api/stream?file=${relativePath}`;
 			} else {
-				// in production, use the direct backend url (served by apache/nginx with range support)
+				// in production OR when using remote backend in dev, use the direct backend url 
+				// (served by apache/nginx or proxied via vite with range support)
 				file.filePath = fixKirbyUrl(file.filePath) || "";
 			}
 			return { ...file, isExternal: false };
