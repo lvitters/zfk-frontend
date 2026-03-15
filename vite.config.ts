@@ -4,16 +4,16 @@ import { defineConfig, loadEnv } from "vite";
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), "");
-	// extract base url from KIRBY_API_URL (default to http://localhost:8000 if not set)
-	// assuming KIRBY_API_URL is something like http://localhost:8000/api/query
-	const kirbyUrl = env.KIRBY_API_URL ? new URL(env.KIRBY_API_URL).origin : "http://localhost:8000";
+	const apiUrl = env.KIRBY_API_URL || "http://localhost:8000/api/query";
+	const kirbyUrl = new URL(apiUrl).origin;
+	const isSubfolder = apiUrl.includes("/hintern/");
 
 	const proxyConfig = {
-		// proxy /hintern requests to the kirby backend (rewriting the path)
+		// proxy /hintern requests to the kirby backend (rewriting the path if not in subfolder)
 		"/hintern": {
 			target: kirbyUrl,
 			changeOrigin: true,
-			rewrite: (path: string) => path.replace(/^\/hintern/, ""),
+			rewrite: (path: string) => isSubfolder ? path : path.replace(/^\/hintern/, ""),
 		},
 		// legacy proxies
 		"/media": kirbyUrl,
