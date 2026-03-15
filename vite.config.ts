@@ -9,11 +9,11 @@ export default defineConfig(({ mode }) => {
 	const kirbyUrl = env.KIRBY_API_URL ? new URL(env.KIRBY_API_URL).origin : "http://localhost:8000";
 
 	const proxyConfig = {
-		// proxy /backend requests to the kirby backend (rewriting the path)
-		"/backend": {
+		// proxy /hintern requests to the kirby backend (rewriting the path)
+		"/hintern": {
 			target: kirbyUrl,
 			changeOrigin: true,
-			rewrite: (path: string) => path.replace(/^\/backend/, ""),
+			rewrite: (path: string) => path.replace(/^\/hintern/, ""),
 		},
 		// legacy proxies
 		"/media": kirbyUrl,

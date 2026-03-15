@@ -14,7 +14,7 @@ interface KqlQueryBody {
 
 export async function kql<T>(queryBody: KqlQueryBody, fetcher: typeof fetch): Promise<T | null> {
 	// Use the private KIRBY_API_URL from the environment
-	const url = env.KIRBY_API_URL || "/backend/api/query";
+	const url = env.KIRBY_API_URL || "/hintern/api/query";
 
 	// Verify if credentials exist (for debugging)
 	if (!env.KIRBY_API_USER || !env.KIRBY_API_PASSWORD) {

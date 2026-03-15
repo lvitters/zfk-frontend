@@ -21,8 +21,8 @@ const replaceUrlWithTitle = (html: string | undefined): string | undefined => {
 const fixKirbyUrl = (url: string | undefined): string => {
 	if (url && url.includes("/media/")) {
 		const mediaPath = url.substring(url.indexOf("/media/"));
-		// assume backend is deployed to /backend subfolder
-		return `/backend${mediaPath}`;
+		// assume backend is deployed to /hintern subfolder
+		return `/hintern${mediaPath}`;
 	}
 	return url || "";
 };

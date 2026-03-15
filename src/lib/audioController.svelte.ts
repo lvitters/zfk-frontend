@@ -256,7 +256,7 @@ class AudioController {
 		this.scWidget.bind(SC.Widget.Events.READY, () => {
 			// Ready
 		});
-		
+
 		this.scWidget.bind(SC.Widget.Events.ERROR, () => {
 			this.isBuffering = false;
 			this.isPlaying = false;
@@ -269,7 +269,7 @@ class AudioController {
 		try {
 			this.audio.src = track.filePath;
 			this.audio.load();
-			
+
 			const p = this.audio.play();
 			if (p !== undefined) {
 				await p;
@@ -302,7 +302,7 @@ class AudioController {
 					this.duration = d / 1000;
 				});
 				this.isBuffering = false;
-				
+
 				// Force play if auto_play fails (mobile fallback attempt)
 				this.scWidget.isPaused((paused: boolean) => {
 					if (paused) {

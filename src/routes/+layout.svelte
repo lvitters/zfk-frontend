@@ -1,12 +1,15 @@
 <script lang="ts">
 	import Lightbox from "$lib/components/Lightbox.svelte";
 	import Footer from "$lib/components/Footer.svelte";
+	import Maintenance from "$lib/components/Maintenance.svelte";
 	import { lightboxImage, isDarkMode } from "$lib/stores";
 	import { onMount } from "svelte";
 	import { afterNavigate } from "$app/navigation";
 	import { page } from "$app/state";
-	let { children } = $props();
+	let { children, data } = $props();
 	import "../app.css";
+
+	const isMaintenance = $derived(data.isMaintenance);
 
 	// sharepic route is for dev mode only and doesn't need global layout
 	const isSharepic = $derived(page.url.pathname.startsWith("/sharepic"));
@@ -82,7 +85,9 @@
 
 <svelte:window onclick={handleGlobalClick} />
 
-{#if isSharepic}
+{#if isMaintenance}
+	<Maintenance />
+{:else if isSharepic}
 	{@render children()}
 {:else}
 	<div class="flex min-h-screen w-full flex-col bg-(--bg-color)">
