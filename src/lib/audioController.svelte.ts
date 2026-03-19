@@ -21,12 +21,16 @@ class AudioController {
 	 * Initialize the controller with DOM elements.
 	 * Must be called in onMount.
 	 */
-	setElements(audio: HTMLAudioElement, scIframe: HTMLIFrameElement) {
-		this.audio = audio;
-		this.scIframe = scIframe;
+	setElements(audio: HTMLAudioElement, scIframe?: HTMLIFrameElement) {
+		if (audio && !this.audio) {
+			this.audio = audio;
+			this._setupLocalAudio();
+		}
 
-		this._setupLocalAudio();
-		this._initScWidget();
+		if (scIframe && !this.scIframe) {
+			this.scIframe = scIframe;
+			this._initScWidget();
+		}
 	}
 
 	/**
@@ -282,6 +286,15 @@ class AudioController {
 	}
 
 	private async _playExternal(track: Track) {
+		// If widget is not ready yet (e.g. just after consent), wait for it
+		if (!this.scWidget) {
+			let attempts = 0;
+			while (!this.scWidget && attempts < 20) {
+				await new Promise((resolve) => setTimeout(resolve, 250));
+				attempts++;
+			}
+		}
+
 		if (!this.scWidget || !track.externalUrl) {
 			this.isBuffering = false;
 			return;

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Lightbox from "$lib/components/Lightbox.svelte";
 	import Footer from "$lib/components/Footer.svelte";
+	import ModeToggle from "$lib/components/ModeToggle.svelte";
 	import Maintenance from "$lib/components/Maintenance.svelte";
 	import { lightboxImage, isDarkMode } from "$lib/stores";
 	import { onMount } from "svelte";
-	import { afterNavigate } from "$app/navigation";
 	import { page } from "$app/state";
 	let { children, data } = $props();
 	import "../app.css";
@@ -91,6 +91,7 @@
 	{@render children()}
 {:else}
 	<div class="flex min-h-screen w-full flex-col bg-(--bg-color)">
+		<ModeToggle />
 		<Lightbox />
 		<main class="grow">
 			{@render children()}

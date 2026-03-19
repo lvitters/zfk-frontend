@@ -3,7 +3,7 @@
 </script>
 
 <button
-	class="group absolute top-5 right-4 z-50 cursor-pointer p-2 focus:outline-none md:top-8"
+	class="group absolute top-3 right-3 z-100 cursor-pointer p-2 focus:outline-none"
 	onclick={() => isDarkMode.update((d) => !d)}
 	aria-label="Toggle theme">
 	<div

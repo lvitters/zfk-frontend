@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { audioController } from "$lib/audioController.svelte";
 	import YearSelect from "$lib/components/YearSelect.svelte";
+	import { soundCloudConsent, pendingConsentTrackId } from "$lib/stores";
 	import type { Track } from "$lib/types";
 	import { tick } from "svelte";
 
@@ -26,6 +27,7 @@
 	// select a year and smoothly animate the container height change
 	async function selectYear(year: string) {
 		if (year === selectedYear) return;
+		$pendingConsentTrackId = null;
 
 		// 1. lock current height
 		if (listContainer) {
@@ -54,7 +56,25 @@
 
 	// select a track to play
 	function selectTrack(track: Track) {
+		if (track.isExternal && !$soundCloudConsent) {
+			$pendingConsentTrackId = track.id;
+			return;
+		}
 		audioController.play(track);
+	}
+
+	async function acceptSoundCloud() {
+		soundCloudConsent.set(true);
+		// wait for DOM to render the iframe and for the effect to call setElements
+		await tick();
+
+		if ($pendingConsentTrackId) {
+			const track = audioFiles.find((f) => f.id === $pendingConsentTrackId);
+			if (track) {
+				audioController.play(track);
+			}
+			$pendingConsentTrackId = null;
+		}
 	}
 </script>
 
@@ -69,59 +89,64 @@
 		<div bind:this={innerContainer} class="w-full">
 			{#each filteredAudioFiles as file}
 				{@const isActive = file.id === audioController.currentTrack?.id}
+				{@const isPending = file.id === $pendingConsentTrackId}
 				<!-- individual file row -->
-				<button
-					class="group/row relative flex w-full cursor-pointer flex-col gap-1 border-b-2 border-(--text-color) p-4 text-left last:border-b-0 md:px-6 {isActive
-						? 'bg-(--text-color) text-(--bg-color)'
-						: 'hover:bg-(--text-color) hover:text-(--bg-color)'}"
-					onclick={() => {
-						if (isActive) {
-							audioController.toggle();
-						} else {
-							selectTrack(file);
-						}
-					}}>
-					<!-- date row -->
-					<div
-						class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
-						<span>
-							{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.
-						</span>
-						{#if file.isExternal}
-							<!-- SoundCloud logo aligned to the right of the date -->
-							<a
-								href={file.externalUrl}
-								target="_blank"
-								rel="noopener noreferrer"
-								onclick={(e) => {
-									e.stopPropagation(); // prevent selectTrack from being called when clicking the logo
-								}}
-								class="group/icon pointer-events-auto inline-flex items-center"
-								style="height: 1em; width: 1.6em; transform: translateY(-0.12em) scale(2);"
-								aria-label="Listen on SoundCloud">
+				<div class="relative flex w-full flex-col border-b-2 border-(--text-color) last:border-b-0">
+					{#if isPending}
+						<!-- invisible row to maintain exact height -->
+						<div class="invisible flex w-full flex-col gap-1 p-4 md:px-6" aria-hidden="true">
+							<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
+								{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.
+							</div>
+							<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
+								{file.title}
+							</div>
+						</div>
+						<!-- centered prompt -->
+						<div
+							class="absolute inset-0 flex items-center gap-4 bg-(--text-color) p-4 text-(--bg-color) md:px-6">
+							<span class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
+								SoundCloud Dienste aktivieren?
+							</span>
+							<button
+								onclick={acceptSoundCloud}
+								class="cursor-pointer bg-(--bg-color) p-1 text-[clamp(1rem,3vw,1.5rem)] leading-none whitespace-nowrap text-(--text-color) hover:bg-(--highlight-color) active:bg-(--highlight-color)">
+								JA
+							</button>
+							<button
+								onclick={() => ($pendingConsentTrackId = null)}
+								class="cursor-pointer p-1 text-[clamp(1rem,3vw,1.5rem)] leading-none whitespace-nowrap hover:text-(--highlight-color) active:text-(--highlight-color)">
+								X
+							</button>
+						</div>
+					{:else}
+						<button
+							class="group/row relative flex w-full cursor-pointer flex-row items-center justify-between gap-1 p-4 text-left md:px-6 {isActive
+								? 'bg-(--text-color) text-(--bg-color)'
+								: 'hover:bg-(--text-color) hover:text-(--bg-color)'}"
+							onclick={() => {
+								if (isActive) {
+									audioController.toggle();
+								} else {
+									selectTrack(file);
+								}
+							}}>
+							<div class="flex flex-col gap-1">
+								<!-- date row -->
 								<div
-									class="h-full w-full {isActive
-										? 'bg-(--bg-color)'
-										: 'bg-(--text-color) group-hover/row:bg-(--bg-color)'} group-hover/icon:bg-(--highlight-color)!"
-									style="
-										mask-image: url('/soundcloud_icon_white_transparent.png');
-										-webkit-mask-image: url('/soundcloud_icon_white_transparent.png');
-										mask-size: contain;
-										-webkit-mask-size: contain;
-										mask-repeat: no-repeat;
-										-webkit-mask-repeat: no-repeat;
-										mask-position: center;
-										-webkit-mask-position: center;
-									">
+									class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
+									<span>
+										{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.
+									</span>
 								</div>
-							</a>
-						{/if}
-					</div>
-					<!-- title -->
-					<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
-						{file.title}
-					</div>
-				</button>
+								<!-- title -->
+								<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
+									{file.title}
+								</div>
+							</div>
+						</button>
+					{/if}
+				</div>
 			{/each}
 		</div>
 	</div>

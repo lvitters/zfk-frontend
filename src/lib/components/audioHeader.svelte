@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { audioController } from "$lib/audioController.svelte";
-	import ModeToggle from "$lib/components/ModeToggle.svelte";
-	import { onMount } from "svelte";
+	import { soundCloudConsent, pendingConsentTrackId } from "$lib/stores";
+	import { onMount, tick } from "svelte";
 
 	let { audioFiles = [] } = $props();
 
@@ -20,6 +20,13 @@
 	});
 
 	onMount(() => {
+		if (audioEl) {
+			audioController.setElements(audioEl, scIframeEl!);
+		}
+	});
+
+	// update controller when sc iframe becomes available (after consent)
+	$effect(() => {
 		if (audioEl && scIframeEl) {
 			audioController.setElements(audioEl, scIframeEl);
 		}
@@ -30,7 +37,28 @@
 		if (audioFiles && audioFiles.length > 0) {
 			const randomIndex = Math.floor(Math.random() * audioFiles.length);
 			const randomTrack = audioFiles[randomIndex];
+
+			if (randomTrack.isExternal && !$soundCloudConsent) {
+				$pendingConsentTrackId = randomTrack.id;
+				audioController.stop(); // stop any current audio
+				return;
+			}
+
 			audioController.play(randomTrack);
+		}
+	}
+
+	async function acceptSoundCloud() {
+		soundCloudConsent.set(true);
+		// wait for DOM to render the iframe and for the effect to call setElements
+		await tick();
+
+		if ($pendingConsentTrackId) {
+			const track = audioFiles.find((f) => f.id === $pendingConsentTrackId);
+			if (track) {
+				audioController.play(track);
+			}
+			$pendingConsentTrackId = null;
 		}
 	}
 
@@ -114,7 +142,9 @@
 </script>
 
 <svelte:head>
-	<script src="https://w.soundcloud.com/player/api.js"></script>
+	{#if $soundCloudConsent}
+		<script src="https://w.soundcloud.com/player/api.js"></script>
+	{/if}
 </svelte:head>
 
 <div class="flex w-full flex-col">
@@ -122,25 +152,24 @@
 	<audio bind:this={audioEl} preload="metadata" style="display: none;"></audio>
 
 	<!-- SoundCloud Widget Iframe (hidden but active) -->
-	<iframe
-		bind:this={scIframeEl}
-		id="sc-widget"
-		width="10"
-		height="10"
-		scrolling="no"
-		frameborder="no"
-		allow="autoplay; encrypted-media"
-		src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&show_artwork=false"
-		style="position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none;"
-		title="SoundCloud Player">
-	</iframe>
+	{#if $soundCloudConsent}
+		<iframe
+			bind:this={scIframeEl}
+			id="sc-widget"
+			width="10"
+			height="10"
+			scrolling="no"
+			frameborder="no"
+			allow="autoplay; encrypted-media"
+			src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&show_artwork=false"
+			style="position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none;"
+			title="SoundCloud Player">
+		</iframe>
+	{/if}
 
 	<!-- audio header: spinning logo + track info + progress bar -->
 	<div
 		class="relative flex w-full items-center overflow-hidden border-b-2 border-(--text-color) bg-(--bg-color) p-4 py-6 md:py-8">
-		<!-- theme toggle (top right) -->
-		<ModeToggle />
-
 		<!-- spinning logo (leftmost) -->
 		<button
 			onclick={togglePlayback}
@@ -165,36 +194,42 @@
 			</div>
 		</button>
 
-		{#if audioController.currentTrack}
-			<!-- track info (time + title) to the right of the logo -->
+		{#if $pendingConsentTrackId}
+			<!-- consent prompt in header -->
+			<div class="pointer-events-none relative z-20 ml-4 flex flex-1 items-center gap-4">
+				<span class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
+					SoundCloud Dienste aktivieren?
+				</span>
+				<button
+					onclick={acceptSoundCloud}
+					class="pointer-events-auto cursor-pointer bg-(--text-color) p-1 text-[clamp(1rem,3vw,1.5rem)] leading-none whitespace-nowrap text-(--bg-color) hover:bg-(--highlight-color) active:bg-(--highlight-color)">
+					JA
+				</button>
+				<button
+					onclick={() => ($pendingConsentTrackId = null)}
+					class="pointer-events-auto cursor-pointer p-1 text-[clamp(1rem,3vw,1.5rem)] leading-none whitespace-nowrap hover:text-(--highlight-color) active:text-(--highlight-color)">
+					X
+				</button>
+			</div>
+		{:else if audioController.currentTrack}
+			<!-- track info (logo + time + title) to the right of the vinyl -->
 			<div class="pointer-events-none relative z-20 ml-4 flex flex-1 flex-col items-start gap-1 pt-2">
-				<!-- metadata -->
+				<!-- soundcloud row -->
+				<a
+					href={audioController.currentTrack.externalUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="group pointer-events-auto inline-flex h-[clamp(1rem,3vw,1.5rem)] w-[clamp(4.5rem,13.5vw,6.75rem)] items-center"
+					aria-label="Listen on SoundCloud">
+					<div
+						class="h-full w-full bg-(--text-color) mask-[url('/soundcloud_logo_text_transparent.png')] mask-contain mask-left mask-no-repeat group-hover:bg-(--highlight-color)">
+					</div>
+				</a>
+
+				<!-- metadata (play progress) -->
 				<div
 					class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
 					<span>{formatTime(audioController.currentTime)} / {formatTime(audioController.duration)}</span>
-					{#if audioController.currentTrack.isExternal && audioController.currentTrack.externalUrl}
-						<a
-							href={audioController.currentTrack.externalUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="group pointer-events-auto inline-flex items-center"
-							style="height: 1em; width: 1.6em; transform: translateY(-0.12em) scale(2);"
-							aria-label="Listen on SoundCloud">
-							<div
-								class="h-full w-full bg-(--text-color) group-hover:bg-(--highlight-color)"
-								style="
-									mask-image: url('/soundcloud_icon_white_transparent.png');
-									-webkit-mask-image: url('/soundcloud_icon_white_transparent.png');
-									mask-size: contain;
-									-webkit-mask-size: contain;
-									mask-repeat: no-repeat;
-									-webkit-mask-repeat: no-repeat;
-									mask-position: center;
-									-webkit-mask-position: center;
-								">
-							</div>
-						</a>
-					{/if}
 				</div>
 
 				<!-- title -->

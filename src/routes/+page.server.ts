@@ -182,39 +182,21 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	// process audio files data
 	const rawAudioData = result.audio;
 
-	// process local audio files
-	const localFiles = (rawAudioData?.files || [])
-		.filter((file: Track) => file.title && file.displayDate)
-		.map((file: Track) => {
-			if (isLocalBackend) {
-				// in dev mode WITH a local backend, use the stream api to handle range requests (seeking)
-				// which the local php server might not support
-				const relativePath = getRelativeMediaPath(file.filePath);
-				file.filePath = `/api/stream?file=${relativePath}`;
-			} else {
-				// in production OR when using remote backend in dev, use the direct backend url 
-				// (served by apache/nginx or proxied via vite with range support)
-				file.filePath = fixKirbyUrl(file.filePath) || "";
-			}
-			return { ...file, isExternal: false };
-		});
-
 	// process SoundCloud links
-	const externalLinks = (rawAudioData?.soundcloudLinks || []).map((link) => ({
-		id: link.url, // use url as id for external links
-		title: link.title,
-		year: link.year,
-		sortDate: link.sortDate,
-		displayDate: link.displayDate,
-		filePath: "", // empty for external
-		externalUrl: link.url,
-		isExternal: true,
-	}));
-
-	// merge and sort audio files by date
-	const audioFiles = [...localFiles, ...externalLinks].sort((a, b) => {
-		return new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime();
-	});
+	const audioFiles = (rawAudioData?.soundcloudLinks || [])
+		.map((link) => ({
+			id: link.url, // use url as id for external links
+			title: link.title,
+			year: link.year,
+			sortDate: link.sortDate,
+			displayDate: link.displayDate,
+			filePath: "", // empty for external
+			externalUrl: link.url,
+			isExternal: true,
+		}))
+		.sort((a, b) => {
+			return new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime();
+		});
 
 	// process all pages into an ordered sections array
 	const pages = (result.pages || []) as KirbyPage[];
