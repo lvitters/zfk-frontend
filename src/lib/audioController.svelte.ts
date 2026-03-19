@@ -13,6 +13,8 @@ class AudioController {
 	private scIframe: HTMLIFrameElement | null = null;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private scWidget: any | null = null;
+	private scEventsBound = false;
+	private targetTrackId: string | null = null;
 
 	// Constants
 	private readonly SC_POLL_INTERVAL = 500;
@@ -44,10 +46,14 @@ class AudioController {
 			return;
 		}
 
-		// Stop previous track properly
+		// Set target ID immediately to ignore old track events
+		this.targetTrackId = track.id;
+
+		// Stop previous track properly and reset all progress state
 		this.stop();
 
 		this.currentTrack = track;
+		this.targetTrackId = track.id; // re-confirm target
 		this.currentTime = 0;
 		this.duration = 0;
 		this.isBuffering = true;
@@ -81,7 +87,6 @@ class AudioController {
 		} else {
 			this.audio?.pause();
 		}
-		// State updates are handled by event listeners
 	}
 
 	/**
@@ -93,7 +98,6 @@ class AudioController {
 		} else {
 			this.audio?.play().catch((e) => console.error("Resume failed:", e));
 		}
-		// State updates are handled by event listeners
 	}
 
 	/**
@@ -102,8 +106,11 @@ class AudioController {
 	stop() {
 		if (this.audio) {
 			this.audio.pause();
-			this.audio.currentTime = 0;
-			// Don't nuke src immediately if not needed, but can help
+			try {
+				this.audio.currentTime = 0;
+			} catch (e) {
+				// can fail if no src
+			}
 			this.audio.removeAttribute("src");
 			this.audio.load();
 		}
@@ -114,24 +121,26 @@ class AudioController {
 
 		this.isPlaying = false;
 		this.isBuffering = false;
+		this.currentTime = 0;
+		this.duration = 0;
+		this.currentTrack = null;
+		// note: we don't clear targetTrackId here because we want it to persist while loading new track
 	}
 
 	/**
 	 * Seek to a specific time (in seconds).
 	 */
 	seek(time: number) {
-		if (!this.currentTrack) return;
+		if (!this.currentTrack || this.isBuffering) return;
 
 		// Clamp time
 		time = Math.max(0, Math.min(time, this.duration));
 
 		if (this.currentTrack.isExternal) {
 			this.scWidget?.seekTo(time * 1000);
-			// SC widget events will update currentTime
 		} else {
 			if (this.audio) {
 				this.audio.currentTime = time;
-				// Immediate update for UI responsiveness
 				this.currentTime = time;
 			}
 		}
@@ -143,7 +152,7 @@ class AudioController {
 		if (!this.audio) return;
 
 		this.audio.onplay = () => {
-			if (!this.currentTrack?.isExternal) {
+			if (!this.currentTrack?.isExternal && this.currentTrack?.id === this.targetTrackId) {
 				this.isPlaying = true;
 				this.isBuffering = false;
 			}
@@ -163,13 +172,22 @@ class AudioController {
 		};
 
 		this.audio.ontimeupdate = () => {
-			if (this.audio && !this.currentTrack?.isExternal && !this.audio.seeking) {
+			// CRITICAL: ignore events from old tracks or while buffering
+			if (this.currentTrack?.isExternal) return;
+			if (this.currentTrack?.id !== this.targetTrackId) return;
+			
+			if (this.isBuffering) {
+				this.currentTime = 0;
+				return;
+			}
+
+			if (this.audio && !this.audio.seeking) {
 				this.currentTime = this.audio.currentTime;
 			}
 		};
 
 		this.audio.onloadedmetadata = () => {
-			if (this.audio && !this.currentTrack?.isExternal) {
+			if (this.audio && !this.currentTrack?.isExternal && this.currentTrack?.id === this.targetTrackId) {
 				this.duration = this.audio.duration;
 				this.isBuffering = false;
 			}
@@ -203,13 +221,11 @@ class AudioController {
 		const SC = (window as any).SC;
 
 		if (this.scIframe && SC) {
-			// Check if widget is already initialized on this iframe
 			if (!this.scWidget) {
 				this.scWidget = SC.Widget(this.scIframe);
 				this._bindScEvents();
 			}
 		} else {
-			// Retry loop
 			const timer = setInterval(() => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				const SC = (window as any).SC;
@@ -225,15 +241,16 @@ class AudioController {
 	}
 
 	private _bindScEvents() {
-		if (!this.scWidget) return;
+		if (!this.scWidget || this.scEventsBound) return;
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const SC = (window as any).SC;
 
 		this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-			if (this.currentTrack?.isExternal) {
+			if (this.currentTrack?.isExternal && this.currentTrack?.id === this.targetTrackId) {
 				this.isPlaying = true;
-				this.isBuffering = false;
+				// CRITICAL: do NOT set isBuffering=false here. 
+				// The PLAY event can fire before the new track has actually loaded internally.
 			}
 		});
 
@@ -252,19 +269,24 @@ class AudioController {
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.scWidget.bind(SC.Widget.Events.PLAY_PROGRESS, (data: any) => {
-			if (this.currentTrack?.isExternal) {
-				this.currentTime = data.currentPosition / 1000;
+			// CRITICAL: ignore events from old tracks or while buffering
+			if (!this.currentTrack?.isExternal) return;
+			if (this.currentTrack?.id !== this.targetTrackId) return;
+			
+			if (this.isBuffering) {
+				this.currentTime = 0;
+				return;
 			}
-		});
 
-		this.scWidget.bind(SC.Widget.Events.READY, () => {
-			// Ready
+			this.currentTime = data.currentPosition / 1000;
 		});
 
 		this.scWidget.bind(SC.Widget.Events.ERROR, () => {
 			this.isBuffering = false;
 			this.isPlaying = false;
 		});
+
+		this.scEventsBound = true;
 	}
 
 	private async _playLocal(track: Track) {
@@ -280,13 +302,14 @@ class AudioController {
 			}
 		} catch (e) {
 			console.error("Local play failed:", e);
-			this.isBuffering = false;
-			this.isPlaying = false;
+			if (this.targetTrackId === track.id) {
+				this.isBuffering = false;
+				this.isPlaying = false;
+			}
 		}
 	}
 
 	private async _playExternal(track: Track) {
-		// If widget is not ready yet (e.g. just after consent), wait for it
 		if (!this.scWidget) {
 			let attempts = 0;
 			while (!this.scWidget && attempts < 20) {
@@ -300,7 +323,6 @@ class AudioController {
 			return;
 		}
 
-		// Re-bind events because widget instance might change behavior on load
 		this._bindScEvents();
 
 		this.scWidget.load(track.externalUrl, {
@@ -311,14 +333,18 @@ class AudioController {
 			download: false,
 			show_playcount: false,
 			callback: () => {
-				this.scWidget.getDuration((d: number) => {
-					this.duration = d / 1000;
-				});
-				this.isBuffering = false;
+				// Only proceed if this is still the track we want to play
+				if (this.targetTrackId !== track.id) return;
 
-				// Force play if auto_play fails (mobile fallback attempt)
+				this.scWidget.getDuration((d: number) => {
+					if (this.targetTrackId === track.id) {
+						this.duration = d / 1000;
+						this.isBuffering = false; // Only now we are ready
+					}
+				});
+
 				this.scWidget.isPaused((paused: boolean) => {
-					if (paused) {
+					if (paused && this.targetTrackId === track.id) {
 						this.scWidget.play();
 					}
 				});

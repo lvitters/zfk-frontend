@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { audioController } from "$lib/audioController.svelte";
-	import { soundCloudConsent, pendingConsentTrackId } from "$lib/stores";
+	import ModeToggle from "$lib/components/ModeToggle.svelte";
+	import { soundCloudConsent, pendingConsentTrackId, pendingConsentSource } from "$lib/stores";
 	import { onMount, tick } from "svelte";
+	import { get } from "svelte/store";
 
 	let { audioFiles = [] } = $props();
 
@@ -40,6 +42,7 @@
 
 			if (randomTrack.isExternal && !$soundCloudConsent) {
 				$pendingConsentTrackId = randomTrack.id;
+				$pendingConsentSource = "header";
 				audioController.stop(); // stop any current audio
 				return;
 			}
@@ -59,6 +62,7 @@
 				audioController.play(track);
 			}
 			$pendingConsentTrackId = null;
+			$pendingConsentSource = null;
 		}
 	}
 
@@ -153,6 +157,7 @@
 
 	<!-- SoundCloud Widget Iframe (hidden but active) -->
 	{#if $soundCloudConsent}
+		{@const initialTrack = audioFiles.find((f) => f.id === $pendingConsentTrackId)}
 		<iframe
 			bind:this={scIframeEl}
 			id="sc-widget"
@@ -161,7 +166,7 @@
 			scrolling="no"
 			frameborder="no"
 			allow="autoplay; encrypted-media"
-			src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&show_artwork=false"
+			src="https://w.soundcloud.com/player/?url={initialTrack?.externalUrl || 'https%3A//api.soundcloud.com/tracks/293'}&show_artwork=false"
 			style="position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none;"
 			title="SoundCloud Player">
 		</iframe>
@@ -194,7 +199,7 @@
 			</div>
 		</button>
 
-		{#if $pendingConsentTrackId}
+		{#if $pendingConsentTrackId && $pendingConsentSource === "header"}
 			<!-- consent prompt in header -->
 			<div class="pointer-events-none relative z-20 ml-4 flex flex-1 items-center gap-4">
 				<span class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">

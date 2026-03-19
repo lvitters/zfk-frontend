@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { audioController } from "$lib/audioController.svelte";
 	import YearSelect from "$lib/components/YearSelect.svelte";
-	import { soundCloudConsent, pendingConsentTrackId } from "$lib/stores";
+	import { soundCloudConsent, pendingConsentTrackId, pendingConsentSource } from "$lib/stores";
 	import type { Track } from "$lib/types";
 	import { tick } from "svelte";
 
@@ -28,6 +28,7 @@
 	async function selectYear(year: string) {
 		if (year === selectedYear) return;
 		$pendingConsentTrackId = null;
+		$pendingConsentSource = null;
 
 		// 1. lock current height
 		if (listContainer) {
@@ -58,6 +59,7 @@
 	function selectTrack(track: Track) {
 		if (track.isExternal && !$soundCloudConsent) {
 			$pendingConsentTrackId = track.id;
+			$pendingConsentSource = "list";
 			return;
 		}
 		audioController.play(track);
@@ -74,6 +76,7 @@
 				audioController.play(track);
 			}
 			$pendingConsentTrackId = null;
+			$pendingConsentSource = null;
 		}
 	}
 </script>
@@ -87,7 +90,7 @@
 		<div bind:this={innerContainer} class="w-full">
 			{#each filteredAudioFiles as file}
 				{@const isActive = file.id === audioController.currentTrack?.id}
-				{@const isPending = file.id === $pendingConsentTrackId}
+				{@const isPending = file.id === $pendingConsentTrackId && $pendingConsentSource === "list"}
 				<!-- individual file row -->
 				<div class="relative flex w-full flex-col border-b-2 border-(--text-color) last:border-b-0">
 					{#if isPending}

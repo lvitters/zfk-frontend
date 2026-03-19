@@ -33,5 +33,6 @@ if (typeof window !== "undefined") {
 }
 
 export const pendingConsentTrackId: Writable<string | null> = writable(null);
+export const pendingConsentSource: Writable<"header" | "list" | null> = writable(null);
 
 export const lightboxImage: Writable<string | null> = writable(null);
