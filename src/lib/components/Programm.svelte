@@ -132,7 +132,7 @@
 	<!-- preview row for event list -->
 	<div class="flex w-full justify-start">
 		<button
-			class="relative flex w-full cursor-pointer flex-col overflow-hidden p-4 text-left focus:outline-none md:px-6 {expandedEventId ===
+			class="relative flex w-full cursor-pointer flex-col overflow-hidden px-2 py-4 text-left focus:outline-none md:px-6 {expandedEventId ===
 			event.id
 				? 'bg-(--text-color) text-(--bg-color)'
 				: 'hover:bg-(--text-color) hover:text-(--bg-color)'}"
@@ -164,7 +164,7 @@
 
 {#snippet expandedEventContent(event: ProgrammEvent)}
 	<!-- expanded details view for an event -->
-	<div class="expanded-event-container flex w-full flex-col gap-6 p-4 md:px-6" transition:slide>
+	<div class="expanded-event-container flex w-full flex-col gap-6 px-2 py-4 md:px-6" transition:slide>
 		<!-- event text -->
 		<div class="kirby-content w-full text-base leading-relaxed md:text-lg">
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -174,17 +174,13 @@
 {/snippet}
 
 <div class="flex w-full flex-col">
-	<!-- year select row -->
-	<div class="w-full border-b-2 border-(--text-color) p-2 md:px-4">
-		<YearSelect {years} year={selectedYear} {selectYear} />
-	</div>
+	<YearSelect {years} year={selectedYear} {selectYear} />
 
+	<!-- events -->
 	<div bind:this={listContainer} class="w-full overflow-hidden transition-[height] duration-300 ease-in-out">
 		<div bind:this={innerContainer} class="w-full">
 			{#each filteredEvents as event, index}
-				<div
-					class="event-row w-full border-b-2 border-(--text-color) last:border-b-0"
-					use:addRef={event.id}>
+				<div class="event-row w-full border-b-2 border-(--text-color) last:border-b-0" use:addRef={event.id}>
 					{@render previewRow(event, index)}
 					{#if expandedEventId === event.id}
 						{@render expandedEventContent(event)}
@@ -195,7 +191,7 @@
 	</div>
 </div>
 
-<!-- Preload images for the selected year so they appear immediately on expand -->
+<!-- preload images for the selected year so they appear immediately on expand -->
 <svelte:head>
 	{#each filteredEvents as event}
 		{#if event.firstImageAttrs}

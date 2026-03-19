@@ -81,9 +81,7 @@
 <!-- display files list container -->
 <div class="flex w-full flex-col">
 	<!-- year select header -->
-	<div class="w-full border-b-2 border-(--text-color) p-2 md:px-4">
-		<YearSelect {years} year={selectedYear} {selectYear} />
-	</div>
+	<YearSelect {years} year={selectedYear} {selectYear} />
 
 	<div bind:this={listContainer} class="w-full overflow-hidden transition-[height] duration-300 ease-in-out">
 		<div bind:this={innerContainer} class="w-full">
@@ -94,7 +92,7 @@
 				<div class="relative flex w-full flex-col border-b-2 border-(--text-color) last:border-b-0">
 					{#if isPending}
 						<!-- invisible row to maintain exact height -->
-						<div class="invisible flex w-full flex-col gap-1 p-4 md:px-6" aria-hidden="true">
+						<div class="invisible flex w-full flex-col gap-1 px-2 py-4 md:px-6" aria-hidden="true">
 							<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
 								{file.sortDate.split("-")[2]}.{file.sortDate.split("-")[1]}.
 							</div>
@@ -104,7 +102,7 @@
 						</div>
 						<!-- centered prompt -->
 						<div
-							class="absolute inset-0 flex items-center gap-4 bg-(--text-color) p-4 text-(--bg-color) md:px-6">
+							class="absolute inset-0 flex items-center gap-4 bg-(--text-color) px-2 py-4 text-(--bg-color) md:px-6">
 							<span class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
 								SoundCloud Dienste aktivieren?
 							</span>
@@ -121,7 +119,7 @@
 						</div>
 					{:else}
 						<button
-							class="group/row relative flex w-full cursor-pointer flex-row items-center justify-between gap-1 p-4 text-left md:px-6 {isActive
+							class="group/row relative flex w-full cursor-pointer flex-row items-center justify-between gap-1 px-2 py-4 text-left md:px-6 {isActive
 								? 'bg-(--text-color) text-(--bg-color)'
 								: 'hover:bg-(--text-color) hover:text-(--bg-color)'}"
 							onclick={() => {
