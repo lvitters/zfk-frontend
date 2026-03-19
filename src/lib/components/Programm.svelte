@@ -132,7 +132,7 @@
 	<!-- preview row for event list -->
 	<div class="flex w-full justify-start">
 		<button
-			class="relative flex w-full cursor-pointer flex-col overflow-hidden px-2 py-4 text-left focus:outline-none md:px-6 {expandedEventId ===
+			class="relative flex w-full cursor-pointer flex-col overflow-hidden p-3 text-left focus:outline-none md:px-6 {expandedEventId ===
 			event.id
 				? 'bg-(--text-color) text-(--bg-color)'
 				: 'hover:bg-(--text-color) hover:text-(--bg-color)'}"
@@ -164,7 +164,7 @@
 
 {#snippet expandedEventContent(event: ProgrammEvent)}
 	<!-- expanded details view for an event -->
-	<div class="expanded-event-container flex w-full flex-col gap-6 px-2 py-4 md:px-6" transition:slide>
+	<div class="expanded-event-container flex w-full flex-col gap-6 p-3 md:px-6" transition:slide>
 		<!-- event text -->
 		<div class="kirby-content w-full text-base leading-relaxed md:text-lg">
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
