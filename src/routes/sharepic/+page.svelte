@@ -6,10 +6,10 @@
 
 	const programData: Record<string, { dateAndTime: string; title: string; subtitle: string; details: string }[]> = {
 		märz: [
-			{ dateAndTime: "14.03   22:00", title: "HDMI Records", subtitle: "Release Event", details: "" },
-			{ dateAndTime: "18.03   20:00", title: "Bunker An'n Diek", subtitle: "Soft Opening", details: "" },
+			{ dateAndTime: "14.03    22:00", title: "HDMI Records", subtitle: "Release Event", details: "" },
+			{ dateAndTime: "20.03    19:00", title: "Bunker Eröffnung", subtitle: "Barabend", details: "" },
 			{
-				dateAndTime: "28.03   20:00  Einlass",
+				dateAndTime: "28.03    Einlass 20:00",
 				title: "Die Behörde + Nein Danke",
 				subtitle: "Doppelkornzert",
 				details: "aftershow: DJ eXpresso fuckers",
@@ -192,14 +192,12 @@
 					</div>
 				</div>
 
-				<div class="w-full shrink-0 border-b-2 border-(--text-color) px-4 py-4">
-					<YearSelect {years} year={currentYear} selectYear={() => {}} />
-				</div>
+				<YearSelect {years} year={currentYear} selectYear={() => {}} />
 
 				<main class="flex grow flex-col overflow-hidden">
 					{#each events as event}
 						<div class="flex w-full flex-col border-b-2 border-(--text-color) last:border-b-0">
-							<div class="flex w-full flex-col gap-1 py-8 text-left">
+							<div class="flex w-full flex-col gap-2 py-8 text-left">
 								<div
 									class="flex shrink-0 items-center gap-6 text-4xl leading-none whitespace-pre tabular-nums opacity-85">
 									<span>{event.dateAndTime}</span>
@@ -207,7 +205,7 @@
 								<div class="mt-2 text-5xl leading-tight font-medium">
 									{event.title}
 									{#if event.subtitle}
-										<span class="font-regular ml-4 text-4xl leading-none">{event.subtitle}</span>
+										<span class="ml-4 text-4xl leading-none">{event.subtitle}</span>
 									{/if}
 								</div>
 								<div class="mt-1 text-3xl leading-none font-normal">
@@ -222,7 +220,7 @@
 
 				<footer class="mt-auto flex shrink-0 items-end justify-end border-t-2 border-(--highlight-color) py-8">
 					<div class="text-3xl font-medium tracking-[0.2em] text-(--text-color) uppercase">
-						Osterstraße 19X, Eingang Am Deich
+						Osterstraße 19X
 					</div>
 				</footer>
 			</div>
