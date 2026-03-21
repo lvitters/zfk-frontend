@@ -57,7 +57,7 @@
 
 	// select a track to play
 	function selectTrack(track: Track) {
-		if (track.isExternal && !$soundCloudConsent) {
+		if (!$soundCloudConsent) {
 			$pendingConsentTrackId = track.id;
 			$pendingConsentSource = "list";
 			return;

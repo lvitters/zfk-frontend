@@ -3,11 +3,9 @@
 	import ModeToggle from "$lib/components/ModeToggle.svelte";
 	import { soundCloudConsent, pendingConsentTrackId, pendingConsentSource } from "$lib/stores";
 	import { onMount, tick } from "svelte";
-	import { get } from "svelte/store";
 
 	let { audioFiles = [] } = $props();
 
-	let audioEl: HTMLAudioElement | undefined = $state();
 	let scIframeEl: HTMLIFrameElement | undefined = $state();
 
 	let isDragging = $state(false);
@@ -22,15 +20,15 @@
 	});
 
 	onMount(() => {
-		if (audioEl) {
-			audioController.setElements(audioEl, scIframeEl!);
+		if (scIframeEl) {
+			audioController.setElements(scIframeEl);
 		}
 	});
 
 	// update controller when sc iframe becomes available (after consent)
 	$effect(() => {
-		if (audioEl && scIframeEl) {
-			audioController.setElements(audioEl, scIframeEl);
+		if (scIframeEl) {
+			audioController.setElements(scIframeEl);
 		}
 	});
 
@@ -40,7 +38,7 @@
 			const randomIndex = Math.floor(Math.random() * audioFiles.length);
 			const randomTrack = audioFiles[randomIndex];
 
-			if (randomTrack.isExternal && !$soundCloudConsent) {
+			if (!$soundCloudConsent) {
 				$pendingConsentTrackId = randomTrack.id;
 				$pendingConsentSource = "header";
 				audioController.stop(); // stop any current audio
@@ -77,7 +75,7 @@
 	}
 
 	// update current time based on click/drag position
-	function updateTime(clientX: number) {
+	function updateTime(clientX: number, commit = false) {
 		if (!progressBar || !audioController.duration) return;
 		if (!audioController.currentTrack) return;
 
@@ -87,12 +85,9 @@
 		const ratio = Math.max(0, Math.min(1, x / width));
 		const newTime = ratio * audioController.duration;
 
-		// update controller immediately for responsive UI during drag?
-		// usually better to just seek on end, or seek continuously.
-		// controller's seek updates the actual audio, which updates currentTime via events.
-		// to make dragging smooth, we might want to override the displayed time locally.
-		// but for now let's just seek.
-		audioController.seek(newTime);
+		// If commit=false, we only update the local state in the controller
+		// This makes the UI responsive without triggering SoundCloud API calls
+		audioController.seek(newTime, commit);
 	}
 
 	// start dragging the progress bar
@@ -100,9 +95,10 @@
 		if (!audioController.currentTrack) return;
 
 		isDragging = true;
+		audioController.isSeeking = true; // Block incoming progress events
 
 		const clientX = "touches" in event ? event.touches[0].clientX : event.clientX;
-		updateTime(clientX);
+		updateTime(clientX, false);
 
 		window.addEventListener("mousemove", onDragMove);
 		window.addEventListener("touchmove", onDragMove, { passive: false });
@@ -118,12 +114,21 @@
 		}
 
 		const clientX = "touches" in event ? event.touches[0].clientX : event.clientX;
-		updateTime(clientX);
+		updateTime(clientX, false);
 	}
 
 	// stop dragging
 	function onDragEnd() {
 		isDragging = false;
+
+		// Perform the final actual seek to SoundCloud
+		audioController.seek(audioController.currentTime, true);
+		
+		// Wait slightly before resuming progress event processing to avoid "snapping" back to old position
+		setTimeout(() => {
+			audioController.isSeeking = false;
+		}, 100);
+
 		window.removeEventListener("mousemove", onDragMove);
 		window.removeEventListener("touchmove", onDragMove);
 		window.removeEventListener("mouseup", onDragEnd);
@@ -152,12 +157,8 @@
 </svelte:head>
 
 <div class="flex w-full flex-col">
-	<!-- HTML5 Audio (hidden but active) -->
-	<audio bind:this={audioEl} preload="metadata" style="display: none;"></audio>
-
 	<!-- SoundCloud Widget Iframe (hidden but active) -->
 	{#if $soundCloudConsent}
-		{@const initialTrack = audioFiles.find((f) => f.id === $pendingConsentTrackId)}
 		<iframe
 			bind:this={scIframeEl}
 			id="sc-widget"
@@ -166,7 +167,7 @@
 			scrolling="no"
 			frameborder="no"
 			allow="autoplay; encrypted-media"
-			src="https://w.soundcloud.com/player/?url={initialTrack?.externalUrl || 'https%3A//api.soundcloud.com/tracks/293'}&show_artwork=false"
+			src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&show_artwork=false"
 			style="position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none;"
 			title="SoundCloud Player">
 		</iframe>

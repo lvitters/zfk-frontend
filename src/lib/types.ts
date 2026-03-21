@@ -26,9 +26,7 @@ export interface Track {
 	sortDate: string;
 	displayDate: string;
 	title: string;
-	filePath: string;
-	externalUrl?: string;
-	isExternal?: boolean;
+	externalUrl: string;
 }
 
 export interface KirbyVideo {

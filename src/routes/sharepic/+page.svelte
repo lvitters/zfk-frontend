@@ -12,7 +12,7 @@
 				dateAndTime: "28.03    Einlass 20:00",
 				title: "Die Behörde + Nein Danke",
 				subtitle: "Doppelkornzert",
-				details: "aftershow: DJ eXpresso fuckers",
+				details: "aftershow DJs:   eXpresso fuckers",
 			},
 		],
 		april: [
@@ -134,7 +134,7 @@
 				--sharepic-height: {aspectRatio === '4:5' ? '1350px' : '1440px'};
 				transform: scale({scale});
 			"
-				class="relative flex origin-top flex-col overflow-hidden bg-(--bg-color) p-8 text-(--text-color)">
+				class="relative flex origin-top flex-col overflow-hidden bg-(--bg-color) p-14 text-(--text-color)">
 				<div
 					class="relative flex w-full shrink-0 items-center overflow-hidden border-b-2 border-(--text-color) bg-(--bg-color) py-10">
 					<button
@@ -202,13 +202,13 @@
 									class="flex shrink-0 items-center gap-6 text-4xl leading-none whitespace-pre tabular-nums opacity-85">
 									<span>{event.dateAndTime}</span>
 								</div>
-								<div class="mt-2 text-5xl leading-tight font-medium">
+								<div class="mt-2 text-5xl leading-tight font-medium whitespace-pre">
 									{event.title}
 									{#if event.subtitle}
-										<span class="ml-4 text-4xl leading-none">{event.subtitle}</span>
+										<span class="ml-4 text-4xl leading-none whitespace-pre">{event.subtitle}</span>
 									{/if}
 								</div>
-								<div class="mt-1 text-3xl leading-none font-normal">
+								<div class="mt-1 text-3xl leading-none font-normal whitespace-pre">
 									{#if event.details}
 										<span>{event.details}</span>
 									{/if}

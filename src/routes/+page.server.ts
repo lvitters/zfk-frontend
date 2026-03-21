@@ -28,18 +28,8 @@ const fixKirbyUrl = (url: string | undefined): string => {
 	return url || "";
 };
 
-// extract relative media path for dev proxy
-const getRelativeMediaPath = (url: string | undefined) => {
-	if (url && url.includes("/media/")) {
-		return url.substring(url.indexOf("/media/"));
-	}
-	return url || "";
-};
-
 // main server-side load function to fetch data from Kirby
 export const load: PageServerLoad = async ({ fetch }) => {
-	const isLocalBackend = dev && (env.KIRBY_API_URL?.includes("localhost") || env.KIRBY_API_URL?.includes("127.0.0.1"));
-
 	// combine all queries into one single object for KQL
 	const megaQuery = {
 		query: "site",
@@ -75,18 +65,6 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			audio: {
 				query: "page('recordings')",
 				select: {
-					files: {
-						query: "page.files",
-						select: {
-							id: "file.uuid",
-							filename: "file.filename",
-							title: "file.titel.value",
-							year: "file.datum.toDate('Y')",
-							displayDate: "file.datum.toDate('d.m.Y')",
-							sortDate: "file.datum.toDate('Y-m-d')",
-							filePath: "file.url",
-						},
-					},
 					soundcloudLinks: {
 						query: "page.soundcloud_links.toStructure",
 						select: {
@@ -133,7 +111,6 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	const result = (await kql(megaQuery, fetch)) as {
 		events: ProgrammEvent[];
 		audio: {
-			files: Track[];
 			soundcloudLinks: { title: string; sortDate: string; displayDate: string; year: string; url: string }[];
 		};
 		pages: KirbyPage[];
@@ -179,20 +156,15 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		};
 	});
 
-	// process audio files data
-	const rawAudioData = result.audio;
-
 	// process SoundCloud links
-	const audioFiles = (rawAudioData?.soundcloudLinks || [])
+	const audioFiles = (result.audio?.soundcloudLinks || [])
 		.map((link) => ({
 			id: link.url, // use url as id for external links
 			title: link.title,
 			year: link.year,
 			sortDate: link.sortDate,
 			displayDate: link.displayDate,
-			filePath: "", // empty for external
 			externalUrl: link.url,
-			isExternal: true,
 		}))
 		.sort((a, b) => {
 			return new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime();
