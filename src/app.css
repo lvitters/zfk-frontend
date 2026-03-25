@@ -16,12 +16,12 @@
 }
 
 .font-clash-display {
-	font-family: "ClashDisplayVariable", sans-serif;
+	@apply font-clash-display;
 }
 
 body {
 	min-width: 320px;
-	font-family: "ClashGroteskVariable", sans-serif;
+	@apply font-clash-grotesk;
 	letter-spacing: 0.045em;
 	line-height: 1.2;
 	color: var(--text-color);
@@ -74,6 +74,8 @@ body {
 
 /* spin vinyl animation */
 @theme {
+	--font-clash-display: "ClashDisplayVariable", sans-serif;
+	--font-clash-grotesk: "ClashGroteskVariable", sans-serif;
 	--animate-spin-vinyl: spin-vinyl 4s linear infinite;
 
 	@keyframes spin-vinyl {
@@ -85,52 +87,52 @@ body {
 
 /* kirby content */
 @layer components {
-	/* reset margins to handle spacing contextually */
+	/* 1. Global Reset & Universal Flow */
 	.kirby-content > * {
 		@apply mt-0 mb-0;
 	}
 
-	/* standard flow: default spacing between stacked elements */
+	/* The Base Gap: Used for paragraphs, images, and generic content. */
 	.kirby-content > * + * {
 		@apply mt-6 md:mt-8;
 	}
 
-	/* headings */
-	.kirby-content h1 {
-		@apply font-bold;
-		font-size: clamp(1.5rem, 5vw, 3rem);
-		font-weight: 900;
+	/* 2. Heading Rhythms: Extra space ABOVE to start a new grouping. */
+	/* All headings (H1, H2, H3) act as major section breaks. */
+	.kirby-content > * + :is(h1, h2, h3) {
+		@apply mt-16 md:mt-24;
 	}
-	/* if H1 follows something (rare), give it extra space */
-	.kirby-content > * + h1 {
-		@apply mt-12 md:mt-16;
+
+	/* 3. Heading Groups: Tighten space between consecutive headings. */
+	/* e.g., Title (H2) -> Artist (H3) or H1 -> H2. */
+	.kirby-content :is(h1, h2, h3) + :is(h1, h2, h3) {
+		@apply !mt-1 md:!mt-2;
+	}
+
+	/* 4. Heading to Content: Slightly tighter gap between a heading and its content. */
+	.kirby-content :is(h1, h2, h3) + :not(:is(h1, h2, h3)) {
+		@apply mt-4 md:mt-5;
+	}
+
+	/* 5. Heading Styles (Visuals only) */
+	.kirby-content h1 {
+		@apply font-clash-display font-bold;
+		font-size: clamp(1.75rem, 6vw, 3.5rem);
+		font-weight: 700;
+		line-height: 1.1;
 	}
 
 	.kirby-content h2 {
 		@apply font-bold;
-		font-size: clamp(1.25rem, 3vw, 2rem);
+		font-size: clamp(1.5rem, 4vw, 2.5rem);
 		font-weight: 600;
 	}
-	.kirby-content > * + h2 {
-		@apply mt-10 md:mt-12;
-	}
 
+	/* Artist names (H3) - bold and emphasized, but smaller than H2 */
 	.kirby-content h3 {
-		@apply font-medium;
-		font-size: clamp(1.1rem, 2vw, 1.5rem);
+		@apply font-bold tracking-widest;
+		font-size: clamp(1.15rem, 2.5vw, 1.75rem);
 		font-weight: 500;
-	}
-	.kirby-content > * + h3 {
-		@apply mt-8 md:mt-10;
-	}
-
-	.kirby-content h4 {
-		@apply font-bold tracking-wide;
-		font-size: clamp(1.25rem, 3vw, 2rem);
-		font-weight: 700;
-	}
-	.kirby-content > * + h4 {
-		@apply mt-2 md:mt-4;
 	}
 
 	/* regular text */
@@ -141,18 +143,10 @@ body {
 		white-space: pre-line;
 		font-weight: 400;
 		width: min(100%, 70ch);
-		opacity: 0.85;
+		opacity: 0.9;
 		overflow-wrap: break-word;
 		word-break: normal;
 		hyphens: none;
-	}
-
-	/* contextual: tighten text following a heading (grouping) */
-	.kirby-content h1 + p,
-	.kirby-content h2 + p,
-	.kirby-content h3 + p,
-	.kirby-content h4 + p {
-		@apply mt-2 md:mt-3;
 	}
 
 	/* media */
@@ -171,16 +165,17 @@ body {
 	}
 
 	/* logic breakers */
-	/* use '---' in markdown or the 'Spacer' block to create a break that resets spacing */
+	/* use '---' for a large intentional break if needed */
 	.kirby-content hr {
 		@apply h-0 border-0 opacity-0;
+		@apply mt-16 md:mt-24;
 	}
 
 	.kirby-content {
 		user-select: text;
 	}
 
-	/* first element should have no top margin usually */
+	/* first element should have no top margin */
 	.kirby-content > :first-child {
 		margin-top: 0;
 	}

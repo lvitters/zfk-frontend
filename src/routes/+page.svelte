@@ -6,7 +6,6 @@
 	import MainSection from "$lib/components/MainSection.svelte";
 	import HeaderSection from "$lib/components/HeaderSection.svelte";
 	import { slide } from "svelte/transition";
-	import { onMount } from "svelte";
 
 	let { data } = $props();
 	let events = $derived(data.events);
