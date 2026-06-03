@@ -17,7 +17,9 @@
 					-webkit-mask-position: center;">
 		</div>
 
-		<h1 class="text-2xl font-bold tracking-widest text-(--text-color) md:text-4xl">IM BAU</h1>
+		<h1 class="text-5xl leading-[0.8] tracking-wide text-(--text-color) md:text-5xl">
+			<div class="flex scale-x-120 font-bold">NEU BAU</div>
+		</h1>
 	</div>
 </div>
 

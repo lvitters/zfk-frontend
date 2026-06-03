@@ -94,45 +94,45 @@ body {
 
 	/* The Base Gap: Used for paragraphs, images, and generic content. */
 	.kirby-content > * + * {
-		@apply mt-6 md:mt-8;
+		@apply mt-6;
 	}
 
 	/* 2. Heading Rhythms: Extra space ABOVE to start a new grouping. */
 	/* All headings (H1, H2, H3) act as major section breaks. */
 	.kirby-content > * + :is(h1, h2, h3) {
-		@apply mt-16 md:mt-24;
+		@apply mt-8;
 	}
 
 	/* 3. Heading Groups: Tighten space between consecutive headings. */
 	/* e.g., Title (H2) -> Artist (H3) or H1 -> H2. */
 	.kirby-content :is(h1, h2, h3) + :is(h1, h2, h3) {
-		@apply !mt-1 md:!mt-2;
+		@apply mt-4!;
 	}
 
 	/* 4. Heading to Content: Slightly tighter gap between a heading and its content. */
 	.kirby-content :is(h1, h2, h3) + :not(:is(h1, h2, h3)) {
-		@apply mt-4 md:mt-5;
+		@apply mt-4;
 	}
 
 	/* 5. Heading Styles (Visuals only) */
 	.kirby-content h1 {
-		@apply font-clash-display font-bold;
+		@apply font-clash-grotesk font-medium;
 		font-size: clamp(1.75rem, 6vw, 3.5rem);
-		font-weight: 700;
+		font-weight: 600;
 		line-height: 1.1;
 	}
 
 	.kirby-content h2 {
 		@apply font-bold;
 		font-size: clamp(1.5rem, 4vw, 2.5rem);
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	/* Artist names (H3) - bold and emphasized, but smaller than H2 */
 	.kirby-content h3 {
 		@apply font-bold tracking-widest;
 		font-size: clamp(1.15rem, 2.5vw, 1.75rem);
-		font-weight: 500;
+		font-weight: 600;
 	}
 
 	/* regular text */
@@ -168,7 +168,7 @@ body {
 	/* use '---' for a large intentional break if needed */
 	.kirby-content hr {
 		@apply h-0 border-0 opacity-0;
-		@apply mt-16 md:mt-24;
+		@apply mt-8;
 	}
 
 	.kirby-content {
@@ -182,7 +182,7 @@ body {
 
 	/* slide gallery */
 	.kirby-content .gallery-wrapper {
-		@apply relative w-full bg-black md:w-1/2 lg:w-1/3 xl:w-1/4;
+		@apply relative mt-8 w-full bg-black md:w-1/2 lg:w-1/3 xl:w-1/4;
 	}
 
 	/* track */

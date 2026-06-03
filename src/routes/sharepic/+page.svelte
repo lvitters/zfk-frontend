@@ -4,30 +4,30 @@
 	import { dev } from "$app/environment";
 	import { onMount } from "svelte";
 
-	const programData: Record<string, { dateAndTime: string; title: string; subtitle: string; details: string }[]> = {
-		märz: [
-			{ dateAndTime: "14.03    22:00", title: "HDMI Records", subtitle: "Release Event", details: "" },
-			{ dateAndTime: "20.03    19:00", title: "Bunker Eröffnung", subtitle: "Barabend", details: "" },
+	const programData: Record<string, { date: string; time: string; title: string; subtitle: string }[]> = {
+		juni: [
 			{
-				dateAndTime: "28.03    Einlass 20:00",
-				title: "Die Behörde + Nein Danke",
-				subtitle: "Doppelkornzert",
-				details: "aftershow DJs:   eXpresso fuckers",
+				date: "05.05.",
+				time: "17 - 00 Uhr",
+				title: "Defibrillator & Drittel @SummerSounds",
+				subtitle: "Takeover",
 			},
-		],
-		april: [
-			{ dateAndTime: "04.05 + 05.05   23.00 - 17:00", title: "Phantasia", subtitle: "Rave", details: "" },
 			{
-				dateAndTime: "14.04   19:00 - 23:00",
-				title: "Scopture",
-				subtitle: "Barabend",
-				details: "mit Lichtinstallation und DJs",
+				date: "06.06.",
+				time: "23:30 - 05:XX Uhr",
+				title: "SummerSounds Afterparty",
+				subtitle: "im NEU ♻ BAU",
 			},
-			{ dateAndTime: "18.04   23:00", title: "Platzhalter", subtitle: "platz wird gehalten", details: "" },
+			{
+				date: "tba",
+				time: "",
+				title: "DIESDAS GESCHICHTEN ERZÄHLEN",
+				subtitle: "Abschlusspräsentation Kelvin Scharnhorst",
+			},
 		],
 	};
 
-	const activeMonth = "märz";
+	const activeMonth = "juni";
 
 	const events = programData[activeMonth] || [];
 	const currentYear = new Date().getFullYear();
@@ -178,9 +178,17 @@
 					</div>
 
 					<div class="ml-8 flex flex-1 items-center">
-						<div class="text-4xl leading-tight font-medium">
-							BUNKER <br />
-							AN'N DIEK
+						<div
+							class="ml-7 h-24 w-[540px] bg-(--text-color)"
+							style="
+							mask-image: url('/neubau.svg');
+							-webkit-mask-image: url('/neubau.svg');
+							mask-size: contain;
+							-webkit-mask-size: contain;
+							mask-repeat: no-repeat;
+							-webkit-mask-repeat: no-repeat;
+							mask-position: center left;
+						">
 						</div>
 					</div>
 				</div>
@@ -194,23 +202,28 @@
 
 				<YearSelect {years} year={currentYear} selectYear={() => {}} />
 
-				<main class="flex grow flex-col overflow-hidden">
+				<main class="font-clash-grotesk flex grow flex-col overflow-hidden">
 					{#each events as event}
 						<div class="flex w-full flex-col border-b-2 border-(--text-color) last:border-b-0">
-							<div class="flex w-full flex-col gap-2 py-8 text-left">
-								<div
-									class="flex shrink-0 items-center gap-6 text-4xl leading-none whitespace-pre tabular-nums opacity-85">
-									<span>{event.dateAndTime}</span>
+							<div class="flex w-full flex-col gap-1 py-6 text-left">
+								<div class="flex w-full items-center justify-between">
+									<span class="text-4xl font-medium whitespace-pre tabular-nums">
+										{event.date}
+									</span>
+									<span class="text-4xl leading-tight font-medium whitespace-pre">
+										{event.title}
+									</span>
 								</div>
-								<div class="mt-2 text-5xl leading-tight font-medium whitespace-pre">
-									{event.title}
+								<div class="flex items-baseline justify-between gap-6">
+									<div class="flex flex-col gap-1">
+										<span class="text-4xl font-medium whitespace-pre tabular-nums">
+											{event.time}
+										</span>
+									</div>
 									{#if event.subtitle}
-										<span class="ml-4 text-4xl leading-none whitespace-pre">{event.subtitle}</span>
-									{/if}
-								</div>
-								<div class="mt-1 text-3xl leading-none font-normal whitespace-pre">
-									{#if event.details}
-										<span>{event.details}</span>
+										<span class="text-3xl whitespace-pre tabular-nums opacity-85">
+											{event.subtitle}
+										</span>
 									{/if}
 								</div>
 							</div>
@@ -218,10 +231,10 @@
 					{/each}
 				</main>
 
-				<footer class="mt-auto flex shrink-0 items-end justify-end border-t-2 border-(--highlight-color) py-8">
-					<div class="text-3xl font-medium tracking-[0.2em] text-(--text-color) uppercase">
-						Osterstraße 19X
-					</div>
+				<footer class="mt-auto flex items-end justify-between border-t-2 border-(--text-color) py-2">
+					<div class="text-3xl font-medium text-(--text-color)">53°04'18.3"N 8°48'04.4"E</div>
+					<!-- <div class="text-3xl font-medium text-(--text-color)">zfk-hb.de</div> -->
+					<div class="text-3xl font-medium text-(--text-color)">Osterstraße 19X, 28199 Bremen</div>
 				</footer>
 			</div>
 		</div>
