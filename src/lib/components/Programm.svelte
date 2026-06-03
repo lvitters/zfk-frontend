@@ -32,10 +32,10 @@
 	// calculate events once
 	const events = $derived(
 		(rawEvents || []).map((e: ProgrammEvent) => {
-			let displayDate = e.formattedDate.split(".").slice(0, 2).join(".");
+			let displayDate = e.formattedDate.split(".").slice(0, 2).join(".") + ".";
 			let displayTime = "";
 			if (e.formattedEndDate && e.formattedEndDate !== e.formattedDate) {
-				displayDate += ` - ${e.formattedEndDate.split(".").slice(0, 2).join(".")}`;
+				displayDate += ` - ${e.formattedEndDate.split(".").slice(0, 2).join(".") + "."}`;
 			}
 			if (e.time) {
 				const timeParts = e.time.split(":");
