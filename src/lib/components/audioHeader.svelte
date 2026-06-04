@@ -123,7 +123,7 @@
 
 		// Perform the final actual seek to SoundCloud
 		audioController.seek(audioController.currentTime, true);
-		
+
 		// Wait slightly before resuming progress event processing to avoid "snapping" back to old position
 		setTimeout(() => {
 			audioController.isSeeking = false;

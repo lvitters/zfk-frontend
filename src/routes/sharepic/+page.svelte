@@ -10,11 +10,11 @@
 				date: "05.05.",
 				time: "17 - 00 Uhr",
 				title: "Defibrillator & Drittel @SummerSounds",
-				subtitle: "Takeover",
+				subtitle: "ZfK Takeover",
 			},
 			{
 				date: "06.06.",
-				time: "23:30 - 05:XX Uhr",
+				time: "23:30 - 07:XX Uhr",
 				title: "SummerSounds Afterparty",
 				subtitle: "im NEU ♻ BAU",
 			},
@@ -23,6 +23,12 @@
 				time: "",
 				title: "DIESDAS GESCHICHTEN ERZÄHLEN",
 				subtitle: "Abschlusspräsentation Kelvin Scharnhorst",
+			},
+			{
+				date: "tba",
+				time: "",
+				title: "TBA LOL",
+				subtitle: "???",
 			},
 		],
 	};

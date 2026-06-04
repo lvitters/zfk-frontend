@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
 		"/hintern": {
 			target: kirbyUrl,
 			changeOrigin: true,
-			rewrite: (path: string) => isSubfolder ? path : path.replace(/^\/hintern/, ""),
+			rewrite: (path: string) => (isSubfolder ? path : path.replace(/^\/hintern/, "")),
 		},
 		// legacy proxies
 		"/media": kirbyUrl,

@@ -3,6 +3,6 @@ import type { LayoutServerLoad } from "./$types";
 
 export const load: LayoutServerLoad = () => {
 	return {
-		isMaintenance: env.MAINTENANCE === "true"
+		isMaintenance: env.MAINTENANCE === "true",
 	};
 };

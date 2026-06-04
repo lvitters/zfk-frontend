@@ -1,7 +1,5 @@
-import { dev } from "$app/environment";
-import { env } from "$env/dynamic/private";
 import { kql } from "$lib/kirby";
-import type { KirbyImage, KirbyPage, ProgrammEvent, Section, Track } from "$lib/types";
+import type { KirbyImage, KirbyPage, ProgrammEvent, Section } from "$lib/types";
 import type { PageServerLoad } from "./$types";
 
 // replace raw URLs with their title attribute in HTML

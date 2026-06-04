@@ -114,6 +114,11 @@ class AudioController {
 					this.duration = d / 1000;
 					this.isBuffering = false;
 				});
+
+				// Programmatically trigger play to bypass mobile autoplay restrictions.
+				// Because this callback is executed right after load finishes (usually very fast),
+				// it executes within the browser's user activation window from the click.
+				this.scWidget.play();
 			},
 		});
 	}
