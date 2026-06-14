@@ -19,16 +19,10 @@
 				subtitle: "im NEU ♻ BAU",
 			},
 			{
-				date: "tba",
-				time: "",
-				title: "DIESDAS GESCHICHTEN ERZÄHLEN",
+				date: "16.06.",
+				time: "19:30 Uhr",
+				title: "DIES DAS GESCHICHTEN ERZÄHLEN",
 				subtitle: "Abschlusspräsentation Kelvin Scharnhorst",
-			},
-			{
-				date: "tba",
-				time: "",
-				title: "TBA LOL",
-				subtitle: "???",
 			},
 		],
 	};

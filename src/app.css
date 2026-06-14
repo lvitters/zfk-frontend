@@ -2,8 +2,8 @@
 
 /* fonts */
 @font-face {
-	font-family: "ClashDisplayVariable";
-	src: url("/fonts/ClashDisplay-Variable.woff2") format("woff2");
+	font-family: "ClashDisplayNeuBau";
+	src: url("/fonts/ClashDisplay-Bold.woff2") format("woff2");
 	font-weight: 200 900;
 	font-style: normal;
 }
@@ -13,10 +13,6 @@
 	src: url("/fonts/ClashGrotesk-Variable.woff2") format("woff2");
 	font-weight: 200 900;
 	font-style: normal;
-}
-
-.font-clash-display {
-	@apply font-clash-display;
 }
 
 body {
@@ -72,12 +68,12 @@ body {
 	initial-value: 90%;
 }
 
-/* spin vinyl animation */
 @theme {
-	--font-clash-display: "ClashDisplayVariable", sans-serif;
+	--font-clash-display: "ClashDisplayNeuBau", sans-serif;
 	--font-clash-grotesk: "ClashGroteskVariable", sans-serif;
 	--animate-spin-vinyl: spin-vinyl 4s linear infinite;
 
+	/* spin vinyl animation */
 	@keyframes spin-vinyl {
 		to {
 			transform: rotate(360deg);
