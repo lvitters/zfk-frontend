@@ -162,13 +162,13 @@
 		<iframe
 			bind:this={scIframeEl}
 			id="sc-widget"
-			width="10"
-			height="10"
+			width="1"
+			height="1"
 			scrolling="no"
 			frameborder="no"
 			allow="autoplay; encrypted-media"
 			src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&show_artwork=false"
-			style="position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none;"
+			style="position: absolute; left: 0; top: 0; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; z-index: -1;"
 			title="SoundCloud Player">
 		</iframe>
 	{/if}
@@ -177,28 +177,59 @@
 	<div
 		class="relative flex w-full items-center overflow-hidden border-b-2 border-(--text-color) bg-(--bg-color) p-4 py-6 md:py-8">
 		<!-- spinning logo (leftmost) -->
-		<button
-			onclick={togglePlayback}
-			class="group flex h-[clamp(112px,21vw,210px)] w-[clamp(112px,21vw,210px)] shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none"
-			aria-label={audioController.isPlaying ? "Pause" : "Play"}>
-			<div
-				class="animate-spin-vinyl h-full w-full {hasBeenActivated
-					? 'bg-(--text-color)'
-					: 'bg-(--highlight-color)'} group-hover:bg-(--highlight-color) group-active:bg-(--highlight-color)"
-				style="
-					mask-image: url('/logo_zfk_transparent.png');
-					-webkit-mask-image: url('/logo_zfk_transparent.png');
-					mask-size: contain;
-					-webkit-mask-size: contain;
-					mask-repeat: no-repeat;
-					-webkit-mask-repeat: no-repeat;
-					mask-position: center;
-					-webkit-mask-position: center;
-					animation-play-state: {audioController.isPlaying ? 'running' : 'paused'};
-					will-change: transform;
-				">
-			</div>
-		</button>
+		<div class="relative h-[clamp(112px,21vw,210px)] w-[clamp(112px,21vw,210px)] shrink-0">
+			<!-- spinning logo button -->
+			<button
+				onclick={togglePlayback}
+				class="group flex h-full w-full cursor-pointer items-center justify-center rounded-full"
+				aria-label={audioController.isPlaying ? "Pause" : "Play"}>
+				<div
+					class="animate-spin-vinyl h-full w-full {hasBeenActivated
+						? 'bg-(--text-color)'
+						: 'bg-(--highlight-color)'} group-hover:bg-(--highlight-color) group-active:bg-(--highlight-color)"
+					style="
+						mask-image: url('/logo_zfk_transparent.png');
+						-webkit-mask-image: url('/logo_zfk_transparent.png');
+						mask-size: contain;
+						-webkit-mask-size: contain;
+						mask-repeat: no-repeat;
+						-webkit-mask-repeat: no-repeat;
+						mask-position: center;
+						-webkit-mask-position: center;
+						animation-play-state: {audioController.isPlaying ? 'running' : 'paused'};
+						will-change: transform;
+					">
+				</div>
+			</button>
+
+			<!-- Play/Pause Button Overlay (bottom-left) -->
+			{#if audioController.currentTrack}
+				<button
+					onclick={togglePlayback}
+					class="hover:background-(--highlight-color) absolute bottom-[-2%] left-[-2%] flex h-[15%] w-[15%] cursor-pointer items-center justify-center rounded-full text-(--background-color) outline-2 outline-(--text-color) hover:text-(--highlight-color) hover:outline-(--highlight-color) active:text-(--highlight-color) active:outline-(--highlight-color)"
+					aria-label={audioController.isPlaying ? "Pause" : "Play"}>
+					{#if audioController.isPlaying}
+						<!-- Pause Icon -->
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							class="h-full w-full">
+							<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+						</svg>
+					{:else}
+						<!-- Play Icon -->
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							class="h-full w-full translate-x-[0.5px]">
+							<path d="M8 5v14l11-7z" />
+						</svg>
+					{/if}
+				</button>
+			{/if}
+		</div>
 
 		{#if $pendingConsentTrackId && $pendingConsentSource === "header"}
 			<!-- consent prompt in header -->

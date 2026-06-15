@@ -99,6 +99,13 @@ class AudioController {
 
 		if (!this.scWidget) return;
 
+		// We set auto_play: true to trigger immediate playback. Since this load() call
+		// is executed synchronously inside the user's click handler, modern browsers
+		// will often permit the autoplay because the sequence was initiated by a user gesture.
+		// Even if a strict browser (like mobile Safari/iOS) blocks this automatic start,
+		// the attempt itself "warms up" (unlocks) the newly loaded iframe's audio context,
+		// allowing the subsequent play click to succeed immediately on the first attempt
+		// without getting blocked or causing a split-second stutter.
 		this.scWidget.load(track.externalUrl, {
 			auto_play: true,
 			show_artwork: false,
@@ -114,11 +121,6 @@ class AudioController {
 					this.duration = d / 1000;
 					this.isBuffering = false;
 				});
-
-				// Programmatically trigger play to bypass mobile autoplay restrictions.
-				// Because this callback is executed right after load finishes (usually very fast),
-				// it executes within the browser's user activation window from the click.
-				this.scWidget.play();
 			},
 		});
 	}

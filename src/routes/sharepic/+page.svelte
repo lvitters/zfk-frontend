@@ -1,6 +1,5 @@
 <script lang="ts">
 	import YearSelect from "$lib/components/YearSelect.svelte";
-	import { toPng } from "html-to-image";
 	import { dev } from "$app/environment";
 	import { onMount } from "svelte";
 
@@ -79,6 +78,7 @@
 	async function saveAsPng() {
 		if (!sharepicEl) return;
 
+		const { toPng } = await import("html-to-image");
 		const width = 1080;
 		const height = aspectRatio === "4:5" ? 1350 : 1440;
 
