@@ -85,6 +85,10 @@
 
 <svelte:window onclick={handleGlobalClick} />
 
+<svelte:head>
+	<title>ZfK HB</title>
+</svelte:head>
+
 {#if isMaintenance}
 	<Maintenance />
 {:else if isSharepic}
