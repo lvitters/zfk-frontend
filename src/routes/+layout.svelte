@@ -89,7 +89,7 @@
 	<title>ZfK HB</title>
 	<meta
 		name="description"
-		content="Das Zentrum für Kollektivkultur e.V. ist das originale ZfK in der Bremer Subkultur." />
+		content="Zentrum für Kollektivkultur e.V. - das originale ZfK in der Bremer Subkultur - Betreiberin des NEU BAU" />
 	<meta name="keywords" content="Subkultur, Musik, Kollektiv, Club, NEU BAU" />
 
 	<!-- open graph / social Media -->
@@ -97,7 +97,7 @@
 	<meta property="og:title" content="Zentrum für Kollektivkultur e.V." />
 	<meta
 		property="og:description"
-		content="Das Zentrum für Kollektivkultur e.V. ist das originale ZfK in der Bremer Subkultur." />
+		content="Zentrum für Kollektivkultur e.V. - das originale ZfK in der Bremer Subkultur - Betreiberin des NEU BAU" />
 	<meta property="og:url" content="https://zfk-hb.de" />
 </svelte:head>
 
