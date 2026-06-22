@@ -30,3 +30,19 @@ jobs:
                   protocol: ftps # secure ftp
                   local-dir: ./build/
                   server-dir: /test123.zfk-hb.de/httpdocs/public/build/ # Test folder
+
+            - name: Create Restart Trigger File
+              run: |
+                  mkdir -p tmp
+                  date > tmp/restart.txt
+
+            - name: Trigger Plesk Node.js Restart
+              uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+              with:
+                  server: ${{ secrets.FTP_SERVER }}
+                  username: ${{ secrets.FTP_USERNAME }}
+                  password: ${{ secrets.FTP_PASSWORD }}
+                  protocol: ftps
+                  local-dir: ./tmp/
+                  # CRITICAL: Application Root, NOT the build folder
+                  server-dir: /test123.zfk-hb.de/tmp/
