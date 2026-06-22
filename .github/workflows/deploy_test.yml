@@ -45,4 +45,4 @@ jobs:
                   protocol: ftps
                   local-dir: ./tmp/
                   # CRITICAL: Application Root, NOT the build folder
-                  server-dir: /test123.zfk-hb.de/tmp/
+                  server-dir: /test123.zfk-hb.de/httpdocs/tmp/
