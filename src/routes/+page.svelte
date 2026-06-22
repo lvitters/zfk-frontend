@@ -32,8 +32,6 @@
 		<AudioHeader {audioFiles} />
 	</div>
 
-	<h1>🔥 TEST 🔥</h1>
-
 	<!-- dynamic sections (cms pages in their ordered sequence) -->
 	{#each sections as section (section.id)}
 		<div class="relative w-full border-b-2 border-(--text-color)">
