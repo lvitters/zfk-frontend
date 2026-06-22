@@ -87,6 +87,18 @@
 
 <svelte:head>
 	<title>ZfK HB</title>
+	<meta
+		name="description"
+		content="Das Zentrum für Kollektivkultur e.V. ist das originale ZfK in der Bremer Subkultur." />
+	<meta name="keywords" content="Subkultur, Musik, Kollektiv, Club, NEU BAU" />
+
+	<!-- open graph / social Media -->
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="Zentrum für Kollektivkultur e.V." />
+	<meta
+		property="og:description"
+		content="Das Zentrum für Kollektivkultur e.V. ist das originale ZfK in der Bremer Subkultur." />
+	<meta property="og:url" content="https://zfk-hb.de" />
 </svelte:head>
 
 {#if isMaintenance}
