@@ -92,7 +92,7 @@ class AudioController {
 	/**
 	 * Load and play a track.
 	 */
-	async play(track: Track) {
+	play(track: Track) {
 		if (this.currentTrack?.id === track.id) {
 			this.toggle();
 			return;
@@ -105,25 +105,24 @@ class AudioController {
 		this.currentTime = 0;
 		this.duration = 0;
 
-		const ready = await this._waitForWidget();
-		if (!ready || !this.scWidget) {
-			console.error("SoundCloud widget is not ready.");
-			this.isBuffering = false;
-			return;
+		if (this.scWidget) {
+			this._loadTrack(track);
+		} else {
+			this._waitForWidget().then((ready) => {
+				if (!ready || !this.scWidget) {
+					console.error("SoundCloud widget is not ready.");
+					this.isBuffering = false;
+					return;
+				}
+				this._loadTrack(track);
+			});
 		}
+	}
 
-		// Pause the widget first before loading to ensure clean state
-		try {
-			this.scWidget.pause();
-		} catch (e) {
-			// ignore if not initialized/playing
-		}
-
+	private _loadTrack(track: Track) {
 		// We set auto_play: true to trigger immediate playback. Since this load() call
-		// is executed inside the user's click handler, desktop browsers will play automatically.
-		// On strict mobile browsers (iOS Safari), autoplay will be blocked, so the track
-		// will load and remain paused (with isPlaying = false). The user can then click
-		// Play once to start playback, which works immediately.
+		// is executed inside the user's click handler (if widget is ready), desktop browsers
+		// and most mobile browsers will respect the gesture and play automatically.
 		this.scWidget.load(track.externalUrl, {
 			auto_play: true,
 			show_artwork: false,
@@ -139,6 +138,9 @@ class AudioController {
 					this.duration = d / 1000;
 					this.isBuffering = false;
 				});
+
+				// In case auto_play didn't trigger, attempt a play call.
+				this.scWidget.play();
 			},
 		});
 	}
