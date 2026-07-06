@@ -29,6 +29,7 @@ class AudioController {
 	setElements(scIframe: HTMLIFrameElement) {
 		if (this.scIframe === scIframe) return;
 		this.scIframe = scIframe;
+		this.scWidget = null; // Clear old widget to force initialization on the new iframe
 		this._initWidget();
 	}
 
@@ -36,10 +37,9 @@ class AudioController {
 		if (typeof window === "undefined") return;
 
 		const SC = (window as any).SC;
-		// If the script isn't loaded yet, we wait.
-		// The component handles loading the script after consent.
+		// If the script isn't loaded yet, we don't schedule a timeout retry here;
+		// we let the dynamic _waitForWidget helper handle polling when a user tries to play.
 		if (!SC || !this.scIframe) {
-			setTimeout(() => this._initWidget(), 200);
 			return;
 		}
 
@@ -76,6 +76,19 @@ class AudioController {
 		}
 	}
 
+	private async _waitForWidget(timeoutMs = 5000): Promise<boolean> {
+		const start = Date.now();
+		while (!this.scWidget) {
+			this._initWidget();
+			if (this.scWidget) return true;
+			if (Date.now() - start > timeoutMs) {
+				return false;
+			}
+			await new Promise((r) => setTimeout(r, 100));
+		}
+		return true;
+	}
+
 	/**
 	 * Load and play a track.
 	 */
@@ -88,24 +101,29 @@ class AudioController {
 		this.lastTrackId = track.id;
 		this.currentTrack = track;
 		this.isBuffering = true;
+		this.isPlaying = false; // Reset play state so UI updates immediately and doesn't get stuck
 		this.currentTime = 0;
+		this.duration = 0;
 
-		// Ensure widget is ready before calling load
-		if (!this.scWidget) {
-			this._initWidget();
-			// wait a bit for initialization
-			await new Promise((r) => setTimeout(r, 300));
+		const ready = await this._waitForWidget();
+		if (!ready || !this.scWidget) {
+			console.error("SoundCloud widget is not ready.");
+			this.isBuffering = false;
+			return;
 		}
 
-		if (!this.scWidget) return;
+		// Pause the widget first before loading to ensure clean state
+		try {
+			this.scWidget.pause();
+		} catch (e) {
+			// ignore if not initialized/playing
+		}
 
 		// We set auto_play: true to trigger immediate playback. Since this load() call
-		// is executed synchronously inside the user's click handler, modern browsers
-		// will often permit the autoplay because the sequence was initiated by a user gesture.
-		// Even if a strict browser (like mobile Safari/iOS) blocks this automatic start,
-		// the attempt itself "warms up" (unlocks) the newly loaded iframe's audio context,
-		// allowing the subsequent play click to succeed immediately on the first attempt
-		// without getting blocked or causing a split-second stutter.
+		// is executed inside the user's click handler, desktop browsers will play automatically.
+		// On strict mobile browsers (iOS Safari), autoplay will be blocked, so the track
+		// will load and remain paused (with isPlaying = false). The user can then click
+		// Play once to start playback, which works immediately.
 		this.scWidget.load(track.externalUrl, {
 			auto_play: true,
 			show_artwork: false,
@@ -130,8 +148,13 @@ class AudioController {
 	 */
 	toggle() {
 		if (!this.scWidget) return;
-		if (this.isPlaying) this.scWidget.pause();
-		else this.scWidget.play();
+		if (this.isPlaying) {
+			this.scWidget.pause();
+			this.isPlaying = false; // Update local state synchronously for instant UI response
+		} else {
+			this.scWidget.play();
+			this.isPlaying = true; // Update local state synchronously for instant UI response
+		}
 	}
 
 	/**
@@ -150,7 +173,11 @@ class AudioController {
 	 * Stop playback and reset.
 	 */
 	stop() {
-		if (this.scWidget) this.scWidget.pause();
+		if (this.scWidget) {
+			try {
+				this.scWidget.pause();
+			} catch (e) {}
+		}
 		this.isPlaying = false;
 		this.currentTrack = null;
 		this.currentTime = 0;
