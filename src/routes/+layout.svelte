@@ -110,14 +110,13 @@
 
 <svelte:head>
 	<title>ZfK HB</title>
-	<meta name="description" content="Zentrum für Kollektivkultur e.V. - NEU BAU" />
-
-	<meta name="keywords" content="Subkultur, Musik, Kollektiv, Club, NEU BAU" />
+	<meta name="description" content="Zentrum für Kollektivkultur e.V. // NEU BAU" />
+	<meta name="keywords" content="Subkultur, Musik, Kollektiv, Club, NEU BAU, Bremen, NEU BAU Bremen, Neubau Bremen" />
 
 	<!-- open graph / social Media -->
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content="Zentrum für Kollektivkultur e.V." />
-	<meta property="og:description" content="Zentrum für Kollektivkultur e.V. - NEU BAU" />
+	<meta property="og:description" content="Zentrum für Kollektivkultur e.V. // NEU BAU" />
 	<meta property="og:url" content="https://zfk-hb.de" />
 </svelte:head>
 
