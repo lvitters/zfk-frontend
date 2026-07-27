@@ -79,7 +79,30 @@
 		// interval in millis (needs to match hue transition in app.css)
 		const interval = setInterval(updateHue, 40000);
 
-		return () => clearInterval(interval);
+		// Global image lazy loading and premium fade-in observer
+		const observer = new MutationObserver(() => {
+			document.querySelectorAll(".kirby-content img:not(.lazy-handled)").forEach((img) => {
+				img.classList.add("lazy-handled");
+
+				if (!img.getAttribute("loading")) {
+					img.setAttribute("loading", "lazy");
+				}
+
+				const htmlImg = img as HTMLImageElement;
+				if (htmlImg.complete) {
+					htmlImg.classList.add("loaded");
+				} else {
+					htmlImg.addEventListener("load", () => htmlImg.classList.add("loaded"));
+				}
+			});
+		});
+
+		observer.observe(document.body, { childList: true, subtree: true });
+
+		return () => {
+			clearInterval(interval);
+			observer.disconnect();
+		};
 	});
 </script>
 

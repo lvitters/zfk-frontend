@@ -190,7 +190,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			};
 		}
 
-		if (page.slug === "bunker") {
+		if (page.slug === "neu-bau" || page.slug === "bunker") {
 			return {
 				type: "bunker",
 				id: page.id,
