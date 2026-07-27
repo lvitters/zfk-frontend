@@ -37,6 +37,7 @@ body {
 
 	--highlight-color: hsl(calc(var(--bg-hue) + 180), 100%, 50%);
 	--text-color: hsl(calc(var(--bg-hue) + 180), 100%, var(--text-lightness));
+	--dark-color: hsl(calc(var(--bg-hue) + 180), 100%, 10%);
 
 	/* hue transition needs to match hue interval +layout.svelte */
 	transition:
@@ -83,7 +84,8 @@ body {
 
 	/* pulse opacity animation */
 	@keyframes pulse-opacity {
-		0%, 100% {
+		0%,
+		100% {
 			opacity: 1;
 		}
 		50% {

@@ -134,7 +134,8 @@
 			}
 
 			const diff = eventDate.getTime() - now.getTime();
-			if (diff > -10800000) { // 3 hours grace period
+			if (diff > -10800000) {
+				// 3 hours grace period
 				if (diff < minDiff) {
 					minDiff = diff;
 					nextUp = e.id;
@@ -159,17 +160,24 @@
 	<!-- preview row for event list -->
 	<div class="flex w-full justify-start">
 		<button
-			class="relative flex w-full cursor-pointer flex-col overflow-hidden p-3 text-left focus:outline-none md:px-6 
-			{nextUpEventId === event.id 
-				? (expandedEventId === event.id ? 'bg-(--highlight-color) text-(--dark-color)' : 'bg-(--highlight-color) text-(--dark-color) hover:bg-(--text-color) hover:text-(--bg-color)')
-				: (expandedEventId === event.id ? 'bg-(--text-color) text-(--bg-color)' : 'hover:bg-(--text-color) hover:text-(--bg-color)')}"
+			class="relative flex w-full cursor-pointer flex-col overflow-hidden p-3 text-left focus:outline-none md:px-6
+			{nextUpEventId === event.id
+				? expandedEventId === event.id
+					? 'bg-(--highlight-color) text-(--dark-color)'
+					: 'bg-(--highlight-color) text-(--dark-color) hover:bg-(--text-color) hover:text-(--bg-color)'
+				: expandedEventId === event.id
+					? 'bg-(--text-color) text-(--bg-color)'
+					: 'hover:bg-(--text-color) hover:text-(--bg-color)'}"
 			onclick={() => toggleEvent(event.id)}
 			onmouseenter={() => (isEntryHovered[index] = true)}
 			onmouseleave={() => (isEntryHovered[index] = false)}>
 			<!-- content -->
 			<div class="flex w-full flex-col gap-1">
 				<div
-					class="flex flex-wrap shrink-0 items-center gap-3 md:gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums {nextUpEventId === event.id ? '' : 'opacity-85'}">
+					class="flex shrink-0 flex-wrap items-center gap-3 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums md:gap-5 {nextUpEventId ===
+					event.id
+						? ''
+						: 'opacity-85'}">
 					<span>
 						{event.displayDate}
 					</span>
@@ -181,13 +189,11 @@
 					{/if}
 
 					{#if nextUpEventId === event.id}
-						<span class="font-bold uppercase animate-pulse-opacity ml-2 md:ml-4">
-							NEXT
-						</span>
+						<span class="animate-pulse-opacity ml-2 font-bold uppercase md:ml-4">NEXT</span>
 					{/if}
 				</div>
 				<!-- title -->
-				<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium mt-1">
+				<div class="mt-1 text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
 					{event.title}
 				</div>
 			</div>
