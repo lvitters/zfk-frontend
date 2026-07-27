@@ -57,6 +57,7 @@ export interface ProgrammEvent {
 	title: string;
 	thumbnailUrl?: string;
 	videoUrl?: string;
+	slug: string;
 	// Derived properties
 	fullText?: string;
 	year: number;

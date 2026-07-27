@@ -4,8 +4,11 @@
 	import { slide } from "svelte/transition";
 	import type { ProgrammEvent } from "$lib/types";
 
-	let { events: rawEvents, selectedYear = $bindable() }: { events: ProgrammEvent[] | null; selectedYear?: number } =
-		$props();
+	let {
+		events: rawEvents,
+		selectedYear = $bindable(),
+		parentSlug,
+	}: { events: ProgrammEvent[] | null; selectedYear?: number; parentSlug?: string } = $props();
 
 	function extractFirstImageAttributes(html: string): { src?: string; srcset?: string; sizes?: string } | null {
 		if (!html) return null;
@@ -144,14 +147,29 @@
 		}
 
 		nextUpEventId = nextUp;
+
+		const hash = window.location.hash.slice(1);
+		if (hash) {
+			const eventToExpand = events.find((e: ProgrammEvent) => e.slug === hash);
+			if (eventToExpand) {
+				selectedYear = eventToExpand.year;
+				expandedEventId = eventToExpand.id;
+			}
+		}
 	});
 
 	// toggle the expanded state of a single event
-	function toggleEvent(id: string) {
-		if (expandedEventId === id) {
+	function toggleEvent(event: ProgrammEvent) {
+		if (expandedEventId === event.id) {
 			expandedEventId = null;
+			if (parentSlug) {
+				history.replaceState(null, "", `#${parentSlug}`);
+			} else {
+				history.replaceState(null, "", window.location.pathname + window.location.search);
+			}
 		} else {
-			expandedEventId = id;
+			expandedEventId = event.id;
+			history.replaceState(null, "", `#${event.slug}`);
 		}
 	}
 </script>
@@ -168,7 +186,7 @@
 				: expandedEventId === event.id
 					? 'bg-(--text-color) text-(--bg-color)'
 					: 'hover:bg-(--text-color) hover:text-(--bg-color)'}"
-			onclick={() => toggleEvent(event.id)}
+			onclick={() => toggleEvent(event)}
 			onmouseenter={() => (isEntryHovered[index] = true)}
 			onmouseleave={() => (isEntryHovered[index] = false)}>
 			<!-- content -->
@@ -219,7 +237,10 @@
 	<div bind:this={listContainer} class="w-full overflow-hidden transition-[height] duration-300 ease-in-out">
 		<div bind:this={innerContainer} class="w-full">
 			{#each filteredEvents as event, index}
-				<div class="event-row w-full border-b-2 border-(--text-color) last:border-b-0" use:addRef={event.id}>
+				<div
+					id={event.slug}
+					class="event-row w-full border-b-2 border-(--text-color) last:border-b-0"
+					use:addRef={event.id}>
 					{@render previewRow(event, index)}
 					{#if expandedEventId === event.id}
 						{@render expandedEventContent(event)}

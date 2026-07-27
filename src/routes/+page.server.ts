@@ -34,11 +34,12 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		select: {
 			// 1. events
 			events: {
-				query: "page('events').children.listed.sortBy('date', 'desc')",
+				query: "page('programm').children.listed.sortBy('date', 'desc')",
 				select: {
 					title: true,
 					date: true,
 					time: true,
+					slug: true,
 					endDate: true,
 					text: "page.text.toBlocks.toHtml",
 					formattedDate: "page.date.toDate('d.m.Y')",
@@ -61,7 +62,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			},
 			// 2. recordings
 			audio: {
-				query: "page('recordings')",
+				query: "page('aufnahmen')",
 				select: {
 					soundcloudLinks: {
 						query: "page.soundcloud_links.toStructure",
@@ -171,7 +172,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	// process all pages into an ordered sections array
 	const pages = (result.pages || []) as KirbyPage[];
 	const sections: Section[] = pages.map((page: KirbyPage): Section => {
-		if (page.slug === "events") {
+		if (page.slug === "programm" || page.slug === "events") {
 			return {
 				type: "events",
 				id: page.id,
@@ -180,7 +181,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			};
 		}
 
-		if (page.slug === "recordings") {
+		if (page.slug === "aufnahmen" || page.slug === "recordings") {
 			return {
 				type: "recordings",
 				id: page.id,
