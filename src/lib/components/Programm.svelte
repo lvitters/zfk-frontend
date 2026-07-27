@@ -113,9 +113,36 @@
 
 	let expandedEventId = $state<string | null>(null);
 	let isEntryHovered = $state<boolean[]>([]);
+	let nextUpEventId = $state<string | null>(null);
 
 	onMount(() => {
 		isEntryHovered = Array(events.length).fill(false);
+
+		const now = new Date();
+		let nextUp = null;
+		let minDiff = Infinity;
+
+		for (const e of events) {
+			const eventDate = new Date(e.date);
+			if (e.time) {
+				const timeParts = e.time.split(":");
+				if (timeParts.length >= 2) {
+					eventDate.setHours(parseInt(timeParts[0], 10), parseInt(timeParts[1], 10), 0, 0);
+				}
+			} else {
+				eventDate.setHours(23, 59, 59, 999);
+			}
+
+			const diff = eventDate.getTime() - now.getTime();
+			if (diff > -10800000) { // 3 hours grace period
+				if (diff < minDiff) {
+					minDiff = diff;
+					nextUp = e.id;
+				}
+			}
+		}
+
+		nextUpEventId = nextUp;
 	});
 
 	// toggle the expanded state of a single event
@@ -132,17 +159,17 @@
 	<!-- preview row for event list -->
 	<div class="flex w-full justify-start">
 		<button
-			class="relative flex w-full cursor-pointer flex-col overflow-hidden p-3 text-left focus:outline-none md:px-6 {expandedEventId ===
-			event.id
-				? 'bg-(--text-color) text-(--bg-color)'
-				: 'hover:bg-(--text-color) hover:text-(--bg-color)'}"
+			class="relative flex w-full cursor-pointer flex-col overflow-hidden p-3 text-left focus:outline-none md:px-6 
+			{nextUpEventId === event.id 
+				? (expandedEventId === event.id ? 'bg-(--highlight-color) text-(--dark-color)' : 'bg-(--highlight-color) text-(--dark-color) hover:bg-(--text-color) hover:text-(--bg-color)')
+				: (expandedEventId === event.id ? 'bg-(--text-color) text-(--bg-color)' : 'hover:bg-(--text-color) hover:text-(--bg-color)')}"
 			onclick={() => toggleEvent(event.id)}
 			onmouseenter={() => (isEntryHovered[index] = true)}
 			onmouseleave={() => (isEntryHovered[index] = false)}>
 			<!-- content -->
 			<div class="flex w-full flex-col gap-1">
 				<div
-					class="flex shrink-0 items-center gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums opacity-85">
+					class="flex flex-wrap shrink-0 items-center gap-3 md:gap-5 text-[clamp(1rem,3vw,1.5rem)] leading-none tabular-nums {nextUpEventId === event.id ? '' : 'opacity-85'}">
 					<span>
 						{event.displayDate}
 					</span>
@@ -152,9 +179,15 @@
 							{event.displayTime}
 						</span>
 					{/if}
+
+					{#if nextUpEventId === event.id}
+						<span class="font-bold uppercase animate-pulse-opacity ml-2 md:ml-4">
+							NEXT
+						</span>
+					{/if}
 				</div>
 				<!-- title -->
-				<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
+				<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium mt-1">
 					{event.title}
 				</div>
 			</div>

@@ -72,11 +72,22 @@ body {
 	--font-clash-display: "ClashDisplayNeuBau", sans-serif;
 	--font-clash-grotesk: "ClashGroteskVariable", sans-serif;
 	--animate-spin-vinyl: spin-vinyl 4s linear infinite;
+	--animate-pulse-opacity: pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
 	/* spin vinyl animation */
 	@keyframes spin-vinyl {
 		to {
 			transform: rotate(360deg);
+		}
+	}
+
+	/* pulse opacity animation */
+	@keyframes pulse-opacity {
+		0%, 100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0;
 		}
 	}
 }
