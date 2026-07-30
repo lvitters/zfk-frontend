@@ -12,6 +12,6 @@
 		<img
 			src="/bunker_freigestellt.png"
 			alt="isometric drawing of ZfK bunker"
-			class="h-auto w-full mix-blend-difference contrast-125 grayscale" />
+			class="h-auto w-full mix-blend-difference contrast-125 drop-shadow-[0px_4px_10px_rgba(255,255,255,1)] grayscale" />
 	</div>
 </div>
