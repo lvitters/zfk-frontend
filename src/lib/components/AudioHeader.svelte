@@ -279,7 +279,7 @@
 				<!-- title, centered vertically -->
 				<div class="text-[clamp(1rem,3vw,1.5rem)] leading-none font-medium">
 					Zentrum für <br />
-					Kollektivkultur e.V.
+					Kollektivkultur e. V.
 				</div>
 			</div>
 		{/if}
