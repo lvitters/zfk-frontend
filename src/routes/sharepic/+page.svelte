@@ -49,10 +49,14 @@
 
 	const activeMonth = "Oktober";
 
-	// export mode: false = Instagram (1080 px wide), true = print (~300 dpi at 20 cm wide)
-	const forPrint = true;
 	// 20 cm at 300 dpi = 2362 px, the layout is 1080 px wide
-	const exportPixelRatio = forPrint ? 2362 / 1080 : 1;
+	// const exportPixelRatio = forPrint ? 2362 / 1080 : 1;
+
+	// 2040 x 2700
+	const exportPixelRatio = 2;
+
+	// 1080 x 1350
+	//const exportPixelRatio = 1;
 
 	// symbol shown between NEU and BAU in the header (see $lib/neubauSymbols for the available ones)
 	const neubauSymbol = "\u{2602}"; // ☂
@@ -124,7 +128,7 @@
 			});
 
 			const link = document.createElement("a");
-			link.download = `zfk-sharepic-${activeMonth}-${aspectRatio.replace(":", "-")}${forPrint ? "-print" : ""}.png`;
+			link.download = `zfk-sharepic-${activeMonth}-${aspectRatio.replace(":", "-")}.png`;
 			link.href = dataUrl;
 			link.click();
 		} catch (err) {
