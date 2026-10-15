@@ -11,7 +11,7 @@ export type Section =
 	| { type: "events"; id: string; title: string; slug: string }
 	| { type: "recordings"; id: string; title: string; slug: string }
 	| {
-			type: "bunker";
+			type: "neubau";
 			id: string;
 			title: string;
 			slug: string;

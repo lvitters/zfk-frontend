@@ -2,7 +2,8 @@
 	import AudioHeader from "$lib/components/AudioHeader.svelte";
 	import Aufnahmen from "$lib/components/Aufnahmen.svelte";
 	import Programm from "$lib/components/Programm.svelte";
-	import Bunker from "$lib/components/Bunker.svelte";
+	import NeuBau from "$lib/components/NeuBau.svelte";
+	import NeuBauTitle from "$lib/components/NeuBauTitle.svelte";
 	import MainSection from "$lib/components/MainSection.svelte";
 	import HeaderSection from "$lib/components/HeaderSection.svelte";
 	import { slide } from "svelte/transition";
@@ -82,16 +83,20 @@
 					? 'bg-(--text-color) text-(--bg-color)'
 					: 'bg-(--bg-color) hover:bg-(--text-color) hover:text-(--bg-color)'}"
 				onclick={() => toggleSection(section.slug)}>
-				{@html section.title}
+				{#if section.type === "neubau"}
+					<NeuBauTitle cycleRangeMs={[3000, 9000]} />
+				{:else}
+					{@html section.title}
+				{/if}
 			</button>
 			{#if expandedSection === section.slug}
 				<div transition:slide>
-					{#if section.type === "events"}
+					{#if section.type === "neubau"}
+						<NeuBau page={section.content} />
+					{:else if section.type === "events"}
 						<Programm {events} bind:selectedYear={programmYear} parentSlug={section.slug} />
 					{:else if section.type === "recordings"}
 						<Aufnahmen {audioFiles} bind:selectedYear={aufnahmenYear} />
-					{:else if section.type === "bunker"}
-						<Bunker page={section.content} />
 					{:else if section.type === "headerSection"}
 						<HeaderSection items={section.content} parentSlug={section.slug} />
 					{:else if section.type === "mainSection"}
