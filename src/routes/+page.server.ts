@@ -192,7 +192,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
 		if (page.slug === "neu-bau" || page.slug === "bunker") {
 			return {
-				type: "bunker",
+				type: "neubau",
 				id: page.id,
 				title: page.title,
 				slug: page.slug,

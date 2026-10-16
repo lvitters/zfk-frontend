@@ -1,32 +1,66 @@
 <script lang="ts">
 	import YearSelect from "$lib/components/YearSelect.svelte";
+	import NeuBauTitle from "$lib/components/NeuBauTitle.svelte";
 	import { dev } from "$app/environment";
 	import { onMount } from "svelte";
 
 	const programData: Record<string, { date: string; time: string; title: string; subtitle: string }[]> = {
-		juni: [
+		Oktober: [
 			{
-				date: "05.05.",
-				time: "17 - 00 Uhr",
-				title: "Defibrillator & Drittel @SummerSounds",
-				subtitle: "ZfK Takeover",
+				date: "16.10.",
+				time: "23 Uhr",
+				title: "Rollout Sessions",
+				subtitle: "Drum'n'Bass",
 			},
 			{
-				date: "06.06.",
-				time: "23:30 - 07:XX Uhr",
-				title: "SummerSounds Afterparty",
-				subtitle: "im NEU ♻ BAU",
+				date: "23.10.",
+				time: "18 Uhr",
+				title: "ZfK x LichtAusGang",
+				subtitle: "Ausstellung + Ambient",
 			},
 			{
-				date: "16.06.",
-				time: "19:30 Uhr",
-				title: "DIES DAS GESCHICHTEN ERZÄHLEN",
-				subtitle: "Abschlusspräsentation Kelvin Scharnhorst",
+				date: "24.10.",
+				time: "21 Uhr",
+				title: "ZfK x LichtAusGang x Friendly Connections",
+				subtitle: "Showcase",
+			},
+		],
+		November: [
+			{
+				date: "06.11.",
+				time: "20 Uhr",
+				title: "BLIZZ",
+				subtitle: "Konzert",
+			},
+			{
+				date: "07.11.",
+				time: "22 Uhr",
+				title: "Hotel Unfug",
+				subtitle: "Rave",
+			},
+			{
+				date: "21.11.",
+				time: "14 Uhr",
+				title: "ALF: Ambient Liberation Front",
+				subtitle: "Ambient Dungeon Vol. 1 + HDMI Clubnacht",
 			},
 		],
 	};
 
-	const activeMonth = "juni";
+	const activeMonth = "Oktober";
+
+	// 20 cm at 300 dpi = 2362 px, the layout is 1080 px wide
+	// const exportPixelRatio = forPrint ? 2362 / 1080 : 1;
+
+	// 2040 x 2700
+	const exportPixelRatio = 2;
+
+	// 1080 x 1350
+	//const exportPixelRatio = 1;
+
+	// symbol shown between NEU and BAU in the header (see $lib/neubauSymbols for the available ones)
+	const neubauSymbol = "\u{2602}"; // ☂
+	// const neubauSymbol = "\u{21BB}"; // ↻
 
 	const events = programData[activeMonth] || [];
 	const currentYear = new Date().getFullYear();
@@ -90,7 +124,7 @@
 					transform: "scale(1)",
 					transformOrigin: "top left",
 				},
-				pixelRatio: 1,
+				pixelRatio: exportPixelRatio,
 			});
 
 			const link = document.createElement("a");
@@ -179,16 +213,8 @@
 
 					<div class="ml-8 flex flex-1 items-center">
 						<div
-							class="ml-7 h-24 w-[540px] bg-(--text-color)"
-							style="
-							mask-image: url('/neubau.svg');
-							-webkit-mask-image: url('/neubau.svg');
-							mask-size: contain;
-							-webkit-mask-size: contain;
-							mask-repeat: no-repeat;
-							-webkit-mask-repeat: no-repeat;
-							mask-position: center left;
-						">
+							class="font-clash-display ml-7 text-[108px] leading-none font-bold whitespace-nowrap text-(--text-color)">
+							<NeuBauTitle symbol={neubauSymbol} />
 						</div>
 					</div>
 				</div>
@@ -232,7 +258,7 @@
 				</main>
 
 				<footer class="mt-auto flex items-end justify-between border-t-2 border-(--text-color) py-2">
-					<div class="text-3xl font-medium text-(--text-color)">53°04'18.3"N 8°48'04.4"E</div>
+					<div class="text-3xl font-medium text-(--text-color)">www.zfk-hb.de</div>
 					<!-- <div class="text-3xl font-medium text-(--text-color)">zfk-hb.de</div> -->
 					<div class="text-3xl font-medium text-(--text-color)">Osterstraße 19X, 28199 Bremen</div>
 				</footer>
