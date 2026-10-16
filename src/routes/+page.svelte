@@ -84,7 +84,7 @@
 					: 'bg-(--bg-color) hover:bg-(--text-color) hover:text-(--bg-color)'}"
 				onclick={() => toggleSection(section.slug)}>
 				{#if section.type === "neubau"}
-					<NeuBauTitle cycleRangeMs={[3000, 9000]} />
+					<NeuBauTitle cycleRangeMs={[1000, 9000]} />
 				{:else}
 					{@html section.title}
 				{/if}
