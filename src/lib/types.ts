@@ -18,7 +18,7 @@ export type Section =
 			content: { text?: string; images?: KirbyImage[] };
 	  }
 	| { type: "headerSection"; id: string; title: string; slug: string; content: KirbyPage[] }
-	| { type: "mainSection"; id: string; title: string; slug: string; content: { text?: string } };
+	| { type: "contentSection"; id: string; title: string; slug: string; content: { text?: string } };
 
 export interface Track {
 	id: string;
