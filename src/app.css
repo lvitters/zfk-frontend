@@ -177,9 +177,8 @@ body {
 			background-color 0.2s ease-out;
 	}
 
-	/* dark mode: images marked with "invert-dark" in Kirby (class: or imgclass:) get inverted,
-	   so black-on-transparent artwork becomes readable */
-	:root.dark .kirby-content img.invert-dark,
+	/* dark mode: image blocks with "Invert in dark mode" enabled in Kirby get the
+	   "invert-dark" class on their <figure>, so black-on-transparent artwork stays readable */
 	:root.dark .kirby-content .invert-dark img {
 		filter: invert(1);
 	}
@@ -256,5 +255,11 @@ body {
 	/* button active state (mobile click feedback) */
 	.kirby-content button.gallery-btn:active {
 		@apply bg-(--text-color) text-(--bg-color);
+	}
+
+	/* a gallery as the first element also gets no top margin
+	   (must come after the .gallery-wrapper rule to win) */
+	.kirby-content > .gallery-wrapper:first-child {
+		margin-top: 0;
 	}
 }
