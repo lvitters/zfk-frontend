@@ -177,6 +177,13 @@ body {
 			background-color 0.2s ease-out;
 	}
 
+	/* dark mode: images marked with "invert-dark" in Kirby (class: or imgclass:) get inverted,
+	   so black-on-transparent artwork becomes readable */
+	:root.dark .kirby-content img.invert-dark,
+	:root.dark .kirby-content .invert-dark img {
+		filter: invert(1);
+	}
+
 	.kirby-content img:not(.loaded) {
 		opacity: 0.1;
 		background-color: var(--text-color);

@@ -48,6 +48,7 @@
 	$effect(() => {
 		document.documentElement.style.setProperty("--bg-lightness", $isDarkMode ? "10%" : "90%");
 		document.documentElement.style.setProperty("--text-lightness", $isDarkMode ? "90%" : "10%");
+		document.documentElement.classList.toggle("dark", $isDarkMode);
 	});
 
 	// hue update
