@@ -221,7 +221,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		}
 
 		return {
-			type: "mainSection",
+			type: "contentSection",
 			id: page.id,
 			title: page.title,
 			slug: page.slug,

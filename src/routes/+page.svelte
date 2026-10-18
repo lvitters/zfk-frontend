@@ -4,7 +4,7 @@
 	import Programm from "$lib/components/Programm.svelte";
 	import NeuBau from "$lib/components/NeuBau.svelte";
 	import NeuBauTitle from "$lib/components/NeuBauTitle.svelte";
-	import MainSection from "$lib/components/MainSection.svelte";
+	import ContentSection from "$lib/components/ContentSection.svelte";
 	import HeaderSection from "$lib/components/HeaderSection.svelte";
 	import { slide } from "svelte/transition";
 	import { onMount } from "svelte";
@@ -23,7 +23,7 @@
 		if (hash) {
 			let foundParent = false;
 
-			// check main sections
+			// check content sections
 			if (sections.some((s) => s.slug === hash)) {
 				expandedSection = hash;
 				foundParent = true;
@@ -99,8 +99,8 @@
 						<Aufnahmen {audioFiles} bind:selectedYear={aufnahmenYear} />
 					{:else if section.type === "headerSection"}
 						<HeaderSection items={section.content} parentSlug={section.slug} />
-					{:else if section.type === "mainSection"}
-						<MainSection page={section.content} />
+					{:else if section.type === "contentSection"}
+						<ContentSection page={section.content} />
 					{/if}
 				</div>
 			{/if}
