@@ -5,26 +5,6 @@
 	import { onMount } from "svelte";
 
 	const programData: Record<string, { date: string; time: string; title: string; subtitle: string }[]> = {
-		Oktober: [
-			{
-				date: "16.10.",
-				time: "23 Uhr",
-				title: "Rollout Sessions",
-				subtitle: "Drum'n'Bass",
-			},
-			{
-				date: "23.10.",
-				time: "18 Uhr",
-				title: "ZfK x LichtAusGang",
-				subtitle: "Ausstellung + Ambient",
-			},
-			{
-				date: "24.10.",
-				time: "21 Uhr",
-				title: "ZfK x LichtAusGang x Friendly Connections",
-				subtitle: "Showcase",
-			},
-		],
 		November: [
 			{
 				date: "06.11.",
@@ -36,10 +16,10 @@
 				date: "07.11.",
 				time: "22 Uhr",
 				title: "Hotel Unfug",
-				subtitle: "Rave",
+				subtitle: "Down- und Midtempo, Indie Dance",
 			},
 			{
-				date: "21.11.",
+				date: "28.11.",
 				time: "14 Uhr",
 				title: "ALF: Ambient Liberation Front",
 				subtitle: "Ambient Dungeon Vol. 1 + HDMI Clubnacht",
@@ -47,10 +27,7 @@
 		],
 	};
 
-	const activeMonth = "Oktober";
-
-	// 20 cm at 300 dpi = 2362 px, the layout is 1080 px wide
-	// const exportPixelRatio = forPrint ? 2362 / 1080 : 1;
+	const activeMonth = "November";
 
 	// 2040 x 2700
 	const exportPixelRatio = 2;
@@ -59,7 +36,7 @@
 	//const exportPixelRatio = 1;
 
 	// symbol shown between NEU and BAU in the header (see $lib/neubauSymbols for the available ones)
-	const neubauSymbol = "\u{2602}"; // ☂
+	const neubauSymbol = "\u{263B}"; // ☂
 	// const neubauSymbol = "\u{21BB}"; // ↻
 
 	const events = programData[activeMonth] || [];
@@ -258,8 +235,8 @@
 				</main>
 
 				<footer class="mt-auto flex items-end justify-between border-t-2 border-(--text-color) py-2">
-					<div class="text-3xl font-medium text-(--text-color)">www.zfk-hb.de</div>
-					<!-- <div class="text-3xl font-medium text-(--text-color)">zfk-hb.de</div> -->
+					<!-- <div class="text-3xl font-medium text-(--text-color)">www.zfk-hb.de</div> -->
+					<div class="text-3xl font-medium text-(--text-color)">53°04'18.3"N 8°48'04.4"E</div>
 					<div class="text-3xl font-medium text-(--text-color)">Osterstraße 19X, 28199 Bremen</div>
 				</footer>
 			</div>
