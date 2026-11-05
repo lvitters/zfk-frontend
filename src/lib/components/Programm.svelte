@@ -62,9 +62,46 @@
 		),
 	);
 
+	// find the next event, including a 3 hour grace period after its start
+	function findNextUpEvent(): ProgrammEvent | null {
+		const now = new Date();
+		let nextUp: ProgrammEvent | null = null;
+		let minDiff = Infinity;
+
+		for (const e of events) {
+			const eventDate = new Date(e.date);
+			if (e.time) {
+				const timeParts = e.time.split(":");
+				if (timeParts.length >= 2) {
+					eventDate.setHours(parseInt(timeParts[0], 10), parseInt(timeParts[1], 10), 0, 0);
+				}
+			} else {
+				eventDate.setHours(23, 59, 59, 999);
+			}
+
+			const diff = eventDate.getTime() - now.getTime();
+			if (diff > -10800000) {
+				// 3 hours grace period
+				if (diff < minDiff) {
+					minDiff = diff;
+					nextUp = e;
+				}
+			}
+		}
+
+		return nextUp;
+	}
+
 	$effect(() => {
 		if (!selectedYear && years.length > 0) {
-			selectedYear = years[0] as number;
+			const currentYear = new Date().getFullYear();
+			if (!years.includes(currentYear)) {
+				selectedYear = years[0] as number;
+			} else {
+				// open on the next event's year if it lies outside the current year
+				const nextYear = findNextUpEvent()?.year;
+				selectedYear = nextYear ?? currentYear;
+			}
 		}
 	});
 
@@ -121,32 +158,7 @@
 	onMount(() => {
 		isEntryHovered = Array(events.length).fill(false);
 
-		const now = new Date();
-		let nextUp = null;
-		let minDiff = Infinity;
-
-		for (const e of events) {
-			const eventDate = new Date(e.date);
-			if (e.time) {
-				const timeParts = e.time.split(":");
-				if (timeParts.length >= 2) {
-					eventDate.setHours(parseInt(timeParts[0], 10), parseInt(timeParts[1], 10), 0, 0);
-				}
-			} else {
-				eventDate.setHours(23, 59, 59, 999);
-			}
-
-			const diff = eventDate.getTime() - now.getTime();
-			if (diff > -10800000) {
-				// 3 hours grace period
-				if (diff < minDiff) {
-					minDiff = diff;
-					nextUp = e.id;
-				}
-			}
-		}
-
-		nextUpEventId = nextUp;
+		nextUpEventId = findNextUpEvent()?.id ?? null;
 
 		const hash = window.location.hash.slice(1);
 		if (hash) {

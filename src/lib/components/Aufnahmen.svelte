@@ -16,7 +16,8 @@
 
 	$effect(() => {
 		if (!selectedYear && years.length > 0) {
-			selectedYear = years[0];
+			const currentYear = String(new Date().getFullYear());
+			selectedYear = years.includes(currentYear) ? currentYear : years[0];
 		}
 	});
 
